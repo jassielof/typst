@@ -141,7 +141,7 @@ pub struct RawElem {
     /// You can also use raw blocks creatively to create custom syntaxes for
     /// your automations.
     ///
-    /// ````example
+    /// ````example:"Implementing a DSL using raw and show rules"
     /// // Parse numbers in raw blocks with the
     /// // `mydsl` tag and sum them up.
     /// #show raw.where(lang: "mydsl"): it => {
@@ -909,20 +909,17 @@ fn align_tabs(text: &str, tab_size: usize) -> EcoString {
     let mut column = 0;
 
     for grapheme in text.graphemes(true) {
-        match grapheme {
-            "\t" => {
-                let required = tab_size - column % divisor;
-                res.push_str(&replacement[..required]);
-                column += required;
-            }
-            "\n" => {
-                res.push_str(grapheme);
-                column = 0;
-            }
-            _ => {
-                res.push_str(grapheme);
-                column += 1;
-            }
+        let c = grapheme.parse::<char>();
+        if c == Ok('\t') {
+            let required = tab_size - column % divisor;
+            res.push_str(&replacement[..required]);
+            column += required;
+        } else if c.is_ok_and(typst_syntax::is_newline) || grapheme == "\r\n" {
+            res.push_str(grapheme);
+            column = 0;
+        } else {
+            res.push_str(grapheme);
+            column += 1;
         }
     }
 

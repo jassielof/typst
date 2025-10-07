@@ -59,7 +59,7 @@ use crate::model::Numbering;
 ///   only trigger on paragraphs.
 ///
 /// - A proper distinction between paragraphs and other text helps people who
-///   rely on assistive technologies (such as screen readers) navigate and
+///   rely on Assistive Technology (AT) (such as screen readers) navigate and
 ///   understand the document properly.
 ///
 /// - PDF export will generate a `P` tag only for paragraphs.
@@ -457,6 +457,15 @@ pub struct ParLine {
     /// Roses are red. \
     /// Violets are blue. \
     /// Typst is there for you.
+    /// ```
+    ///
+    /// ```example
+    /// >>> #set page(width: 200pt, margin: (left: 3em))
+    /// #set par.line(
+    ///   numbering: i => if calc.rem(i, 5) == 0 or i == 1 { i },
+    /// )
+    ///
+    /// #lorem(60)
     /// ```
     #[ghost]
     pub numbering: Option<Numbering>,

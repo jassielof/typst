@@ -241,6 +241,15 @@ emph(hello.my().world())
 #hello.world()
 #box[]
 ```
+
+--- raw-highlight-typm-extra ---
+// Math highlighting for strings, alignments, shorthands, and named args.
+#set page(width: auto)
+```typm
+"string" - + * ::= & \
+|=> & [|define(x: #y, x::= y)|]
+```
+
 --- raw-highlight-rust ---
 #set page(width: auto)
 
@@ -658,6 +667,20 @@ if true {
 	f()	// typc
 }
 ```
+
+--- issue-6961-tab-crlf-raw-indent ---
+#let snippet = (
+  ```
+  A
+    BC
+    D
+  ```
+)
+
+#raw(
+  snippet.text.replace("  ", "\t").replace("\n", "\r\n"),
+  block: true,
+)
 
 --- issue-4662-math-mode-language-for-raw ---
 // Test lang: "typm" syntax highlighting without enclosing dollar signs
