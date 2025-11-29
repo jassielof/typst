@@ -5,9 +5,11 @@ pub mod color;
 mod book;
 mod exceptions;
 mod variant;
+mod variation;
 
 pub use self::book::{Coverage, FontBook, FontFlags, FontInfo};
 pub use self::variant::{FontStretch, FontStyle, FontVariant, FontWeight};
+pub use self::variation::{VariationAxis, VariationCoordinates, VariationInfo};
 
 use std::cell::OnceCell;
 use std::fmt::{self, Debug, Formatter};
@@ -37,6 +39,8 @@ struct Repr {
     info: FontInfo,
     /// The font's metrics.
     metrics: FontMetrics,
+    /// Variable font information (axes, etc.).
+    variation_info: VariationInfo,
     /// The underlying ttf-parser face.
     ttf: ttf_parser::Face<'static>,
     /// The underlying rustybuzz face.
@@ -67,8 +71,17 @@ impl Font {
         let rusty = rustybuzz::Face::from_slice(slice, index)?;
         let metrics = FontMetrics::from_ttf(&ttf);
         let info = FontInfo::from_ttf(&ttf)?;
+        let variation_info = VariationInfo::from_ttf(&ttf);
 
-        Some(Self(Arc::new(Repr { data, index, info, metrics, ttf, rusty })))
+        Some(Self(Arc::new(Repr {
+            data,
+            index,
+            info,
+            metrics,
+            variation_info,
+            ttf,
+            rusty,
+        })))
     }
 
     /// Parse all fonts in the given data.
@@ -95,6 +108,16 @@ impl Font {
     /// The font's metrics.
     pub fn metrics(&self) -> &FontMetrics {
         &self.0.metrics
+    }
+
+    /// The font's variation information.
+    pub fn variation_info(&self) -> &VariationInfo {
+        &self.0.variation_info
+    }
+
+    /// Check if this is a variable font.
+    pub fn is_variable(&self) -> bool {
+        self.0.variation_info.is_variable()
     }
 
     /// The font's math constants.
@@ -146,6 +169,50 @@ impl Font {
         // We can't implement Deref because that would leak the
         // internal 'static lifetime.
         &self.0.rusty
+    }
+
+    /// Create a rustybuzz face with variation coordinates applied.
+    ///
+    /// This creates a new face from the font data with the specified variations.
+    /// If no coordinates are provided or the font is not variable, returns the
+    /// default face.
+    ///
+    /// This is used during text shaping to apply variable font variations.
+    pub fn rusty_with_variations(
+        &self,
+        coords: Option<&VariationCoordinates>,
+    ) -> Option<rustybuzz::Face<'_>> {
+        // If no coordinates or font is not variable, use default face
+        let Some(coords) = coords else {
+            return Some(self.rusty().clone());
+        };
+
+        if !self.is_variable() {
+            return Some(self.rusty().clone());
+        }
+
+        // Create a new rustybuzz face from the font data
+        let slice: &[u8] = unsafe {
+            std::slice::from_raw_parts(self.data().as_ptr(), self.data().len())
+        };
+
+        let mut face = rustybuzz::Face::from_slice(slice, self.index())?;
+
+        // Build variation settings
+        let mut variations = Vec::new();
+        if let Some(wght) = coords.wght {
+            variations.push(rustybuzz::Variation {
+                tag: ttf_parser::Tag::from_bytes(b"wght"),
+                value: wght,
+            });
+        }
+
+        // Set the variations on the face
+        if !variations.is_empty() {
+            face.set_variations(&variations);
+        }
+
+        Some(face)
     }
 
     /// Resolve the top and bottom edges of text.

@@ -15,7 +15,8 @@ use typst_library::layout::{Abs, Dir, Em, Frame, FrameItem, Point, Rel, Size};
 use typst_library::model::{JustificationLimits, ParElem};
 use typst_library::text::{
     Font, FontFamily, FontVariant, Glyph, Lang, Region, ShiftSettings, TextEdgeBounds,
-    TextElem, TextItem, families, features, is_default_ignorable, language, variant,
+    TextElem, TextItem, VariationCoordinates, families, features, is_default_ignorable,
+    language, variant,
 };
 use typst_utils::SliceExt;
 use unicode_bidi::{BidiInfo, Level as BidiLevel};
@@ -52,6 +53,8 @@ pub struct ShapedText<'a> {
     pub variant: FontVariant,
     /// The shaped glyphs.
     pub glyphs: Glyphs<'a>,
+    /// The variation coordinates used for shaping (for variable fonts).
+    pub variation_coords: Option<VariationCoordinates>,
 }
 
 /// A copy-on-write collection of glyphs.
@@ -442,6 +445,7 @@ impl<'a> ShapedText<'a> {
                 stroke: stroke.clone().map(|s| s.unwrap_or_default()),
                 text: self.text[range.start - self.base..range.end - self.base].into(),
                 glyphs,
+                variation_coords: self.variation_coords,
             };
 
             let width = item.width();
@@ -556,6 +560,7 @@ impl<'a> ShapedText<'a> {
                 styles: self.styles,
                 variant: self.variant,
                 glyphs: Glyphs::from_slice(glyphs),
+                variation_coords: self.variation_coords,
             }
         } else {
             shape(
@@ -572,7 +577,12 @@ impl<'a> ShapedText<'a> {
 
     /// Derive an empty text run with the same properties as this one.
     pub fn empty(&self) -> Self {
-        Self { text: "", glyphs: Glyphs::from_slice(&[]), ..*self }
+        Self {
+            text: "",
+            glyphs: Glyphs::from_slice(&[]),
+            variation_coords: self.variation_coords,
+            ..*self
+        }
     }
 
     /// Creates shaped text containing a hyphen.
@@ -629,6 +639,7 @@ impl<'a> ShapedText<'a> {
                     is_justifiable: false,
                     script: Script::Common,
                 }]),
+                variation_coords: base.variation_coords,
             })
         })
     }
@@ -815,6 +826,23 @@ fn shape<'a>(
     #[cfg(debug_assertions)]
     assert_glyph_ranges_in_order(&ctx.glyphs, dir);
 
+    // Compute variation coordinates for variable fonts
+    // We need to get a font to check if it's variable, so we use the first font from the glyphs
+    // or try to get one from the font families
+    let variation_coords = if let Some(first_font) = ctx.glyphs.first().map(|g| &g.font) {
+        VariationCoordinates::from_variant(first_font.variation_info(), ctx.variant)
+    } else {
+        // If no glyphs yet, try to get a font from families to check variation info
+        let world = engine.world;
+        let book = world.book();
+        families(styles)
+            .find_map(|family| {
+                book.select(family.as_str(), ctx.variant)
+                    .and_then(|id| world.font(id))
+            })
+            .and_then(|font| VariationCoordinates::from_variant(font.variation_info(), ctx.variant))
+    };
+
     ShapedText {
         base,
         text,
@@ -824,6 +852,7 @@ fn shape<'a>(
         styles,
         variant: ctx.variant,
         glyphs: Glyphs::from_vec(ctx.glyphs),
+        variation_coords,
     }
 }
 
@@ -1001,8 +1030,20 @@ fn shape_segment<'a>(
         ctx.features.pop();
     }
 
-    // Shape!
-    let buffer = rustybuzz::shape_with_plan(font.rusty(), &plan, buffer);
+    // Compute variation coordinates for variable fonts
+    let coords = VariationCoordinates::from_variant(font.variation_info(), ctx.variant);
+
+    // Shape with appropriate face (with or without variations)
+    let buffer = if let Some(ref coords) = coords {
+        // Use a face with variations applied
+        let face = font
+            .rusty_with_variations(Some(coords))
+            .unwrap_or_else(|| font.rusty().clone());
+        rustybuzz::shape_with_plan(&face, &plan, buffer)
+    } else {
+        // Use the default face
+        rustybuzz::shape_with_plan(font.rusty(), &plan, buffer)
+    };
     let infos = buffer.glyph_infos();
     let pos = buffer.glyph_positions();
     let ltr = ctx.dir.is_positive();

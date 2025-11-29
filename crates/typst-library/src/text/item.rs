@@ -28,6 +28,8 @@ pub struct TextItem {
     /// The glyphs. The number of glyphs may be different from the number of
     /// characters in the plain text due to e.g. ligatures.
     pub glyphs: Vec<Glyph>,
+    /// The variation coordinates used when shaping this text (for variable fonts).
+    pub variation_coords: Option<super::VariationCoordinates>,
 }
 
 impl TextItem {

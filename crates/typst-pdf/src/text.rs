@@ -6,12 +6,13 @@ use krilla::surface::{Location, Surface};
 use krilla::text::GlyphId;
 use typst_library::diag::{SourceResult, bail};
 use typst_library::layout::Size;
-use typst_library::text::{Font, Glyph, TextItem};
+use typst_library::text::{Font, Glyph, TextItem, VariationCoordinates};
 use typst_library::visualize::FillRule;
 use typst_syntax::Span;
 use typst_utils::defer;
 
 use crate::convert::{FrameContext, GlobalContext};
+use crate::instance::instance_variable_font;
 use crate::util::{AbsExt, TransformExt, display_font};
 use crate::{paint, tags};
 
@@ -25,7 +26,7 @@ pub(crate) fn handle_text(
     let mut handle = tags::text(gc, fc, surface, t);
     let surface = handle.surface();
 
-    let font = convert_font(gc, t.font.clone())?;
+    let font = convert_font(gc, t.font.clone(), t.variation_coords)?;
     let fill = paint::convert_fill(
         gc,
         &t.fill,
@@ -66,23 +67,61 @@ pub(crate) fn handle_text(
 fn convert_font(
     gc: &mut GlobalContext,
     typst_font: Font,
+    variation_coords: Option<VariationCoordinates>,
 ) -> SourceResult<krilla::text::Font> {
-    if let Some(font) = gc.fonts_forward.get(&typst_font) {
-        Ok(font.clone())
-    } else {
-        let font = build_font(typst_font.clone())?;
+    // Check if we need instancing (variable font with coordinates)
+    let needs_instancing = typst_font.is_variable()
+        && variation_coords.is_some()
+        && variation_coords.as_ref().is_some_and(|c| c.has_any());
 
+    if !needs_instancing {
+        // For non-variable fonts or fonts without variation coords, use simple cache
+        if let Some(font) = gc.fonts_forward.get(&typst_font) {
+            return Ok(font.clone());
+        }
+    }
+
+    // Build the font (with instancing if needed)
+    // The comemo::memoize on build_font will cache based on both font and coords
+    let font = build_font(typst_font.clone(), variation_coords)?;
+
+    // Only cache in the simple forward cache if we don't have variation coordinates
+    // Variable fonts with coordinates are handled by comemo memoization in build_font
+    if !needs_instancing {
         gc.fonts_forward.insert(typst_font.clone(), font.clone());
         gc.fonts_backward.insert(font.clone(), typst_font.clone());
-
-        Ok(font)
     }
+
+    Ok(font)
 }
 
 #[comemo::memoize]
-fn build_font(typst_font: Font) -> SourceResult<krilla::text::Font> {
-    let font_data: Arc<dyn AsRef<[u8]> + Send + Sync> =
-        Arc::new(typst_font.data().clone());
+fn build_font(
+    typst_font: Font,
+    variation_coords: Option<VariationCoordinates>,
+) -> SourceResult<krilla::text::Font> {
+    let font_data = if typst_font.is_variable()
+        && variation_coords.is_some()
+        && variation_coords.as_ref().is_some_and(|c| c.has_any())
+    {
+        // Instance the variable font with the given coordinates
+        let coords = variation_coords.unwrap();
+        let instanced_data = match instance_variable_font(typst_font.data(), &coords, typst_font.variation_info()) {
+            Ok(data) => data,
+            Err(e) => {
+                return Err(bail!(
+                    Span::detached(),
+                    "failed to instance variable font {}: {}",
+                    display_font(Some(&typst_font)),
+                    e
+                ));
+            }
+        };
+        Arc::new(instanced_data) as Arc<dyn AsRef<[u8]> + Send + Sync>
+    } else {
+        // Use original font data for static fonts or variable fonts without coordinates
+        Arc::new(typst_font.data().clone())
+    };
 
     match krilla::text::Font::new(font_data.into(), typst_font.index()) {
         Some(f) => Ok(f),

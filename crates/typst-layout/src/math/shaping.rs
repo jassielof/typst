@@ -74,6 +74,7 @@ impl From<ShapedText> for TextItem {
                     span: (item.span, 0),
                 })
                 .collect(),
+            variation_coords: None, // Math shaping doesn't use variable fonts yet
         }
     }
 }
