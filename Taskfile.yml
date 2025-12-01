@@ -22,3 +22,5 @@ tasks:
             PDF_STD: ["1.7", "2.0"]
             FORMAT: ["pdf", "png", "svg"]
         cmd: "./target/release/typst compile --pdf-standard {{.ITEM.PDF_STD}} --ignore-embedded-fonts --timings --ignore-system-fonts --font-path ./tests/suite/text/fonts/{{.ITEM.FONT_TECH}} tests/suite/text/variable-fonts-basic.typ tests/suite/text/variable-fonts/git-{{.ITEM.FONT_TECH}}-{{.ITEM.PDF_STD}}.{{.ITEM.FORMAT}}"
+      # - for: ["typst", "./target/release/typst"]
+      #   cmd:

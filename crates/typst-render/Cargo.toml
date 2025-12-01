@@ -17,6 +17,7 @@ typst-assets = { workspace = true }
 typst-library = { workspace = true }
 typst-macros = { workspace = true }
 typst-timing = { workspace = true }
+allsorts = "0.15"
 bytemuck = { workspace = true }
 comemo = { workspace = true }
 hayro = { workspace = true }

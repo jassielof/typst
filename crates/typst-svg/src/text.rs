@@ -1,12 +1,16 @@
 use std::io::Read;
 
+use allsorts::binary::read::ReadScope;
+use allsorts::font_data::FontData;
+use allsorts::tables::Fixed;
+use allsorts::variations::instance as allsorts_instance;
 use base64::Engine;
 use ecow::EcoString;
 use ttf_parser::GlyphId;
 use typst_library::foundations::Bytes;
 use typst_library::layout::{Abs, Point, Ratio, Size, Transform};
 use typst_library::text::color::colr_glyph_to_svg;
-use typst_library::text::{Font, TextItem};
+use typst_library::text::{Font, TextItem, VariationCoordinates};
 use typst_library::visualize::{
     ExchangeFormat, FillRule, Image, Paint, RasterImage, RelativeTo,
 };
@@ -19,7 +23,22 @@ impl SVGRenderer<'_> {
     /// try to render the text as SVG first, then bitmap, then outline. If none
     /// of them works, we will skip the text.
     pub(super) fn render_text(&mut self, state: &State, text: &TextItem) {
-        let scale: f64 = text.size.to_pt() / text.font.units_per_em();
+        // For variable fonts, get the instanced font to use for rendering
+        let font = if text.font.is_variable()
+            && text.variation_coords.is_some()
+            && text.variation_coords.as_ref().is_some_and(|c| c.has_any())
+        {
+            // Get instanced font data and create a Font from it
+            let coords = text.variation_coords.unwrap();
+            match get_instanced_font_for_svg(text.font.clone(), coords) {
+                Some(instanced_font) => instanced_font,
+                None => text.font.clone(), // Fallback to original if instancing fails
+            }
+        } else {
+            text.font.clone()
+        };
+
+        let scale: f64 = text.size.to_pt() / font.units_per_em();
 
         self.xml.start_element("g");
         self.xml.write_attribute("class", "typst-text");
@@ -42,9 +61,9 @@ impl SVGRenderer<'_> {
             let x_offset = x + glyph.x_offset.at(text.size).to_pt();
             let y_offset = y + glyph.y_offset.at(text.size).to_pt();
 
-            self.render_colr_glyph(text, id, x_offset, y_offset, scale)
-                .or_else(|| self.render_svg_glyph(text, id, x_offset, y_offset, scale))
-                .or_else(|| self.render_bitmap_glyph(text, id, x_offset, y_offset))
+            self.render_colr_glyph(&font, text, id, x_offset, y_offset, scale)
+                .or_else(|| self.render_svg_glyph(&font, text, id, x_offset, y_offset, scale))
+                .or_else(|| self.render_bitmap_glyph(&font, text, id, x_offset, y_offset))
                 .or_else(|| {
                     self.render_outline_glyph(
                         state
@@ -53,6 +72,7 @@ impl SVGRenderer<'_> {
                                 Abs::pt(x_offset),
                                 Abs::pt(y_offset),
                             )),
+                        &font,
                         text,
                         id,
                         x_offset,
@@ -71,17 +91,18 @@ impl SVGRenderer<'_> {
     /// Render a glyph defined by an SVG.
     fn render_svg_glyph(
         &mut self,
-        text: &TextItem,
+        font: &Font,
+        _text: &TextItem,
         id: GlyphId,
         x_offset: f64,
         y_offset: f64,
         scale: f64,
     ) -> Option<()> {
-        let data_url = convert_svg_glyph_to_base64_url(&text.font, id)?;
-        let upem = text.font.units_per_em();
-        let origin_ascender = text.font.metrics().ascender.at(Abs::pt(upem));
+        let data_url = convert_svg_glyph_to_base64_url(font, id)?;
+        let upem = font.units_per_em();
+        let origin_ascender = font.metrics().ascender.at(Abs::pt(upem));
 
-        let glyph_hash = hash128(&(&text.font, id));
+        let glyph_hash = hash128(&(font, id));
         let id = self.glyphs.insert_with(glyph_hash, || RenderedGlyph::Image {
             url: data_url,
             width: upem,
@@ -102,14 +123,15 @@ impl SVGRenderer<'_> {
     /// Render a glyph defined by COLR glyph descriptions.
     fn render_colr_glyph(
         &mut self,
-        text: &TextItem,
+        font: &Font,
+        _text: &TextItem,
         id: GlyphId,
         x_offset: f64,
         y_offset: f64,
         scale: f64,
     ) -> Option<()> {
-        let ttf = text.font.ttf();
-        let converted = colr_glyph_to_svg(&text.font, id)?;
+        let ttf = font.ttf();
+        let converted = colr_glyph_to_svg(font, id)?;
         let width = ttf.global_bounding_box().width() as f64;
         let height = ttf.global_bounding_box().height() as f64;
         let data_url = svg_to_base64(&converted);
@@ -117,7 +139,7 @@ impl SVGRenderer<'_> {
         let x_min = ttf.global_bounding_box().x_min as f64;
         let y_max = ttf.global_bounding_box().y_max as f64;
 
-        let glyph_hash = hash128(&(&text.font, id));
+        let glyph_hash = hash128(&(font, id));
         let id = self.glyphs.insert_with(glyph_hash, || RenderedGlyph::Image {
             url: data_url,
             width,
@@ -138,15 +160,16 @@ impl SVGRenderer<'_> {
     /// Render a glyph defined by a bitmap.
     fn render_bitmap_glyph(
         &mut self,
+        font: &Font,
         text: &TextItem,
         id: GlyphId,
         x_offset: f64,
         y_offset: f64,
     ) -> Option<()> {
         let (image, bitmap_x_offset, bitmap_y_offset) =
-            convert_bitmap_glyph_to_image(&text.font, id)?;
+            convert_bitmap_glyph_to_image(font, id)?;
 
-        let glyph_hash = hash128(&(&text.font, id));
+        let glyph_hash = hash128(&(font, id));
         let id = self.glyphs.insert_with(glyph_hash, || {
             let width = image.width();
             let height = image.height();
@@ -181,6 +204,7 @@ impl SVGRenderer<'_> {
     fn render_outline_glyph(
         &mut self,
         state: State,
+        font: &Font,
         text: &TextItem,
         glyph_id: GlyphId,
         x_offset: f64,
@@ -188,11 +212,11 @@ impl SVGRenderer<'_> {
         scale: f64,
     ) -> Option<()> {
         let scale = Ratio::new(scale);
-        let path = convert_outline_glyph_to_path(&text.font, glyph_id, scale)?;
-        let hash = hash128(&(&text.font, glyph_id, scale));
+        let path = convert_outline_glyph_to_path(font, glyph_id, scale)?;
+        let hash = hash128(&(font, glyph_id, scale));
         let id = self.glyphs.insert_with(hash, || RenderedGlyph::Path(path));
 
-        let glyph_size = text.font.ttf().glyph_bounding_box(glyph_id)?;
+        let glyph_size = font.ttf().glyph_bounding_box(glyph_id)?;
         let width = glyph_size.width() as f64 * scale.get();
         let height = glyph_size.height() as f64 * scale.get();
 
@@ -378,4 +402,75 @@ fn svg_to_base64(svg_str: &str) -> EcoString {
     url.push_str(&b64_encoded);
 
     url
+}
+
+/// Memoized function to get instanced font for SVG rendering.
+/// This avoids re-instancing the same font multiple times.
+#[comemo::memoize]
+fn get_instanced_font_for_svg(
+    typst_font: Font,
+    coords: VariationCoordinates,
+) -> Option<Font> {
+    // Instance the variable font
+    let instanced_data = instance_variable_font_for_svg(
+        typst_font.data().as_slice(),
+        &coords,
+        typst_font.variation_info(),
+        typst_font.is_cff2(),
+    )
+    .ok()?;
+
+    // Create a Font from the instanced data
+    Font::new(Bytes::new(instanced_data), typst_font.index())
+}
+
+/// Instance a variable font to a static font with specific variation coordinates.
+/// This is similar to the function in typst-pdf but for SVG export.
+fn instance_variable_font_for_svg(
+    font_data: &[u8],
+    coords: &VariationCoordinates,
+    variation_info: &typst_library::text::VariationInfo,
+    is_cff2: bool,
+) -> Result<Vec<u8>, String> {
+    // Parse the font with allsorts
+    let scope = ReadScope::new(font_data);
+    let font_file = scope
+        .read::<FontData<'_>>()
+        .map_err(|e| format!("Failed to parse font: {:?}", e))?;
+
+    // Get the first font from the file (handle collections)
+    let provider = font_file
+        .table_provider(0)
+        .map_err(|e| format!("Failed to get table provider: {:?}", e))?;
+
+    // Build allsorts variation instance from our coordinates
+    let mut user_instance = Vec::new();
+
+    for axis in variation_info.axes() {
+        let value = if axis.tag == *b"wght" {
+            coords.wght.map(|w| Fixed::from(w as f32))
+                .unwrap_or_else(|| Fixed::from(axis.default_value))
+        } else {
+            Fixed::from(axis.default_value)
+        };
+
+        user_instance.push(value);
+    }
+
+    // If no weight coordinate to apply, return original font data
+    if coords.wght.is_none() || user_instance.is_empty() {
+        return Ok(font_data.to_vec());
+    }
+
+    // Perform the instancing
+    let (instanced, _) = allsorts_instance(&provider, &user_instance)
+        .map_err(|e| {
+            if is_cff2 {
+                format!("Failed to instance CFF2 variable font: {:?}", e)
+            } else {
+                format!("Failed to instance variable font: {:?}", e)
+            }
+        })?;
+
+    Ok(instanced)
 }

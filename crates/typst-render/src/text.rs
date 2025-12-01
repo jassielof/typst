@@ -1,11 +1,16 @@
 use std::sync::Arc;
 
+use allsorts::binary::read::ReadScope;
+use allsorts::font_data::FontData;
+use allsorts::tables::Fixed;
+use allsorts::variations::instance as allsorts_instance;
 use pixglyph::Bitmap;
 use tiny_skia as sk;
 use ttf_parser::{GlyphId, OutlineBuilder};
+use typst_library::foundations::Bytes;
 use typst_library::layout::{Abs, Axes, Point, Size};
 use typst_library::text::color::{glyph_frame, should_outline};
-use typst_library::text::{Font, TextItem};
+use typst_library::text::{Font, TextItem, VariationCoordinates};
 use typst_library::visualize::{FixedStroke, Paint};
 
 use crate::paint::{self, GradientSampler, PaintSampler, TilingSampler};
@@ -13,6 +18,21 @@ use crate::{AbsExt, State, shape};
 
 /// Render a text run into the canvas.
 pub fn render_text(canvas: &mut sk::Pixmap, state: State, text: &TextItem) {
+    // For variable fonts, get the instanced font to use for rendering
+    let font = if text.font.is_variable()
+        && text.variation_coords.is_some()
+        && text.variation_coords.as_ref().is_some_and(|c| c.has_any())
+    {
+        // Get instanced font data and create a Font from it
+        let coords = text.variation_coords.unwrap();
+        match get_instanced_font_for_png(text.font.clone(), coords) {
+            Some(instanced_font) => instanced_font,
+            None => text.font.clone(), // Fallback to original if instancing fails
+        }
+    } else {
+        text.font.clone()
+    };
+
     let mut x = Abs::zero();
     let mut y = Abs::zero();
     for glyph in &text.glyphs {
@@ -20,17 +40,17 @@ pub fn render_text(canvas: &mut sk::Pixmap, state: State, text: &TextItem) {
         let x_offset = x + glyph.x_offset.at(text.size);
         let y_offset = y + glyph.y_offset.at(text.size);
 
-        if should_outline(&text.font, glyph) {
+        if should_outline(&font, glyph) {
             let state = state.pre_translate(Point::new(x_offset, -y_offset));
-            render_outline_glyph(canvas, state, text, id);
+            render_outline_glyph(canvas, state, &font, text, id);
         } else {
-            let upem = text.font.units_per_em();
+            let upem = font.units_per_em();
             let text_scale = text.size / upem;
             let state = state
                 .pre_translate(Point::new(x_offset, -y_offset - text.size))
                 .pre_scale(Axes::new(text_scale, text_scale));
 
-            let (glyph_frame, _) = glyph_frame(&text.font, glyph.id);
+            let (glyph_frame, _) = glyph_frame(&font, glyph.id);
             crate::render_frame(canvas, state, &glyph_frame);
         }
 
@@ -43,6 +63,7 @@ pub fn render_text(canvas: &mut sk::Pixmap, state: State, text: &TextItem) {
 fn render_outline_glyph(
     canvas: &mut sk::Pixmap,
     state: State,
+    font: &Font,
     text: &TextItem,
     id: GlyphId,
 ) -> Option<()> {
@@ -61,11 +82,11 @@ fn render_outline_glyph(
     {
         let path = {
             let mut builder = WrappedPathBuilder(sk::PathBuilder::new());
-            text.font.ttf().outline_glyph(id, &mut builder)?;
+            font.ttf().outline_glyph(id, &mut builder)?;
             builder.0.finish()?
         };
 
-        let scale = text.size.to_f32() / text.font.units_per_em() as f32;
+        let scale = text.size.to_f32() / font.units_per_em() as f32;
 
         let mut pixmap = None;
 
@@ -134,7 +155,7 @@ fn render_outline_glyph(
     // Try to retrieve a prepared glyph or prepare it from scratch if it
     // doesn't exist, yet.
     let bitmap =
-        rasterize(&text.font, id, ts.tx.to_bits(), ts.ty.to_bits(), ppem.to_bits())?;
+        rasterize(font, id, ts.tx.to_bits(), ts.ty.to_bits(), ppem.to_bits())?;
     match &text.fill {
         Paint::Gradient(gradient) => {
             let sampler = GradientSampler::new(gradient, &state, Size::zero(), true);
@@ -291,4 +312,75 @@ fn alpha_mul(color: u32, scale: u32) -> u32 {
     let rb = ((color & mask) * scale) >> 8;
     let ag = ((color >> 8) & mask) * scale;
     (rb & mask) | (ag & !mask)
+}
+
+/// Memoized function to get instanced font for PNG rendering.
+/// This avoids re-instancing the same font multiple times.
+#[comemo::memoize]
+fn get_instanced_font_for_png(
+    typst_font: Font,
+    coords: VariationCoordinates,
+) -> Option<Font> {
+    // Instance the variable font
+    let instanced_data = instance_variable_font_for_png(
+        typst_font.data().as_slice(),
+        &coords,
+        typst_font.variation_info(),
+        typst_font.is_cff2(),
+    )
+    .ok()?;
+
+    // Create a Font from the instanced data
+    Font::new(Bytes::new(instanced_data), typst_font.index())
+}
+
+/// Instance a variable font to a static font with specific variation coordinates.
+/// This is similar to the function in typst-pdf but for PNG export.
+fn instance_variable_font_for_png(
+    font_data: &[u8],
+    coords: &VariationCoordinates,
+    variation_info: &typst_library::text::VariationInfo,
+    is_cff2: bool,
+) -> Result<Vec<u8>, String> {
+    // Parse the font with allsorts
+    let scope = ReadScope::new(font_data);
+    let font_file = scope
+        .read::<FontData<'_>>()
+        .map_err(|e| format!("Failed to parse font: {:?}", e))?;
+
+    // Get the first font from the file (handle collections)
+    let provider = font_file
+        .table_provider(0)
+        .map_err(|e| format!("Failed to get table provider: {:?}", e))?;
+
+    // Build allsorts variation instance from our coordinates
+    let mut user_instance = Vec::new();
+
+    for axis in variation_info.axes() {
+        let value = if axis.tag == *b"wght" {
+            coords.wght.map(|w| Fixed::from(w as f32))
+                .unwrap_or_else(|| Fixed::from(axis.default_value))
+        } else {
+            Fixed::from(axis.default_value)
+        };
+
+        user_instance.push(value);
+    }
+
+    // If no weight coordinate to apply, return original font data
+    if coords.wght.is_none() || user_instance.is_empty() {
+        return Ok(font_data.to_vec());
+    }
+
+    // Perform the instancing
+    let (instanced, _) = allsorts_instance(&provider, &user_instance)
+        .map_err(|e| {
+            if is_cff2 {
+                format!("Failed to instance CFF2 variable font: {:?}", e)
+            } else {
+                format!("Failed to instance variable font: {:?}", e)
+            }
+        })?;
+
+    Ok(instanced)
 }

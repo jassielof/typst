@@ -18,6 +18,7 @@ typst-library = { workspace = true }
 typst-macros = { workspace = true }
 typst-timing = { workspace = true }
 typst-utils = { workspace = true }
+allsorts = "0.15"
 base64 = { workspace = true }
 comemo = { workspace = true }
 ecow = { workspace = true }
