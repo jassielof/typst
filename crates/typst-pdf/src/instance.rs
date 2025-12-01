@@ -9,6 +9,52 @@ use allsorts::tables::Fixed;
 use allsorts::variations::instance as allsorts_instance;
 use typst_library::text::VariationCoordinates;
 
+/// Recalculate advance widths from an instanced font to ensure they match.
+///
+/// This function takes glyphs that were shaped with a variable font and
+/// recalculates their advance widths using the instanced font. This ensures
+/// that the advances used for layout match the advances in the instanced font
+/// that will be used for rendering.
+///
+/// # Arguments
+///
+/// * `instanced_font_data` - The instanced font data
+/// * `glyph_ids` - The glyph IDs to recalculate
+/// * `units_per_em` - The units per em of the original font
+///
+/// # Returns
+///
+/// A vector of advance widths in font units, or an error if parsing fails.
+pub fn recalculate_advances_from_instanced(
+    instanced_font_data: &[u8],
+    glyph_ids: &[u16],
+    units_per_em: f64,
+) -> Result<Vec<f32>, String> {
+    use ttf_parser::Face;
+
+    let face = Face::parse(instanced_font_data, 0)
+        .map_err(|e| format!("Failed to parse instanced font: {:?}", e))?;
+
+    // Verify units_per_em matches (instanced font should have same upem)
+    if (face.units_per_em() as f64 - units_per_em).abs() > 0.5 {
+        return Err(format!(
+            "Units per em mismatch: instanced font has {}, expected {}",
+            face.units_per_em(),
+            units_per_em
+        ));
+    }
+
+    let mut advances = Vec::with_capacity(glyph_ids.len());
+    for &glyph_id in glyph_ids {
+        let advance_units = face
+            .glyph_hor_advance(ttf_parser::GlyphId(glyph_id))
+            .unwrap_or(0) as f32;
+        advances.push(advance_units);
+    }
+
+    Ok(advances)
+}
+
 /// Instance a variable font to a static font with specific variation coordinates.
 ///
 /// This function takes a variable font and variation coordinates, and produces

@@ -1,0 +1,20 @@
+version: "3"
+
+vars:
+  BINARY: target/release/typst
+
+tasks:
+  build-release:
+    cmd: cargo build --release
+  build:
+    cmd: cargo build
+  test:
+    cmds:
+      - for:
+          matrix:
+            FONT_TECH: ["variable", "static"]
+        cmd: "typst compile --ignore-embedded-fonts --ignore-system-fonts --font-path ./tests/suite/text/fonts/{{.ITEM.FONT_TECH}} tests/suite/text/variable-fonts-basic.typ tests/suite/text/variable-fonts-basic-normal-{{.ITEM.FONT_TECH}}.pdf"
+      - for:
+          matrix:
+            FONT_TECH: ["variable", "static"]
+        cmd: "./target/release/typst compile --ignore-embedded-fonts --ignore-system-fonts --font-path ./tests/suite/text/fonts/{{.ITEM.FONT_TECH}} tests/suite/text/variable-fonts-basic.typ tests/suite/text/variable-fonts-basic-git-{{.ITEM.FONT_TECH}}.pdf"

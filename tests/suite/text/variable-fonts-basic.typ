@@ -1,34 +1,62 @@
-// Test: variable-fonts-basic
-// Test basic variable font rendering with different weights
+#set page(margin: 1cm, width: 8in, height: auto)
 
-// NOTE: This test requires a variable font to be installed
-// For testing, use Inter or Roboto Flex which are freely available
+#let weights = (
+  "thin",
+  "light",
+  "regular",
+  "medium",
+  "semibold",
+  "bold",
+  "extrabold",
+  "black",
+)
 
-#set page(width: 200pt, height: auto, margin: 10pt)
+#let styles = (
+  "normal",
+  "italic",
+  "oblique",
+)
 
-// Test different weights with variable font
+#let fonts = (
+  "source serif 4",
+  "source sans 3",
+  "source code pro",
+  "montserrat",
+  "roboto",
+  "open sans",
+  "merriweather",
+  "inter",
+  "ibm plex sans",
+)
+
 #let sample-text = [Whereas recognition of the inherent dignity]
-#set text(font: "source serif 4", size: 12pt)
 
-#text(weight: "thin", sample-text)
-#linebreak()
+#for f in fonts {
+  let styled-texts = ()
 
-#text(weight: "light", sample-text)
-#linebreak()
+  for w in range(100, 1000, step: 100) {
+    styled-texts.push(strong[#w])
+    for s in styles {
+      styled-texts.push(
+        text(
+          font: f,
+          weight: w,
+          style: s,
+          sample-text,
+        ),
+      )
+    }
+  }
 
-#text(weight: "regular", sample-text)
-#linebreak()
+  figure(
+    table(
+      columns: 4,
+      rows: 9,
+      align: left,
+      table.header([], [*Normal*], [*Italic*], [*Oblique*]),
+      ..styled-texts,
+    ),
+    caption: upper(strong(f)),
+  )
+}
 
-#text(weight: "medium", sample-text)
-#linebreak()
-
-#text(weight: "semibold", sample-text)
-#linebreak()
-
-#text(weight: "bold", sample-text)
-#linebreak()
-
-#text(weight: "extrabold", sample-text)
-#linebreak()
-
-#text(weight: "black", sample-text)

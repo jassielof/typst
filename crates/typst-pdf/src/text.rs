@@ -12,7 +12,7 @@ use typst_syntax::Span;
 use typst_utils::defer;
 
 use crate::convert::{FrameContext, GlobalContext};
-use crate::instance::instance_variable_font;
+use crate::instance::{instance_variable_font, recalculate_advances_from_instanced};
 use crate::util::{AbsExt, TransformExt, display_font};
 use crate::{paint, tags};
 
@@ -25,6 +25,14 @@ pub(crate) fn handle_text(
 ) -> SourceResult<()> {
     let mut handle = tags::text(gc, fc, surface, t);
     let surface = handle.surface();
+
+    // For variable fonts, verify that instanced font advances match rustybuzz advances
+    // and adjust if necessary to fix spacing issues
+    let t = if t.font.is_variable() && t.variation_coords.is_some() {
+        adjust_glyph_advances_for_instanced_font(t, gc).unwrap_or_else(|_| t.clone())
+    } else {
+        t.clone()
+    };
 
     let font = convert_font(gc, t.font.clone(), t.variation_coords)?;
     let fill = paint::convert_fill(
@@ -62,6 +70,73 @@ pub(crate) fn handle_text(
     );
 
     Ok(())
+}
+
+/// Adjust glyph advance widths to match the instanced font's advances.
+///
+/// This fixes spacing issues where rustybuzz-calculated advances don't match
+/// the instanced font's advances. We recalculate advances from the instanced
+/// font and update the glyphs accordingly.
+fn adjust_glyph_advances_for_instanced_font(
+    t: &TextItem,
+    _gc: &mut GlobalContext,
+) -> SourceResult<TextItem> {
+    use typst_library::layout::Em;
+
+    // We need to get the instanced font data to recalculate advances
+    // Instance the font (this is memoized in build_font, so it's cheap)
+    let instanced_data = if t.font.is_variable()
+        && t.variation_coords.is_some()
+        && t.variation_coords.as_ref().is_some_and(|c| c.has_any())
+    {
+        let coords = t.variation_coords.unwrap();
+        match instance_variable_font(t.font.data(), &coords, t.font.variation_info()) {
+            Ok(data) => data,
+            Err(_) => return Ok(t.clone()), // If instancing fails, use original
+        }
+    } else {
+        return Ok(t.clone()); // Not a variable font or no coords
+    };
+
+    // Recalculate advances from instanced font
+    let glyph_ids: Vec<u16> = t.glyphs.iter().map(|g| g.id).collect();
+    let units_per_em = t.font.units_per_em();
+
+    match recalculate_advances_from_instanced(&instanced_data, &glyph_ids, units_per_em) {
+        Ok(instanced_advances_units) => {
+            // Convert font units to Em and update glyphs
+            let mut updated_glyphs = t.glyphs.clone();
+            let mut has_changes = false;
+
+            for (glyph, &advance_units) in updated_glyphs.iter_mut().zip(instanced_advances_units.iter()) {
+                let instanced_advance_em = Em::from_units(advance_units as f64, units_per_em);
+                let original_advance_em = glyph.x_advance;
+
+                // Only update if there's a significant difference
+                // We use a small threshold to avoid rounding errors, but catch real mismatches
+                // Threshold: 0.1% of the advance or 0.5 font units (whichever is larger)
+                let threshold = (original_advance_em.get().abs() * 0.001).max(0.5 / units_per_em);
+                let diff = (instanced_advance_em.get() - original_advance_em.get()).abs();
+                if diff > threshold {
+                    glyph.x_advance = instanced_advance_em;
+                    has_changes = true;
+                }
+            }
+
+            if has_changes {
+                Ok(TextItem {
+                    glyphs: updated_glyphs,
+                    ..t.clone()
+                })
+            } else {
+                Ok(t.clone())
+            }
+        }
+        Err(_) => {
+            // If recalculation fails, use original
+            Ok(t.clone())
+        }
+    }
 }
 
 fn convert_font(
