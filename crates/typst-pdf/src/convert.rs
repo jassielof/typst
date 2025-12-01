@@ -234,6 +234,8 @@ impl FrameContext {
 /// Globally needed context for converting a Typst document.
 pub(crate) struct GlobalContext<'a> {
     /// Cache the conversion between krilla and Typst fonts (forward and backward).
+    /// For variable fonts with coordinates, we use comemo memoization in build_font
+    /// instead of this cache to properly handle different instances.
     pub(crate) fonts_forward: FxHashMap<Font, krilla::text::Font>,
     pub(crate) fonts_backward: FxHashMap<krilla::text::Font, Font>,
     /// Mapping between images and their span.

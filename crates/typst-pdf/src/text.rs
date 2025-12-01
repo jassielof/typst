@@ -72,6 +72,21 @@ pub(crate) fn handle_text(
     Ok(())
 }
 
+/// Memoized function to get instanced font data.
+/// This avoids re-instancing the same font multiple times.
+#[comemo::memoize]
+fn get_instanced_font_data(
+    typst_font: Font,
+    coords: VariationCoordinates,
+) -> Result<Vec<u8>, String> {
+    instance_variable_font(
+        typst_font.data().as_slice(),
+        &coords,
+        typst_font.variation_info(),
+        typst_font.is_cff2(),
+    )
+}
+
 /// Adjust glyph advance widths to match the instanced font's advances.
 ///
 /// This fixes spacing issues where rustybuzz-calculated advances don't match
@@ -84,13 +99,13 @@ fn adjust_glyph_advances_for_instanced_font(
     use typst_library::layout::Em;
 
     // We need to get the instanced font data to recalculate advances
-    // Instance the font (this is memoized in build_font, so it's cheap)
+    // Use the memoized function to avoid re-instancing
     let instanced_data = if t.font.is_variable()
         && t.variation_coords.is_some()
         && t.variation_coords.as_ref().is_some_and(|c| c.has_any())
     {
         let coords = t.variation_coords.unwrap();
-        match instance_variable_font(t.font.data(), &coords, t.font.variation_info()) {
+        match get_instanced_font_data(t.font.clone(), coords) {
             Ok(data) => data,
             Err(_) => return Ok(t.clone()), // If instancing fails, use original
         }
@@ -158,7 +173,9 @@ fn convert_font(
 
     // Build the font (with instancing if needed)
     // The comemo::memoize on build_font will cache based on both font and coords
-    let font = build_font(typst_font.clone(), variation_coords)?;
+    // PDF version is checked inside build_font to determine if native variable fonts are supported
+    let pdf_version_str = gc.options.standards.config.version().as_str();
+    let font = build_font(typst_font.clone(), variation_coords, pdf_version_str)?;
 
     // Only cache in the simple forward cache if we don't have variation coordinates
     // Variable fonts with coordinates are handled by comemo memoization in build_font
@@ -174,14 +191,20 @@ fn convert_font(
 fn build_font(
     typst_font: Font,
     variation_coords: Option<VariationCoordinates>,
+    _pdf_version_str: &str, // Reserved for future PDF 2.0 native variable font support
 ) -> SourceResult<krilla::text::Font> {
+    // Always instance variable fonts for now, since krilla doesn't support
+    // native variable fonts yet (even in PDF 2.0).
+    // TODO: Once krilla supports native variable fonts in PDF 2.0, we can skip
+    // instancing here and pass the variable font directly to krilla for PDF 2.0+.
     let font_data = if typst_font.is_variable()
         && variation_coords.is_some()
         && variation_coords.as_ref().is_some_and(|c| c.has_any())
     {
         // Instance the variable font with the given coordinates
+        // Use the memoized function to avoid duplicate instancing
         let coords = variation_coords.unwrap();
-        let instanced_data = match instance_variable_font(typst_font.data(), &coords, typst_font.variation_info()) {
+        let instanced_data = match get_instanced_font_data(typst_font.clone(), coords) {
             Ok(data) => data,
             Err(e) => {
                 return Err(bail!(
@@ -189,7 +212,7 @@ fn build_font(
                     "failed to instance variable font {}: {}",
                     display_font(Some(&typst_font)),
                     e
-                ));
+                ))
             }
         };
         Arc::new(instanced_data) as Arc<dyn AsRef<[u8]> + Send + Sync>

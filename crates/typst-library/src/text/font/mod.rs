@@ -120,6 +120,21 @@ impl Font {
         self.0.variation_info.is_variable()
     }
 
+    /// Check if this font uses CFF2 outlines.
+    ///
+    /// CFF2 (Compact Font Format 2) is used for PostScript outlines in variable fonts.
+    /// It requires different instancing approach than TrueType variable fonts.
+    pub fn is_cff2(&self) -> bool {
+        // CFF2 fonts have a CFF2 table, while TrueType fonts have a glyf table
+        // CFF (version 1) fonts are static, CFF2 (version 2) are for variable fonts
+        self.0.ttf.tables().cff2.is_some()
+    }
+
+    /// Check if this font uses TrueType outlines.
+    pub fn is_truetype(&self) -> bool {
+        self.0.ttf.tables().glyf.is_some()
+    }
+
     /// The font's math constants.
     #[inline]
     pub fn math(&self) -> &MathConstants {

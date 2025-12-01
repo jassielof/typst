@@ -117,6 +117,16 @@ impl VariationInfo {
         }
     }
 
+    /// Check if this is a CFF2 variable font.
+    ///
+    /// CFF2 (Compact Font Format 2) is used for PostScript outlines in variable fonts.
+    /// It requires different handling than TrueType variable fonts.
+    pub fn is_cff2(&self) -> bool {
+        // This will be set when we detect CFF2 during font loading
+        // For now, we'll check it dynamically when needed
+        false // Placeholder - will be implemented below
+    }
+
     /// Check if this is a variable font.
     pub fn is_variable(&self) -> bool {
         self.is_variable

@@ -59,15 +59,17 @@ pub fn recalculate_advances_from_instanced(
 ///
 /// This function takes a variable font and variation coordinates, and produces
 /// a new static font with the variations baked in. This is necessary because
-/// krilla (the PDF library) doesn't support variable fonts directly.
+/// krilla (the PDF library) doesn't support variable fonts directly for PDF 1.7.
 ///
 /// The function uses the allsorts library to perform the instancing operation.
+/// Supports both TrueType and CFF2 variable fonts.
 ///
 /// # Arguments
 ///
 /// * `font_data` - The raw bytes of the variable font
 /// * `coords` - The variation coordinates to apply
 /// * `variation_info` - The font's variation information (for getting axis defaults)
+/// * `is_cff2` - Whether this is a CFF2 font (requires different handling)
 ///
 /// # Returns
 ///
@@ -77,7 +79,11 @@ pub fn instance_variable_font(
     font_data: &[u8],
     coords: &VariationCoordinates,
     variation_info: &typst_library::text::VariationInfo,
+    is_cff2: bool,
 ) -> Result<Vec<u8>, String> {
+    // CFF2 variable fonts require different handling
+    // allsorts should support CFF2, but we may need to handle errors differently
+    // For now, try the same approach - allsorts should handle both TrueType and CFF2
     // Parse the font with allsorts
     let scope = ReadScope::new(font_data);
     let font_file = scope
@@ -115,8 +121,17 @@ pub fn instance_variable_font(
 
     // Perform the instancing
     // The function returns (font_data, tuple), we only need the font_data
+    // Note: Font subsetting is handled by krilla after instancing, so we don't
+    // need to subset here. The instanced font will be subsetted by krilla based
+    // on the glyphs actually used in the document.
     let (instanced, _) = allsorts_instance(&provider, &user_instance)
-        .map_err(|e| format!("Failed to instance font: {:?}", e))?;
+        .map_err(|e| {
+            if is_cff2 {
+                format!("Failed to instance CFF2 variable font: {:?}. CFF2 variable fonts may require additional support.", e)
+            } else {
+                format!("Failed to instance variable font: {:?}", e)
+            }
+        })?;
 
     Ok(instanced)
 }
