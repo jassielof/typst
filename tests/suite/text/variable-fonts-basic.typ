@@ -27,6 +27,7 @@
   "merriweather",
   "inter",
   "ibm plex sans",
+  "google sans flex",
 )
 
 #let sample-text = [Whereas recognition of the inherent dignity]

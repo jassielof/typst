@@ -14,9 +14,11 @@ tasks:
           matrix:
             FONT_TECH: ["variable", "static"]
             PDF_STD: ["1.7", "2.0"]
-        cmd: "typst compile --pdf-standard {{.ITEM.PDF_STD}} --ignore-embedded-fonts --ignore-system-fonts --font-path ./tests/suite/text/fonts/{{.ITEM.FONT_TECH}} tests/suite/text/variable-fonts-basic.typ tests/suite/text/variable-fonts-{{.ITEM.FONT_TECH}}-{{.ITEM.PDF_STD}}.pdf"
+            FORMAT: ["pdf", "png", "svg"]
+        cmd: "typst compile --pdf-standard {{.ITEM.PDF_STD}} --ignore-embedded-fonts --ignore-system-fonts --font-path ./tests/suite/text/fonts/{{.ITEM.FONT_TECH}} tests/suite/text/variable-fonts-basic.typ tests/suite/text/variable-fonts/{{.ITEM.FONT_TECH}}-{{.ITEM.PDF_STD}}.{{.ITEM.FORMAT}}"
       - for:
           matrix:
             FONT_TECH: ["variable", "static"]
             PDF_STD: ["1.7", "2.0"]
-        cmd: "./target/release/typst compile --pdf-standard {{.ITEM.PDF_STD}} --ignore-embedded-fonts --ignore-system-fonts --font-path ./tests/suite/text/fonts/{{.ITEM.FONT_TECH}} tests/suite/text/variable-fonts-basic.typ tests/suite/text/variable-fonts-git-{{.ITEM.FONT_TECH}}-{{.ITEM.PDF_STD}}.pdf"
+            FORMAT: ["pdf", "png", "svg"]
+        cmd: "./target/release/typst compile --pdf-standard {{.ITEM.PDF_STD}} --ignore-embedded-fonts --ignore-system-fonts --font-path ./tests/suite/text/fonts/{{.ITEM.FONT_TECH}} tests/suite/text/variable-fonts-basic.typ tests/suite/text/variable-fonts/git-{{.ITEM.FONT_TECH}}-{{.ITEM.PDF_STD}}.{{.ITEM.FORMAT}}"
