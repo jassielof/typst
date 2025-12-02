@@ -1,3 +1,4 @@
+use ecow::EcoString;
 use typst_library::diag::warning;
 use typst_library::foundations::{Packed, Resolve};
 use typst_library::introspection::{SplitLocator, Tag, TagElem};
@@ -159,7 +160,22 @@ pub fn collect<'a>(
                     }
                 }
 
-                if let Some(case) = styles.get(TextElem::case) {
+                // Handle case transformation for small caps
+                // Only transform if synthetic is explicitly true AND all: true
+                // When all: false, we transform in shaping.rs so we can track which were originally lowercase
+                // For fallback case, transformation happens in shaping phase
+                if let Some(sc_settings) = styles.get(TextElem::smallcaps_settings) {
+                    if !sc_settings.typographic && sc_settings.all {
+                        // Transform to uppercase for forced synthesis when all: true
+                        // When all: false, we'll transform in shaping.rs to track original case
+                        let transformed: EcoString = elem.text.to_uppercase().into();
+                        full.push_str(&transformed);
+                    } else if let Some(case) = styles.get(TextElem::case) {
+                        full.push_str(&case.apply(&elem.text));
+                    } else {
+                        full.push_str(&elem.text);
+                    }
+                } else if let Some(case) = styles.get(TextElem::case) {
                     full.push_str(&case.apply(&elem.text));
                 } else {
                     full.push_str(&elem.text);

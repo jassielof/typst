@@ -26,8 +26,8 @@ use typst_library::pdf::{ArtifactElem, ArtifactKind, AttachElem, PdfMarkerTag};
 use typst_library::text::{
     DecoLine, Decoration, HighlightElem, ItalicToggle, LinebreakElem, LocalName,
     OverlineElem, RawElem, RawLine, ScriptKind, ShiftSettings, Smallcaps, SmallcapsElem,
-    SmartQuoteElem, SmartQuotes, SpaceElem, StrikeElem, SubElem, SuperElem, TextElem,
-    TextSize, UnderlineElem, WeightDelta,
+    SmallcapsSettings, SmartQuoteElem, SmartQuotes, SpaceElem, StrikeElem, SubElem, SuperElem,
+    TextElem, TextSize, UnderlineElem, WeightDelta,
 };
 use typst_library::visualize::{
     CircleElem, CurveElem, EllipseElem, ImageElem, LineElem, PathElem, PolygonElem,
@@ -651,8 +651,33 @@ const HIGHLIGHT_RULE: ShowFn<HighlightElem> = |elem, _, styles| {
 };
 
 const SMALLCAPS_RULE: ShowFn<SmallcapsElem> = |elem, _, styles| {
-    let sc = if elem.all.get(styles) { Smallcaps::All } else { Smallcaps::Minuscules };
-    Ok(elem.body.clone().set(TextElem::smallcaps, Some(sc)))
+    let typographic = elem.typographic.get(styles);
+    let all = elem.all.get(styles);
+    let size = elem.size.get(styles);
+    let expansion = elem.expansion.get(styles);
+    let font_size = styles.resolve(TextElem::size);
+
+    // Convert TextSize to Em for internal use (following sub/super pattern)
+    let size_em = size.map(|ts| Em::from_length(ts.0, font_size));
+
+    // Always set smallcaps_settings so case transformation can happen
+    // The typographic flag controls whether we try OpenType first or force synthesis
+    let settings = SmallcapsSettings {
+        typographic,
+        size: size_em,
+        expansion,
+        all,
+    };
+
+    let mut body = elem.body.clone().set(TextElem::smallcaps_settings, Some(settings));
+
+    // If typographic is true, also set smallcaps to try OpenType features first
+    if typographic {
+        let sc = if all { Smallcaps::All } else { Smallcaps::Minuscules };
+        body = body.set(TextElem::smallcaps, Some(sc));
+    }
+
+    Ok(body)
 };
 
 const RAW_RULE: ShowFn<RawElem> = |elem, _, styles| {

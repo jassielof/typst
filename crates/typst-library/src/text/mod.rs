@@ -789,6 +789,11 @@ pub struct TextElem {
     #[ghost]
     pub smallcaps: Option<Smallcaps>,
 
+    /// The configuration for synthetic small caps.
+    #[internal]
+    #[ghost]
+    pub smallcaps_settings: Option<SmallcapsSettings>,
+
     /// The configuration for superscripts or subscripts, if one of them is
     /// enabled.
     #[internal]

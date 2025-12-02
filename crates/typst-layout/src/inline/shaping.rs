@@ -11,11 +11,12 @@ use ttf_parser::gsub::SubstitutionSubtable;
 use typst_library::World;
 use typst_library::engine::Engine;
 use typst_library::foundations::{Regex, Smart, StyleChain};
-use typst_library::layout::{Abs, Dir, Em, Frame, FrameItem, Point, Rel, Size};
+use typst_library::layout::{Abs, Dir, Em, Frame, FrameItem, Point, Ratio, Rel, Size};
 use typst_library::model::{JustificationLimits, ParElem};
 use typst_library::text::{
-    Font, FontFamily, FontVariant, Glyph, Lang, Region, ShiftSettings, TextEdgeBounds,
-    TextElem, TextItem, families, features, is_default_ignorable, language, variant,
+    Font, FontFamily, FontVariant, Glyph, Lang, Region, ShiftSettings, Smallcaps,
+    SmallcapsSettings, TextEdgeBounds, TextElem, TextItem, families, features,
+    is_default_ignorable, language, variant,
 };
 use typst_utils::SliceExt;
 use unicode_bidi::{BidiInfo, Level as BidiLevel};
@@ -790,6 +791,7 @@ fn shape<'a>(
 ) -> ShapedText<'a> {
     let size = styles.resolve(TextElem::size);
     let shift_settings = styles.get(TextElem::shift_settings);
+    let smallcaps_settings = styles.get(TextElem::smallcaps_settings);
     let mut ctx = ShapingContext {
         world: engine.world,
         size,
@@ -801,6 +803,7 @@ fn shape<'a>(
         fallback: styles.get(TextElem::fallback),
         dir,
         shift_settings,
+        smallcaps_settings,
     };
 
     if !text.is_empty() {
@@ -839,6 +842,7 @@ struct ShapingContext<'a> {
     fallback: bool,
     dir: Dir,
     shift_settings: Option<ShiftSettings>,
+    smallcaps_settings: Option<SmallcapsSettings>,
 }
 
 pub trait SharedShapingContext<'a> {
@@ -953,9 +957,76 @@ fn shape_segment<'a>(
         return;
     };
 
-    // Fill the buffer with our text.
+    // Check if small caps synthesis is needed (before creating buffer)
+    // Following the sub/super script pattern: typographic: true tries font features first
+    let smallcaps = ctx.styles.get(TextElem::smallcaps);
+    let needs_synthesis = ctx.smallcaps_settings.map_or_else(
+        || {
+            // No settings: check if font supports small caps features
+            // If not, synthesize (automatic fallback)
+            check_smallcaps_support(text, &font, smallcaps, false)
+        },
+        |settings| {
+            if !settings.typographic {
+                // typographic: false → always synthesize (force synthesis)
+                true
+            } else {
+                // typographic: true → try font features first, fallback to synthesis if needed
+                check_smallcaps_support(text, &font, smallcaps, false)
+            }
+        },
+    );
+
+    // Transform case for synthesis if needed
+    // Case is transformed in collect.rs only when typographic: false AND all: true
+    // Otherwise, we transform here so we can track which characters were originally lowercase
+    let case_already_transformed = ctx.smallcaps_settings
+        .map_or(false, |s| !s.typographic && s.all);
+
+    // Determine if we need to transform case
+    // We transform if synthesis is needed AND case wasn't already transformed
+    // (Case is only pre-transformed in collect.rs when synthetic: true AND all: true)
+    let needs_case_transform = needs_synthesis && !case_already_transformed;
+
+    // Determine if all letters should be small caps
+    let all_smallcaps = smallcaps.map_or(false, |sc| sc == Smallcaps::All)
+        || ctx.smallcaps_settings.map_or(false, |s| s.all);
+
+    // Track which characters were originally lowercase (for all: false case)
+    // This helps us apply synthesis only to originally lowercase letters
+    // When case is already transformed in collect.rs, we can't determine original case
+    // from the transformed text, so we'll need to check the character in the original text
+    // For the fallback case (case not yet transformed), we can identify originally lowercase
+    let original_lowercase: std::collections::HashSet<usize> = if !all_smallcaps && needs_synthesis && !case_already_transformed {
+        // Case not yet transformed, so we can identify originally lowercase characters
+        text.char_indices()
+            .filter(|(_, c)| c.is_lowercase())
+            .map(|(i, _)| i)
+            .collect()
+    } else {
+        std::collections::HashSet::new()
+    };
+
+    let text_to_shape = if needs_case_transform {
+        // Transform case for synthesis
+        if all_smallcaps {
+            text.to_uppercase()
+        } else {
+            text.chars()
+                .map(|c| if c.is_lowercase() {
+                    c.to_uppercase().next().unwrap_or(c)
+                } else {
+                    c
+                })
+                .collect::<String>()
+        }
+    } else {
+        text.to_string()
+    };
+
+    // Fill the buffer with our text (potentially transformed)
     let mut buffer = UnicodeBuffer::new();
-    buffer.push_str(text);
+    buffer.push_str(&text_to_shape);
     buffer.set_language(language(ctx.styles));
     if let Some(script) = ctx.styles.get(TextElem::script).custom().and_then(|script| {
         rustybuzz::Script::from_iso15924_tag(Tag::from_bytes(script.as_bytes()))
@@ -978,8 +1049,34 @@ fn shape_segment<'a>(
     let (script_shift, script_compensation, scale, shift_feature) = ctx
         .shift_settings
         .map_or((Em::zero(), Em::zero(), Em::one(), None), |settings| {
-            determine_shift(text, &font, settings)
+            determine_shift(&text_to_shape, &font, settings)
         });
+
+    // Handle OpenType features and synthesis parameters
+    // When typographic: true, we may use font features for some characters and synthesize others
+    // When typographic: false, we always synthesize, so remove font features
+    let mut sc_expansion = Ratio::one();
+    let force_synthesis = ctx.smallcaps_settings
+        .map_or(false, |s| !s.typographic);
+
+    if force_synthesis {
+        // typographic: false → remove font features, always synthesize
+        ctx.features.retain(|f| {
+            let tag = f.tag;
+            tag != Tag::from_bytes(b"smcp") && tag != Tag::from_bytes(b"c2sc")
+        });
+    }
+    // When typographic: true, we keep font features but may synthesize missing characters
+
+    // Get synthesis parameters (size is handled per-glyph, expansion is applied to width)
+    if needs_synthesis || force_synthesis {
+        if let Some(settings) = ctx.smallcaps_settings {
+            sc_expansion = settings.expansion.unwrap_or(Ratio::new(1.05));
+        } else {
+            // Default synthesis parameters
+            sc_expansion = Ratio::new(1.05);
+        }
+    }
 
     let has_shift_feature = shift_feature.is_some();
     if let Some(feat) = shift_feature {
@@ -1001,7 +1098,7 @@ fn shape_segment<'a>(
         ctx.features.pop();
     }
 
-    // Shape!
+    // Shape! (use the potentially transformed text)
     let buffer = rustybuzz::shape_with_plan(font.rusty(), &plan, buffer);
     let infos = buffer.glyph_infos();
     let pos = buffer.glyph_positions();
@@ -1009,12 +1106,12 @@ fn shape_segment<'a>(
 
     // Whether the character at the given offset is covered by the coverage.
     let is_covered = |offset| {
-        let end = text[offset..]
+        let end = text_to_shape[offset..]
             .char_indices()
             .nth(1)
             .map(|(i, _)| offset + i)
-            .unwrap_or(text.len());
-        covers.is_none_or(|cov| cov.is_match(&text[offset..end]))
+            .unwrap_or(text_to_shape.len());
+        covers.is_none_or(|cov| cov.is_match(&text_to_shape[offset..end]))
     };
 
     // Collect the shaped glyphs, doing fallback and shaping parts again with
@@ -1052,20 +1149,71 @@ fn shape_segment<'a>(
                     .checked_add_signed(step)
                     .and_then(|n| infos.get(n).map(|info| (n, info)))
                 else {
-                    break base + text.len();
+                    break base + text_to_shape.len();
                 };
 
                 // If the cluster doesn't match anymore, we've reached the end.
                 if next_info.cluster != info.cluster {
+                    // Cluster is in the transformed text, but we need to map it back
+                    // For now, use the cluster directly (they should align if transformation is 1:1)
                     break base + next_info.cluster as usize;
                 }
 
                 k = next;
             };
 
-            let c = text[cluster..].chars().next().unwrap();
+            let c = text_to_shape[cluster..].chars().next().unwrap();
             let script = c.script();
-            let x_advance = font.to_em(pos[i].x_advance);
+            let mut x_advance = font.to_em(pos[i].x_advance);
+
+            // Determine if this glyph should have small caps synthesis applied
+            // When typographic: true, use font small caps where available, synthesize only missing
+            // When typographic: false, always synthesize
+            // When all: false, only originally lowercase letters get synthesis
+            let should_apply_synthesis = if needs_synthesis {
+                // Check if we should use font feature for this character (partial coverage)
+                let use_font_feature = ctx.smallcaps_settings
+                    .map_or(false, |s| s.typographic)
+                    && font_has_smallcap_for_char(&font, c, all_smallcaps);
+
+                if use_font_feature {
+                    // Font has small caps for this character, don't synthesize
+                    false
+                } else if all_smallcaps {
+                    // All letters get synthesis (when font doesn't have it)
+                    true
+                } else {
+                    // Only originally lowercase letters get synthesis
+                    // Case should not be pre-transformed when all: false, so we can check original_lowercase
+                    original_lowercase.contains(&cluster)
+                }
+            } else {
+                false
+            };
+
+            // Apply small caps synthesis transformations
+            if should_apply_synthesis {
+                // Apply expansion to glyph width
+                x_advance = x_advance * sc_expansion.get();
+            }
+
+            // Calculate final size for the glyph
+            let final_size = if should_apply_synthesis {
+                // For synthesized small caps, use size from settings or default scale
+                let sc_scale_em = if let Some(settings) = ctx.smallcaps_settings {
+                    settings.size.unwrap_or(Em::new(0.75))
+                } else {
+                    Em::new(0.75)
+                };
+
+                // Combine script scale with small caps scale
+                // scale is Em (e.g., 0.6 for subscripts), sc_scale_em is Em (e.g., 0.75)
+                let combined_scale = Em::new(scale.get() * sc_scale_em.get());
+                combined_scale.at(ctx.size)
+            } else {
+                scale.at(ctx.size)
+            };
+
             ctx.glyphs.push(ShapedGlyph {
                 font: font.clone(),
                 glyph_id: info.glyph_id as u16,
@@ -1073,7 +1221,7 @@ fn shape_segment<'a>(
                 x_advance,
                 x_offset: font.to_em(pos[i].x_offset) + script_compensation,
                 y_offset: font.to_em(pos[i].y_offset) + script_shift,
-                size: scale.at(ctx.size),
+                size: final_size,
                 adjustability: Adjustability::default(),
                 range: start..end,
                 safe_to_break: !info.unsafe_to_break(),
@@ -1191,6 +1339,80 @@ fn determine_shift(
                 None,
             )
         })
+}
+
+/// Check if a font supports small caps OpenType features for a character.
+/// Returns true if the font has small caps support for this character.
+fn font_has_smallcap_for_char(font: &Font, c: char, all: bool) -> bool {
+    let gsub = match font.rusty().tables().gsub {
+        Some(gsub) => gsub,
+        None => return false,
+    };
+
+    let Some(glyph_id) = font.rusty().glyph_index(c) else {
+        return false;
+    };
+
+    if c.is_lowercase() {
+        // Check smcp feature for lowercase
+        let smcp_tag = Tag::from_bytes(b"smcp");
+        if let Some(lookups) = gsub.features.find(smcp_tag).map(|f| f.lookup_indices) {
+            return lookups
+                .into_iter()
+                .flat_map(|i| gsub.lookups.get(i))
+                .flat_map(|lookup| {
+                    lookup.subtables.into_iter::<SubstitutionSubtable>()
+                })
+                .any(|subtable| subtable.coverage().contains(glyph_id));
+        }
+    } else if c.is_uppercase() && all {
+        // Check c2sc feature for uppercase (only if all: true)
+        let c2sc_tag = Tag::from_bytes(b"c2sc");
+        if let Some(lookups) = gsub.features.find(c2sc_tag).map(|f| f.lookup_indices) {
+            return lookups
+                .into_iter()
+                .flat_map(|i| gsub.lookups.get(i))
+                .flat_map(|lookup| {
+                    lookup.subtables.into_iter::<SubstitutionSubtable>()
+                })
+                .any(|subtable| subtable.coverage().contains(glyph_id));
+        }
+    }
+
+    false
+}
+
+/// Check if a font supports small caps OpenType features and determine if synthesis is needed.
+/// Returns true if synthesis is needed (font doesn't fully support small caps).
+fn check_smallcaps_support(
+    text: &str,
+    font: &Font,
+    smallcaps: Option<Smallcaps>,
+    force_synthesis: bool,
+) -> bool {
+    // If force_synthesis is true, always synthesize
+    if force_synthesis {
+        return true;
+    }
+
+    // If no smallcaps requested, no synthesis needed
+    let Some(sc) = smallcaps else {
+        return false;
+    };
+
+    let all = sc == Smallcaps::All;
+
+    // Check if font supports small caps for all relevant characters
+    // If any character lacks support, we need synthesis
+    let needs_synthesis = text.chars().any(|c| {
+        if c.is_lowercase() || (c.is_uppercase() && all) {
+            !font_has_smallcap_for_char(font, c, all)
+        } else {
+            false // Non-letters don't need small caps
+        }
+    });
+
+    needs_synthesis
 }
 
 /// Create a shape plan.
