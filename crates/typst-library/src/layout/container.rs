@@ -59,7 +59,7 @@ pub struct BoxElem {
     ///
     /// The other way to adjust it is to shift the default baseline vertically
     /// by some amount, specified as a [relative length]($relative). For
-    /// example, a value of `{2pt}` will move it up by that exact length]
+    /// example, a value of `{2pt}` will move it up by that exact length
     /// (causing the contents to go _down_, as the alignment point moves _up_),
     /// whereas `{-40%}` will shift the baseline _down_ by 40% of the box's
     /// total height, including inset (thus causing the contents to move _up_).
