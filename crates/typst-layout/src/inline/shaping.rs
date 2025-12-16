@@ -4,13 +4,15 @@ use std::ops::Deref;
 use std::sync::Arc;
 
 use az::SaturatingAs;
-use comemo::Tracked;
+use comemo::{Tracked, TrackedMut};
 use rustybuzz::{BufferFlags, Feature, ShapePlan, UnicodeBuffer};
 use ttf_parser::Tag;
 use ttf_parser::gsub::SubstitutionSubtable;
 use typst_library::World;
-use typst_library::engine::Engine;
+use typst_library::engine::{Engine, Sink};
+use typst_library::diag::warning;
 use typst_library::foundations::{Regex, Smart, StyleChain};
+use typst_syntax::Span;
 use typst_library::layout::{Abs, Dir, Em, Frame, FrameItem, Point, Ratio, Rel, Size};
 use typst_library::model::{JustificationLimits, ParElem};
 use typst_library::text::{
@@ -543,7 +545,7 @@ impl<'a> ShapedText<'a> {
     /// shaping process if possible.
     ///
     /// The text `range` is relative to the whole inline layout.
-    pub fn reshape(&'a self, engine: &Engine, text_range: Range) -> ShapedText<'a> {
+    pub fn reshape(&'a self, engine: &mut Engine, text_range: Range) -> ShapedText<'a> {
         let text = &self.text[text_range.start - self.base..text_range.end - self.base];
         if let Some(glyphs) = self.slice_safe_to_break(text_range.clone()) {
             #[cfg(debug_assertions)]
@@ -717,7 +719,7 @@ impl Debug for ShapedText<'_> {
 /// items for them.
 pub fn shape_range<'a>(
     items: &mut Vec<(Range, Item<'a>)>,
-    engine: &Engine,
+    engine: &mut Engine,
     text: &'a str,
     bidi: &BidiInfo<'a>,
     range: Range,
@@ -781,7 +783,7 @@ fn is_compatible(a: Script, b: Script) -> bool {
 /// Shape text into [`ShapedText`].
 #[allow(clippy::too_many_arguments)]
 fn shape<'a>(
-    engine: &Engine,
+    engine: &mut Engine,
     base: usize,
     text: &'a str,
     styles: StyleChain<'a>,
@@ -794,6 +796,7 @@ fn shape<'a>(
     let smallcaps_settings = styles.get(TextElem::smallcaps_settings);
     let mut ctx = ShapingContext {
         world: engine.world,
+        sink: TrackedMut::reborrow_mut(&mut engine.sink),
         size,
         glyphs: vec![],
         used: vec![],
@@ -833,6 +836,7 @@ fn shape<'a>(
 /// Holds shaping results and metadata common to all shaped segments.
 struct ShapingContext<'a> {
     world: Tracked<'a, dyn World + 'a>,
+    sink: TrackedMut<'a, Sink>,
     glyphs: Vec<ShapedGlyph>,
     used: Vec<Font>,
     styles: StyleChain<'a>,
@@ -960,22 +964,50 @@ fn shape_segment<'a>(
     // Check if small caps synthesis is needed (before creating buffer)
     // Following the sub/super script pattern: typographic: true tries font features first
     let smallcaps = ctx.styles.get(TextElem::smallcaps);
-    let needs_synthesis = ctx.smallcaps_settings.map_or_else(
+    let (needs_synthesis, synthesis_reason) = ctx.smallcaps_settings.map_or_else(
         || {
             // No settings: check if font supports small caps features
             // If not, synthesize (automatic fallback)
-            check_smallcaps_support(text, &font, smallcaps, false)
+            let needs = check_smallcaps_support(text, &font, smallcaps, false);
+            (needs, if needs { Some("font does not support small caps") } else { None })
         },
         |settings| {
             if !settings.typographic {
                 // typographic: false → always synthesize (force synthesis)
-                true
+                (true, Some("typographic is set to false"))
             } else {
                 // typographic: true → try font features first, fallback to synthesis if needed
-                check_smallcaps_support(text, &font, smallcaps, false)
+                let needs = check_smallcaps_support(text, &font, smallcaps, false);
+                (needs, if needs { Some("font does not fully support small caps") } else { None })
             }
         },
     );
+
+    // Emit pedantic warning when synthesis is used
+    // Use a static to track warned segments and avoid duplicate warnings
+    use std::sync::{Mutex, OnceLock};
+    use std::collections::HashSet;
+    static WARNED: OnceLock<Mutex<HashSet<(usize, usize)>>> = OnceLock::new();
+
+    if needs_synthesis {
+        if let Some(reason) = synthesis_reason {
+            // Use a hash of (base, text.len()) to deduplicate warnings for the same text segment
+            let key = (base, text.len());
+            let warned = WARNED.get_or_init(|| Mutex::new(HashSet::new()));
+            let mut warned = warned.lock().unwrap();
+            if warned.insert(key) {
+                // First time we see this segment, emit warning
+                let span = Span::detached();
+                ctx.sink.warn(warning!(
+                    span,
+                    "small caps are being synthesized because {}",
+                    reason;
+                    hint: "to suppress this warning, set `typographic: false` explicitly";
+                    hint: "or use a font that supports small caps OpenType features (`smcp`/`c2sc`)"
+                ));
+            }
+        }
+    }
 
     // Transform case for synthesis if needed
     // Case is transformed in collect.rs only when typographic: false AND all: true

@@ -12,7 +12,7 @@ Default font with true small caps:
 Setting to a font without true small caps (IBM Plex Serif):
 #set text(font: "IBM Plex Serif")
 - Default: #smallcaps(lorem(20))
-  - More size: #smallcaps(size: 0.5em, lorem(20))
+  - Different size: #smallcaps(size: 0.5em, lorem(20))
 
 // Extra tests:
 // - #smallcaps(synthetic: false, lorem(20))

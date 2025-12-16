@@ -125,7 +125,7 @@ pub enum Dash {
 
 /// Create a line which spans the given range.
 pub fn line<'a>(
-    engine: &Engine,
+    engine: &mut Engine,
     p: &'a Preparation,
     range: Range,
     breakpoint: Breakpoint,
@@ -204,7 +204,7 @@ pub fn line<'a>(
 /// to keep non-text items after the trim (e.g. tags).
 fn collect_items<'a>(
     items: &mut Items<'a>,
-    engine: &Engine,
+    engine: &mut Engine,
     p: &'a Preparation,
     range: Range,
     trim: &Trim,
@@ -282,7 +282,7 @@ where
 /// Collects / reshapes all items for the given `subrange` with continuous
 /// direction.
 fn collect_range<'a>(
-    engine: &Engine,
+    engine: &mut Engine,
     p: &'a Preparation,
     range: Range,
     trim: &Trim,
