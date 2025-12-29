@@ -351,11 +351,48 @@ impl<'a> ShapedText<'a> {
             .all()
             .group_by_key(|g| (g.font.clone(), g.y_offset, g.size))
         {
+            // Aggregate glyph ranges
             let mut range = group[0].range.clone();
             for glyph in group {
                 range.start = range.start.min(glyph.range.start);
                 range.end = range.end.max(glyph.range.end);
             }
+
+            // Ensure range boundaries are at character boundaries in self.text
+            // This is critical for multi-byte UTF-8 characters (e.g., 'ß')
+            let text_start_offset = range.start.saturating_sub(self.base);
+            let text_end_offset = range.end.saturating_sub(self.base);
+
+            // Find character boundary for start
+            let safe_text_start = if text_start_offset >= self.text.len() {
+                self.text.len()
+            } else {
+                self.text
+                    .char_indices()
+                    .take_while(|&(i, _)| i <= text_start_offset)
+                    .last()
+                    .map(|(i, _)| i)
+                    .unwrap_or(0)
+            };
+
+            // Find character boundary for end (need the end of the character)
+            let safe_text_end = if text_end_offset >= self.text.len() {
+                self.text.len()
+            } else {
+                // Find the start of the character containing text_end_offset
+                let char_start = self.text
+                    .char_indices()
+                    .take_while(|&(i, _)| i <= text_end_offset)
+                    .last()
+                    .map(|(i, c)| (i, c))
+                    .unwrap_or((0, '\0'));
+                // Get the end of that character
+                char_start.0 + char_start.1.len_utf8()
+            };
+
+            // Update range to use safe boundaries (back in full text coordinates)
+            range.start = self.base + safe_text_start;
+            range.end = self.base + safe_text_end;
 
             let pos = Point::new(offset, top + shift - y_offset.at(size));
             let glyphs: Vec<Glyph> = group
@@ -436,6 +473,38 @@ impl<'a> ShapedText<'a> {
                 })
                 .collect();
 
+            // Safely extract text slice, ensuring we're at character boundaries
+            let text_start = range.start.saturating_sub(self.base);
+            let text_end = range.end.saturating_sub(self.base);
+
+            // Ensure text_start and text_end are at character boundaries
+            let safe_start = if text_start >= self.text.len() {
+                self.text.len()
+            } else {
+                // Find the character boundary at or before text_start
+                self.text
+                    .char_indices()
+                    .take_while(|&(i, _)| i <= text_start)
+                    .last()
+                    .map(|(i, _)| i)
+                    .unwrap_or(0)
+            };
+
+            let safe_end = if text_end >= self.text.len() {
+                self.text.len()
+            } else {
+                // Find the character boundary at or before text_end
+                self.text
+                    .char_indices()
+                    .take_while(|&(i, _)| i <= text_end)
+                    .last()
+                    .map(|(i, _)| i)
+                    .unwrap_or(0)
+            };
+
+            // Ensure safe_end >= safe_start
+            let safe_end = safe_end.max(safe_start);
+
             let item = TextItem {
                 font,
                 size: glyph_size,
@@ -443,7 +512,7 @@ impl<'a> ShapedText<'a> {
                 region: self.region,
                 fill: fill.clone(),
                 stroke: stroke.clone().map(|s| s.unwrap_or_default()),
-                text: self.text[range.start - self.base..range.end - self.base].into(),
+                text: self.text.get(safe_start..safe_end).unwrap_or("").into(),
                 glyphs,
             };
 
@@ -984,41 +1053,24 @@ fn shape_segment<'a>(
     );
 
     // Emit pedantic warning when synthesis is used
-    // Use a static to track warned segments and avoid duplicate warnings
-    use std::sync::{Mutex, OnceLock};
-    use std::collections::HashSet;
-    static WARNED: OnceLock<Mutex<HashSet<(usize, usize)>>> = OnceLock::new();
-
+    // Note: Typst's engine will handle warning deduplication automatically
     if needs_synthesis {
         if let Some(reason) = synthesis_reason {
-            // Use a hash of (base, text.len()) to deduplicate warnings for the same text segment
-            let key = (base, text.len());
-            let warned = WARNED.get_or_init(|| Mutex::new(HashSet::new()));
-            let mut warned = warned.lock().unwrap();
-            if warned.insert(key) {
-                // First time we see this segment, emit warning
-                let span = Span::detached();
-                ctx.sink.warn(warning!(
-                    span,
-                    "small caps are being synthesized because {}",
-                    reason;
-                    hint: "to suppress this warning, set `typographic: false` explicitly";
-                    hint: "or use a font that supports small caps OpenType features (`smcp`/`c2sc`)"
-                ));
-            }
+            let span = Span::detached();
+            ctx.sink.warn(warning!(
+                span,
+                "small caps are being synthesized because {}",
+                reason;
+                hint: "to suppress this warning, set `typographic: false` explicitly";
+                hint: "or use a font that supports small caps OpenType features (`smcp`/`c2sc`)"
+            ));
         }
     }
 
-    // Transform case for synthesis if needed
-    // Case is transformed in collect.rs only when typographic: false AND all: true
-    // Otherwise, we transform here so we can track which characters were originally lowercase
-    let case_already_transformed = ctx.smallcaps_settings
-        .map_or(false, |s| !s.typographic && s.all);
-
-    // Determine if we need to transform case
-    // We transform if synthesis is needed AND case wasn't already transformed
-    // (Case is only pre-transformed in collect.rs when synthetic: true AND all: true)
-    let needs_case_transform = needs_synthesis && !case_already_transformed;
+    // Determine if we need to transform case for synthesis
+    // Case transformation always happens here (not in collect.rs) to maintain
+    // proper tracking of original case for selective synthesis (all: false)
+    let needs_case_transform = needs_synthesis;
 
     // Determine if all letters should be small caps
     let all_smallcaps = smallcaps.map_or(false, |sc| sc == Smallcaps::All)
@@ -1026,11 +1078,9 @@ fn shape_segment<'a>(
 
     // Track which characters were originally lowercase (for all: false case)
     // This helps us apply synthesis only to originally lowercase letters
-    // When case is already transformed in collect.rs, we can't determine original case
-    // from the transformed text, so we'll need to check the character in the original text
-    // For the fallback case (case not yet transformed), we can identify originally lowercase
-    let original_lowercase: std::collections::HashSet<usize> = if !all_smallcaps && needs_synthesis && !case_already_transformed {
-        // Case not yet transformed, so we can identify originally lowercase characters
+    // We track byte offsets in the original text before any transformation
+    let original_lowercase: std::collections::HashSet<usize> = if !all_smallcaps && needs_synthesis {
+        // Track originally lowercase characters by their byte offsets in original text
         text.char_indices()
             .filter(|(_, c)| c.is_lowercase())
             .map(|(i, _)| i)
@@ -1169,7 +1219,20 @@ fn shape_segment<'a>(
             // scenarios.
 
             // The start of the glyph's text range.
-            let start = base + cluster;
+            // Cluster is a byte offset from rustybuzz. We need to ensure it's at a character boundary.
+            // For case transformation, byte offsets should be preserved (1:1), but we need to be safe.
+            let cluster_start = if cluster >= text_to_shape.len() {
+                text_to_shape.len()
+            } else {
+                // Find the start of the character containing or at cluster
+                text_to_shape
+                    .char_indices()
+                    .take_while(|&(i, _)| i <= cluster)
+                    .last()
+                    .map(|(i, _)| i)
+                    .unwrap_or(0)
+            };
+            let start = base + cluster_start;
 
             // Determine the end of the glyph's text range.
             let mut k = i;
@@ -1186,16 +1249,53 @@ fn shape_segment<'a>(
 
                 // If the cluster doesn't match anymore, we've reached the end.
                 if next_info.cluster != info.cluster {
-                    // Cluster is in the transformed text, but we need to map it back
-                    // For now, use the cluster directly (they should align if transformation is 1:1)
-                    break base + next_info.cluster as usize;
+                    // Cluster is in the transformed text. Find the character boundary.
+                    let next_cluster = next_info.cluster as usize;
+                    let next_cluster_start = if next_cluster >= text_to_shape.len() {
+                        text_to_shape.len()
+                    } else {
+                        text_to_shape
+                            .char_indices()
+                            .take_while(|&(i, _)| i <= next_cluster)
+                            .last()
+                            .map(|(i, _)| i)
+                            .unwrap_or(0)
+                    };
+                    break base + next_cluster_start;
                 }
 
                 k = next;
             };
 
-            let c = text_to_shape[cluster..].chars().next().unwrap();
-            let script = c.script();
+            // Get character from transformed text (used for shaping)
+            // Use cluster_start which is already calculated and guaranteed to be at char boundary
+            let c_shaped = text_to_shape
+                .get(cluster_start..)
+                .and_then(|s| s.chars().next())
+                .unwrap_or('\0');
+
+            // Calculate character index in transformed text
+            // Use get() to safely slice up to cluster_start
+            let char_index = text_to_shape
+                .get(..cluster_start)
+                .map(|s| s.chars().count())
+                .unwrap_or(0);
+
+            // Get original character from original text for font feature checking
+            // For ASCII case transformation, character indices should match
+            let c_original = text.chars().nth(char_index).unwrap_or(c_shaped);
+
+            // Calculate original byte offset for checking original_lowercase
+            // Find the byte offset of the character at char_index in original text
+            let original_byte_offset = text.char_indices()
+                .nth(char_index)
+                .map(|(i, _)| i)
+                .unwrap_or_else(|| {
+                    // Fallback: if char_index is beyond text length, use safe value
+                    cluster.min(text.len())
+                });
+
+            let script = c_shaped.script();
             let mut x_advance = font.to_em(pos[i].x_advance);
 
             // Determine if this glyph should have small caps synthesis applied
@@ -1204,9 +1304,10 @@ fn shape_segment<'a>(
             // When all: false, only originally lowercase letters get synthesis
             let should_apply_synthesis = if needs_synthesis {
                 // Check if we should use font feature for this character (partial coverage)
+                // Use original character for font feature checking, not transformed character
                 let use_font_feature = ctx.smallcaps_settings
                     .map_or(false, |s| s.typographic)
-                    && font_has_smallcap_for_char(&font, c, all_smallcaps);
+                    && font_has_smallcap_for_char(&font, c_original, all_smallcaps);
 
                 if use_font_feature {
                     // Font has small caps for this character, don't synthesize
@@ -1216,8 +1317,8 @@ fn shape_segment<'a>(
                     true
                 } else {
                     // Only originally lowercase letters get synthesis
-                    // Case should not be pre-transformed when all: false, so we can check original_lowercase
-                    original_lowercase.contains(&cluster)
+                    // Use the calculated original byte offset
+                    original_lowercase.contains(&original_byte_offset)
                 }
             } else {
                 false
@@ -1257,9 +1358,9 @@ fn shape_segment<'a>(
                 adjustability: Adjustability::default(),
                 range: start..end,
                 safe_to_break: !info.unsafe_to_break(),
-                c,
+                c: c_original, // Use original character for glyph metadata
                 is_justifiable: is_justifiable(
-                    c,
+                    c_original,
                     script,
                     x_advance,
                     Adjustability::default().stretchability,
