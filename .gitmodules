@@ -1,0 +1,12 @@
+[submodule "modules/typst-subsetter"]
+	path = modules/typst-subsetter
+	url = https://github.com/jassielof/typst-subsetter.git
+[submodule "modules/allsorts"]
+	path = modules/allsorts
+	url = https://github.com/yeslogic/allsorts.git
+[submodule "modules/allsorts-tools"]
+	path = modules/allsorts-tools
+	url = https://github.com/yeslogic/allsorts-tools.git
+[submodule "modules/typst-laurenzv-variable-fonts"]
+	path = modules/typst-laurenzv-variable-fonts
+	url = https://github.com/typst/typst
