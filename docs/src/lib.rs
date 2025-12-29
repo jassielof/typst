@@ -219,6 +219,8 @@ fn changelog_pages(resolver: &dyn Resolver) -> PageModel {
     let mut page = md_page(resolver, resolver.base(), load!("changelog/welcome.md"));
     let base = format!("{}changelog/", resolver.base());
     page.children = vec![
+        md_page(resolver, &base, load!("changelog/0.14.2.md")),
+        md_page(resolver, &base, load!("changelog/0.14.1.md")),
         md_page(resolver, &base, load!("changelog/0.14.0.md")),
         md_page(resolver, &base, load!("changelog/0.13.1.md")),
         md_page(resolver, &base, load!("changelog/0.13.0.md")),
@@ -485,7 +487,7 @@ fn func_model(
         title: func.title().unwrap(),
         keywords: func.keywords(),
         oneliner: oneliner(first_md),
-        element: func.element().is_some(),
+        element: func.to_element().is_some(),
         contextual: func.contextual().unwrap_or(false),
         deprecation_message: deprecation.map(Deprecation::message),
         deprecation_until: deprecation.and_then(Deprecation::until),

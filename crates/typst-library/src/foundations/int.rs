@@ -40,7 +40,7 @@ use crate::foundations::{
 #[ty(scope, cast, name = "int", title = "Integer")]
 type i64;
 
-#[scope]
+#[scope(ext)]
 impl i64 {
     /// Converts a value to an integer. Raises an error if there is an attempt
     /// to parse an invalid string or produce an integer that doesn't fit
@@ -443,12 +443,12 @@ fn parse_str_error(kind: &IntErrorKind, base: Spanned<Base>) -> HintedString {
         IntErrorKind::PosOverflow => error!(
             "integer value is too large";
             hint: "value does not fit into a signed 64-bit integer";
-            hint: "try using a floating point number"
+            hint: "try using a floating point number";
         ),
         IntErrorKind::NegOverflow => error!(
             "integer value is too small";
             hint: "value does not fit into a signed 64-bit integer";
-            hint: "try using a floating point number"
+            hint: "try using a floating point number";
         ),
         IntErrorKind::Zero => unreachable!(),
         _ => error!("invalid integer"),
