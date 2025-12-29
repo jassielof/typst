@@ -1,7 +1,7 @@
 use std::fmt::{self, Debug, Formatter};
 use std::ops::{Deref, DerefMut};
 
-use typst_library::engine::Engine;
+use typst_library::{WorldExt, engine::Engine};
 use typst_library::foundations::Resolve;
 use typst_library::introspection::{SplitLocator, Tag, TagFlags};
 use typst_library::layout::{Abs, Dir, Em, Fr, Frame, FrameItem, Point};
@@ -467,7 +467,7 @@ pub fn apply_shift<'a>(
                 world
                     .book()
                     .select(family.as_str(), variant(styles))
-                    .and_then(|id| world.font(id))
+                    .and_then(|key| world.font_by_key(&key))
             })
             .map_or(*scripts.kind.default_metrics(), |f| {
                 *scripts.kind.read_metrics(f.metrics())

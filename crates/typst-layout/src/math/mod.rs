@@ -15,7 +15,7 @@ mod text;
 mod underover;
 
 use comemo::Tracked;
-use typst_library::World;
+use typst_library::{World, WorldExt};
 use typst_library::diag::{At, SourceResult, warning};
 use typst_library::engine::Engine;
 use typst_library::foundations::{
@@ -669,7 +669,7 @@ fn get_font(
             world
                 .book()
                 .select(family.as_str(), variant)
-                .and_then(|id| world.font(id))
+                .and_then(|key| world.font_by_key(&key))
                 .filter(|_| family.covers().is_none())
         })
         .ok_or("no font could be found")

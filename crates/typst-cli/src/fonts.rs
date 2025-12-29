@@ -15,7 +15,7 @@ pub fn fonts(command: &FontsCommand) {
         println!("{name}");
         if command.variants {
             for info in infos {
-                let FontVariant { style, weight, stretch } = info.variant;
+                let FontVariant { style, weight, stretch } = info.variant();
                 println!("- Style: {style:?}, Weight: {weight:?}, Stretch: {stretch:?}");
             }
         }

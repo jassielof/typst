@@ -14,7 +14,7 @@ use std::sync::OnceLock;
 
 use fontdb::{Database, Source};
 use typst_library::foundations::Bytes;
-use typst_library::text::{Font, FontBook, FontInfo};
+use typst_library::text::{Font, FontBook, FontInfo, InstanceParameters};
 use typst_timing::TimingScope;
 use typst_utils::LazyHash;
 
@@ -55,7 +55,7 @@ impl FontSlot {
                         .expect("`path` is not `None` if `font` is uninitialized"),
                 )
                 .ok()?;
-                Font::new(Bytes::new(data), self.index)
+                Font::new(Bytes::new(data), self.index, InstanceParameters::new())
             })
             .clone()
     }

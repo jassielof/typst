@@ -1,7 +1,8 @@
 #set page(height: auto)
+#set text(size: 20pt)
 
 // Define the target font and sample text
-#let font-family = "Noto Sans"
+#let font-family = "Google Sans Code"
 #let sample-text = "The quick brown fox jumps over the lazy dog."
 
 // --- Exhaustive Test Function ---
@@ -14,7 +15,7 @@
   #let rows = ()
 
   // Loop from 100 to 900 (range excludes the end, so 901)
-  #for w in range(100, 901, step: 1) {
+  #for w in range(300, 801, step: 1) {
     // 1. Weight Label
     rows.push(align(center + horizon)[*#w*])
 

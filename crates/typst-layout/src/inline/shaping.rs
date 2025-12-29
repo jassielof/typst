@@ -8,7 +8,7 @@ use comemo::Tracked;
 use rustybuzz::{BufferFlags, Feature, ShapePlan, UnicodeBuffer};
 use ttf_parser::Tag;
 use ttf_parser::gsub::SubstitutionSubtable;
-use typst_library::World;
+use typst_library::{World, WorldExt};
 use typst_library::engine::Engine;
 use typst_library::foundations::{Regex, Smart, StyleChain};
 use typst_library::layout::{Abs, Dir, Em, Frame, FrameItem, Point, Rel, Size};
@@ -492,7 +492,7 @@ impl<'a> ShapedText<'a> {
                 if let Some(font) = world
                     .book()
                     .select(family.as_str(), self.variant)
-                    .and_then(|id| world.font(id))
+                    .and_then(|key| world.font_by_key(&key))
                 {
                     expand(&font, TextEdgeBounds::Zero);
                     break;
@@ -599,8 +599,8 @@ impl<'a> ShapedText<'a> {
             .chain(fallback_func.iter().map(|f| f()))
             .flatten();
 
-        chain.find_map(|id| {
-            let font = world.font(id)?;
+        chain.find_map(|key| {
+            let font = world.font_by_key(&key)?;
             let ttf = font.ttf();
             let glyph_id = ttf.glyph_index('-')?;
             let x_advance = font.to_em(ttf.glyph_hor_advance(glyph_id)?);
@@ -897,7 +897,7 @@ where
     for family in families.by_ref() {
         selection = book
             .select(family.as_str(), ctx.variant())
-            .and_then(|id| world.font(id))
+            .and_then(|key| world.font_by_key(&key))
             .filter(|font| !ctx.used().contains(font));
         if selection.is_some() {
             covers = family.covers();
@@ -910,7 +910,7 @@ where
         let first = ctx.first().map(Font::info);
         selection = book
             .select_fallback(first, ctx.variant(), text)
-            .and_then(|id| world.font(id))
+            .and_then(|key| world.font_by_key(&key))
             .filter(|font| !ctx.used().contains(font));
     }
 
