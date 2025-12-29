@@ -1,0 +1,8 @@
+version: "3"
+
+tasks:
+  default:
+    desc: Run parallel tests via script
+    cmds:
+      - cargo build
+      - nu local-testing/build.nu
