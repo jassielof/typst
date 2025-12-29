@@ -42,7 +42,7 @@
           #v(0.5em)
           // Smallcaps text (Note: CJK fonts often lack true smallcaps, but this tests fallback)
           #box(smallcaps(sample-text), fill: luma(220), inset: 4pt, radius: 2pt)
-        ]
+        ],
       )
     }
   }
@@ -53,7 +53,7 @@
     inset: 10pt,
     align: (x, y) => if x == 0 { center + horizon } else { left + top },
     table.header([*Weight*], [*Normal*], [*Italic*]),
-    ..weights
+    ..weights,
   )
 ]
 

@@ -6,3 +6,11 @@ tasks:
     cmds:
       - cargo build
       - nu local-testing/build.nu
+  bench:
+    cmds:
+      - hyperfine -w 3 -r 5 "typst compile --ignore-embedded-fonts --ignore-system-fonts --font-path local-testing/fonts/static local-testing/test.typ local-testing/out/test-stable.pdf"
+      - hyperfine -w 3 -r 5 "C:/Users/Jassiel/.cargo/target/release/typst compile --ignore-embedded-fonts --ignore-system-fonts --font-path local-testing/fonts/variable local-testing/test.typ local-testing/out/test-nightly.pdf"
+  exhaustive:
+    cmds:
+      - cargo run -- compile --ignore-embedded-fonts --ignore-system-fonts --font-path local-testing/fonts/variable local-testing/exhaustive.typ local-testing/out/exhaustive.pdf
+      - typst compile --ignore-embedded-fonts --ignore-system-fonts --font-path local-testing/fonts/static local-testing/exhaustive.typ local-testing/out/exhaustive-static.pdf
