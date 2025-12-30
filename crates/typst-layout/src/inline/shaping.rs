@@ -352,6 +352,7 @@ impl<'a> ShapedText<'a> {
             .group_by_key(|g| (g.font.clone(), g.y_offset, g.size))
         {
             // Aggregate glyph ranges
+            // Aggregate glyph ranges
             let mut range = group[0].range.clone();
             for glyph in group {
                 range.start = range.start.min(glyph.range.start);
@@ -391,8 +392,7 @@ impl<'a> ShapedText<'a> {
             };
 
             // Update range to use safe boundaries (back in full text coordinates)
-            range.start = self.base + safe_text_start;
-            range.end = self.base + safe_text_end;
+            let safe_range_start = self.base + safe_text_start;
 
             let pos = Point::new(offset, top + shift - y_offset.at(size));
             let glyphs: Vec<Glyph> = group
@@ -460,51 +460,56 @@ impl<'a> ShapedText<'a> {
                     // D: justification_right
                     // A+B: Glyph's x_offset
                     // A+B+C+D: Glyph's x_advance
+
+                    // Calculate relative range within the TextItem's text slice
+                    // Use safe_range_start (which is range.start after fixing) to ensure character boundaries
+                    let glyph_start_rel = shaped.range.start.saturating_sub(safe_range_start);
+                    let glyph_end_rel = shaped.range.end.saturating_sub(safe_range_start);
+
+                    // The text slice we'll use
+                    let text_slice = &self.text[safe_text_start..safe_text_end];
+
+                    // Find character boundaries in the text slice for glyph start
+                    let safe_glyph_start = if glyph_start_rel >= text_slice.len() {
+                        text_slice.len()
+                    } else {
+                        text_slice
+                            .char_indices()
+                            .take_while(|&(i, _)| i <= glyph_start_rel)
+                            .last()
+                            .map(|(i, _)| i)
+                            .unwrap_or(0)
+                    };
+
+                    // Find character boundaries in the text slice for glyph end
+                    let safe_glyph_end = if glyph_end_rel >= text_slice.len() {
+                        text_slice.len()
+                    } else {
+                        // Find the end of the character containing glyph_end_rel
+                        let char_info = text_slice
+                            .char_indices()
+                            .take_while(|&(i, _)| i <= glyph_end_rel)
+                            .last();
+                        if let Some((char_start, c)) = char_info {
+                            char_start + c.len_utf8()
+                        } else {
+                            0
+                        }
+                    };
+
                     Glyph {
                         id: shaped.glyph_id,
                         x_advance,
                         x_offset,
                         y_advance: Em::zero(),
                         y_offset: Em::zero(),
-                        range: (shaped.range.start - range.start).saturating_as()
-                            ..(shaped.range.end - range.start).saturating_as(),
+                        range: safe_glyph_start.saturating_as()..safe_glyph_end.max(safe_glyph_start).saturating_as(),
                         span,
                     }
                 })
                 .collect();
 
-            // Safely extract text slice, ensuring we're at character boundaries
-            let text_start = range.start.saturating_sub(self.base);
-            let text_end = range.end.saturating_sub(self.base);
-
-            // Ensure text_start and text_end are at character boundaries
-            let safe_start = if text_start >= self.text.len() {
-                self.text.len()
-            } else {
-                // Find the character boundary at or before text_start
-                self.text
-                    .char_indices()
-                    .take_while(|&(i, _)| i <= text_start)
-                    .last()
-                    .map(|(i, _)| i)
-                    .unwrap_or(0)
-            };
-
-            let safe_end = if text_end >= self.text.len() {
-                self.text.len()
-            } else {
-                // Find the character boundary at or before text_end
-                self.text
-                    .char_indices()
-                    .take_while(|&(i, _)| i <= text_end)
-                    .last()
-                    .map(|(i, _)| i)
-                    .unwrap_or(0)
-            };
-
-            // Ensure safe_end >= safe_start
-            let safe_end = safe_end.max(safe_start);
-
+            // Use the safe text boundaries we already calculated
             let item = TextItem {
                 font,
                 size: glyph_size,
@@ -512,7 +517,7 @@ impl<'a> ShapedText<'a> {
                 region: self.region,
                 fill: fill.clone(),
                 stroke: stroke.clone().map(|s| s.unwrap_or_default()),
-                text: self.text.get(safe_start..safe_end).unwrap_or("").into(),
+                text: self.text.get(safe_text_start..safe_text_end).unwrap_or("").into(),
                 glyphs,
             };
 
