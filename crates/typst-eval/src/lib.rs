@@ -29,8 +29,9 @@ use typst_library::engine::{Engine, Route, Sink, Traced};
 use typst_library::foundations::{Context, Module, NativeElement, Scope, Scopes, Value};
 use typst_library::introspection::{EmptyIntrospector, Introspector};
 use typst_library::math::EquationElem;
+use typst_library::routines::SpanMode;
 use typst_library::{Library, World};
-use typst_syntax::{Source, Span, SyntaxMode, ast, parse, parse_code, parse_math};
+use typst_syntax::{Source, SyntaxMode, ast, parse, parse_code, parse_math};
 use typst_utils::{LazyHash, Protected};
 
 /// Evaluate a source file and return the resulting module.
@@ -88,9 +89,8 @@ pub fn eval(
     Ok(Module::new(name, vm.scopes.top).with_content(output).with_file_id(id))
 }
 
-/// Evaluate a string as code and return the resulting value.
-///
-/// Everything in the output is associated with the given `span`.
+/// Evaluates a string in the given syntax `mode` and returns the resulting
+/// value.
 #[comemo::memoize]
 #[allow(clippy::too_many_arguments)]
 pub fn eval_string(
@@ -100,7 +100,7 @@ pub fn eval_string(
     introspector: Tracked<dyn Introspector + '_>,
     context: Tracked<Context>,
     string: &str,
-    span: Span,
+    spans: SpanMode,
     mode: SyntaxMode,
     scope: Scope,
 ) -> SourceResult<Value> {
@@ -110,7 +110,11 @@ pub fn eval_string(
         SyntaxMode::Math => parse_math(string),
     };
 
-    root.synthesize(span);
+    match spans {
+        SpanMode::Uniform(span) if span.is_detached() => {}
+        SpanMode::Uniform(span) => root.synthesize(span),
+        SpanMode::Mapped { id, mapper } => root.synthesize_mapped(id, mapper),
+    }
 
     // Check for well-formedness.
     let errors = root.errors();
@@ -144,7 +148,7 @@ pub fn eval_string(
             EquationElem::new(root.cast::<ast::Math>().unwrap().eval(&mut vm)?)
                 .with_block(false)
                 .pack()
-                .spanned(span),
+                .spanned(root.span()),
         ),
     };
 
