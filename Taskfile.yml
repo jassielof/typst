@@ -14,3 +14,7 @@ tasks:
     cmds:
       - cargo run -- compile --ignore-embedded-fonts --ignore-system-fonts --font-path local-testing/fonts/variable local-testing/exhaustive.typ local-testing/out/exhaustive.pdf
       - typst compile --ignore-embedded-fonts --ignore-system-fonts --font-path local-testing/fonts/static local-testing/exhaustive.typ local-testing/out/exhaustive-static.pdf
+  measured:
+    cmds:
+      - cargo run -- compile --ignore-embedded-fonts --ignore-system-fonts --font-path local-testing/fonts/static local-testing/measured.typ local-testing/out/measured.pdf
+      - typst compile --ignore-embedded-fonts --ignore-system-fonts --font-path local-testing/fonts/static local-testing/measured.typ local-testing/out/measured-stable.pdf
