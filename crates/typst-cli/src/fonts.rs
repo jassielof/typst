@@ -18,7 +18,7 @@ pub fn fonts(command: &FontsCommand) {
         if command.variants {
             for index in indices {
                 let Some(font_info) = fonts.book.info(index) else { continue };
-                let FontVariant { style, weight, stretch } = font_info.variant;
+                let FontVariant { style, weight, stretch } = font_info.variant();
                 let path = fonts
                     .slots
                     .get(index)
