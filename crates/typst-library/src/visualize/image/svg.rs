@@ -252,8 +252,7 @@ impl FontResolver<'_> {
         let variant = like.map(|info| info.variant()).unwrap_or_default();
 
         // Select the font.
-        let key =
-            self.book.select_fallback(like, variant, c.encode_utf8(&mut [0; 4]))?;
+        let key = self.book.select_fallback(like, variant, c.encode_utf8(&mut [0; 4]))?;
 
         self.get_or_load(key.index, db)
     }

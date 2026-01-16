@@ -7,9 +7,9 @@ use serde::{Deserialize, Serialize};
 use ttf_parser::{PlatformId, Tag, name_id};
 use unicode_segmentation::UnicodeSegmentation;
 
+use super::InstanceParameters;
 use super::exceptions::find_exception;
 use super::variant::{Field, StaticField, VariableField};
-use super::InstanceParameters;
 use crate::text::{
     Font, FontStretch, FontStyle, FontVariant, FontVariantCoverage, FontWeight,
     is_default_ignorable,
@@ -30,10 +30,7 @@ pub struct FontKey {
 impl FontKey {
     /// Create a new font key with no instance parameters.
     pub fn new(index: usize) -> Self {
-        Self {
-            index,
-            instance_params: InstanceParameters::new(),
-        }
+        Self { index, instance_params: InstanceParameters::new() }
     }
 
     /// Create a new font key with instance parameters.
@@ -362,10 +359,8 @@ impl FontInfo {
                         let max = FontWeight::from_number(axis.max_value.ceil() as u16);
                         let default =
                             FontWeight::from_number(axis.def_value.round() as u16);
-                        weight = Field::Variable(VariableField {
-                            range: min..=max,
-                            default,
-                        });
+                        weight =
+                            Field::Variable(VariableField { range: min..=max, default });
                     }
                     // wdth axis (width/stretch)
                     // Note: OpenType wdth is in percentage (100 = normal)
@@ -380,10 +375,8 @@ impl FontInfo {
                         let default = FontStretch::from_ratio(crate::layout::Ratio::new(
                             axis.def_value as f64 / 100.0,
                         ));
-                        stretch = Field::Variable(VariableField {
-                            range: min..=max,
-                            default,
-                        });
+                        stretch =
+                            Field::Variable(VariableField { range: min..=max, default });
                     }
                 }
             }

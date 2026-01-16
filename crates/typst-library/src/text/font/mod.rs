@@ -694,10 +694,8 @@ impl InstanceParameters {
 
     /// Set the weight axis value.
     pub fn set_weight(&mut self, weight: FontWeight) {
-        self.0.push(AxisValue {
-            tag: *b"wght",
-            value: weight.to_number() as f32,
-        });
+        self.0
+            .push(AxisValue { tag: *b"wght", value: weight.to_number() as f32 });
     }
 
     /// Set the width axis value.

@@ -12,7 +12,6 @@ mod table;
 mod text;
 
 use comemo::Tracked;
-use typst_library::{World, WorldExt};
 use typst_library::diag::{At, SourceResult, warning};
 use typst_library::engine::Engine;
 use typst_library::foundations::{NativeElement, Packed, Resolve, Style, StyleChain};
@@ -28,6 +27,7 @@ use typst_library::math::{EquationElem, families};
 use typst_library::model::ParElem;
 use typst_library::routines::Arenas;
 use typst_library::text::{Font, FontFlags, TextEdgeBounds, TextElem, variant};
+use typst_library::{World, WorldExt};
 use typst_syntax::Span;
 use typst_utils::{LazyHash, Numeric};
 
