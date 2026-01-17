@@ -65,6 +65,35 @@ pub struct FontVariant {
     pub stretch: FontStretch,
 }
 
+/// Information about a variable font's slant/italic axis.
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize)]
+pub enum SlantAxis {
+    /// No slant axis (static font or variable font without slnt/ital).
+    None,
+    /// Has a slnt (slant) axis with the given range in degrees.
+    /// Negative values = right-leaning (italic/oblique), positive = left-leaning.
+    Slnt {
+        /// Minimum slant value (usually negative for italic).
+        min: i16,
+        /// Maximum slant value (usually 0 for upright).
+        max: i16,
+        /// Default slant value.
+        default: i16,
+    },
+    /// Has an ital (italic) axis (binary: 0 = upright, 1 = italic).
+    Ital {
+        /// Whether the font defaults to italic.
+        default_italic: bool,
+    },
+}
+
+impl Default for SlantAxis {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
 /// Properties describing the coverage of a font variant, supporting variable fonts.
 ///
 /// For static fonts, each property is a single value.
@@ -78,6 +107,8 @@ pub struct FontVariantCoverage {
     pub weight: Field<FontWeight>,
     /// The stretch coverage: either a static value or a variable range.
     pub stretch: Field<FontStretch>,
+    /// Information about the slant/italic axis for variable fonts.
+    pub slant_axis: SlantAxis,
 }
 
 impl FontVariantCoverage {
@@ -87,7 +118,27 @@ impl FontVariantCoverage {
         weight: Field<FontWeight>,
         stretch: Field<FontStretch>,
     ) -> Self {
-        Self { style, weight, stretch }
+        Self {
+            style,
+            weight,
+            stretch,
+            slant_axis: SlantAxis::None,
+        }
+    }
+
+    /// Create a new variant coverage with slant axis information.
+    pub fn with_slant(
+        style: FontStyle,
+        weight: Field<FontWeight>,
+        stretch: Field<FontStretch>,
+        slant_axis: SlantAxis,
+    ) -> Self {
+        Self { style, weight, stretch, slant_axis }
+    }
+
+    /// Check if this font has a variable slant or italic axis.
+    pub fn has_slant_axis(&self) -> bool {
+        !matches!(self.slant_axis, SlantAxis::None)
     }
 
     /// Check if this font supports the requested variant.
@@ -116,7 +167,40 @@ impl FontVariantCoverage {
     /// For variable fonts, if the requested value is within range, the distance is 0.
     /// Otherwise, it returns the distance to the nearest edge of the range.
     pub fn distance(&self, variant: &FontVariant) -> (u16, Ratio, u16) {
-        let style_dist = self.style.distance(variant.style);
+        // For style distance, if the font has a slant/ital axis, it can produce
+        // italic/oblique styles, so the distance should be 0 for those requests.
+        let style_dist = match &self.slant_axis {
+            SlantAxis::Slnt { min, max, .. } => {
+                // A slnt axis can produce oblique/italic if it has negative values
+                let can_produce_slant = *min < 0 || *max < 0;
+                match (self.style, variant.style) {
+                    // Same style = distance 0
+                    (a, b) if a == b => 0,
+                    // Font is normal, user wants italic/oblique, and we have slant axis
+                    (FontStyle::Normal, FontStyle::Italic | FontStyle::Oblique)
+                        if can_produce_slant =>
+                    {
+                        0
+                    }
+                    // Otherwise use the regular distance
+                    _ => self.style.distance(variant.style),
+                }
+            }
+            SlantAxis::Ital { .. } => {
+                // An ital axis can toggle between normal and italic
+                match (self.style, variant.style) {
+                    // Same style = distance 0
+                    (a, b) if a == b => 0,
+                    // Font is normal, user wants italic/oblique
+                    (FontStyle::Normal, FontStyle::Italic | FontStyle::Oblique) => 0,
+                    // Font is italic, user wants normal
+                    (FontStyle::Italic, FontStyle::Normal) => 0,
+                    // Otherwise use the regular distance
+                    _ => self.style.distance(variant.style),
+                }
+            }
+            SlantAxis::None => self.style.distance(variant.style),
+        };
 
         let weight_dist = match &self.weight {
             Field::Static(s) => s.0.distance(variant.weight),
@@ -156,9 +240,9 @@ impl FontVariantCoverage {
         }
     }
 
-    /// Check if this is a variable font (has variable weight or stretch).
+    /// Check if this is a variable font (has variable weight, stretch, or slant).
     pub fn is_variable(&self) -> bool {
-        self.weight.is_variable() || self.stretch.is_variable()
+        self.weight.is_variable() || self.stretch.is_variable() || self.has_slant_axis()
     }
 }
 

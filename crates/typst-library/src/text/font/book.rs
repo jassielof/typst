@@ -9,7 +9,7 @@ use unicode_segmentation::UnicodeSegmentation;
 
 use super::InstanceParameters;
 use super::exceptions::find_exception;
-use super::variant::{Field, StaticField, VariableField};
+use super::variant::{Field, SlantAxis, StaticField, VariableField};
 use crate::text::{
     Font, FontStretch, FontStyle, FontVariant, FontVariantCoverage, FontWeight,
     is_default_ignorable,
@@ -227,6 +227,32 @@ impl FontBook {
                     let clamped_stretch = clamp_to_range(&variant.stretch, &v.range);
                     instance_params.set_stretch(clamped_stretch);
                 }
+
+                // Set slant/italic axis based on the requested style
+                match &info.variant_coverage.slant_axis {
+                    SlantAxis::Slnt { min, max, default } => {
+                        // For slnt axis: negative values = italic/oblique (right-leaning)
+                        // Use the minimum value for italic/oblique, default for normal
+                        let slant_value = match variant.style {
+                            FontStyle::Normal => *default as f32,
+                            FontStyle::Italic | FontStyle::Oblique => {
+                                // Use the most italic value (usually the minimum, which is negative)
+                                // Clamp to the font's range
+                                (*min).min(*max) as f32
+                            }
+                        };
+                        instance_params.set_slant(slant_value);
+                    }
+                    SlantAxis::Ital { .. } => {
+                        // For ital axis: 0 = upright, 1 = italic
+                        let is_italic = matches!(
+                            variant.style,
+                            FontStyle::Italic | FontStyle::Oblique
+                        );
+                        instance_params.set_italic(is_italic);
+                    }
+                    SlantAxis::None => {}
+                }
             }
 
             FontKey::with_params(id, instance_params)
@@ -349,6 +375,7 @@ impl FontInfo {
             // Build weight and stretch fields, checking for variable axes
             let mut weight = Field::Static(StaticField(base_weight));
             let mut stretch = Field::Static(StaticField(base_stretch));
+            let mut slant_axis = SlantAxis::None;
 
             // Check for variable font axes
             if ttf.is_variable() {
@@ -378,10 +405,24 @@ impl FontInfo {
                         stretch =
                             Field::Variable(VariableField { range: min..=max, default });
                     }
+                    // slnt axis (slant) - continuous slant in degrees
+                    // Negative values are right-leaning (italic/oblique)
+                    if axis.tag == Tag::from_bytes(b"slnt") {
+                        slant_axis = SlantAxis::Slnt {
+                            min: axis.min_value.floor() as i16,
+                            max: axis.max_value.ceil() as i16,
+                            default: axis.def_value.round() as i16,
+                        };
+                    }
+                    // ital axis (italic) - binary toggle (0 = upright, 1 = italic)
+                    if axis.tag == Tag::from_bytes(b"ital") {
+                        slant_axis =
+                            SlantAxis::Ital { default_italic: axis.def_value > 0.5 };
+                    }
                 }
             }
 
-            FontVariantCoverage::new(style, weight, stretch)
+            FontVariantCoverage::with_slant(style, weight, stretch, slant_axis)
         };
 
         // Determine the unicode coverage.

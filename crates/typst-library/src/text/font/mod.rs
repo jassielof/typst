@@ -9,7 +9,7 @@ mod variant;
 pub use self::book::{Coverage, FontBook, FontFlags, FontInfo, FontKey};
 pub use self::variant::{
     Field, FontStretch, FontStyle, FontVariant, FontVariantCoverage, FontWeight,
-    StaticField, VariableField,
+    SlantAxis, StaticField, VariableField,
 };
 
 use std::cell::OnceCell;
@@ -705,6 +705,21 @@ impl InstanceParameters {
         self.0.push(AxisValue {
             tag: *b"wdth",
             value: stretch.to_ratio().get() as f32 * 100.0,
+        });
+    }
+
+    /// Set the slant axis value (slnt).
+    /// The value is in degrees, negative for right-leaning (italic/oblique).
+    pub fn set_slant(&mut self, degrees: f32) {
+        self.0.push(AxisValue { tag: *b"slnt", value: degrees });
+    }
+
+    /// Set the italic axis value (ital).
+    /// 0 = upright, 1 = italic.
+    pub fn set_italic(&mut self, italic: bool) {
+        self.0.push(AxisValue {
+            tag: *b"ital",
+            value: if italic { 1.0 } else { 0.0 },
         });
     }
 
