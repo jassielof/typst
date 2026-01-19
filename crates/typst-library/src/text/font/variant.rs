@@ -66,10 +66,11 @@ pub struct FontVariant {
 }
 
 /// Information about a variable font's slant/italic axis.
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash, Default)]
 #[derive(Serialize, Deserialize)]
 pub enum SlantAxis {
     /// No slant axis (static font or variable font without slnt/ital).
+    #[default]
     None,
     /// Has a slnt (slant) axis with the given range in degrees.
     /// Negative values = right-leaning (italic/oblique), positive = left-leaning.
@@ -86,12 +87,6 @@ pub enum SlantAxis {
         /// Whether the font defaults to italic.
         default_italic: bool,
     },
-}
-
-impl Default for SlantAxis {
-    fn default() -> Self {
-        Self::None
-    }
 }
 
 /// Properties describing the coverage of a font variant, supporting variable fonts.
