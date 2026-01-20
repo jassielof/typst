@@ -1,18 +1,13 @@
 version: "3"
 
 vars:
-  IGNORE_FONTS: "--ignore-embedded-fonts --ignore-system-fonts"
+  IGNORE_FONTS: --ignore-embedded-fonts --ignore-system-fonts
   VARIABLE_FONTS: --font-path local-testing/fonts/variable
   STATIC_FONTS: --font-path local-testing/fonts/static
-  CARGO_RUN_COMPILE_VARIABLE: "cargo run -- compile {{.IGNORE_FONTS}} {{.VARIABLE_FONTS}}"
-  CARGO_RUN_COMPILE_STATIC: "cargo run -- compile {{.IGNORE_FONTS}} {{.STATIC_FONTS}}"
+  CARGO_RUN_COMPILE_VARIABLE: cargo run -- compile {{.IGNORE_FONTS}} {{.VARIABLE_FONTS}}
+  CARGO_RUN_COMPILE_STATIC: cargo run -- compile {{.IGNORE_FONTS}} {{.STATIC_FONTS}}
 
 tasks:
-  default:
-    desc: Run parallel tests via script
-    cmds:
-      - cargo build
-      - nu local-testing/build.nu
   bench:
     cmds:
       - hyperfine -w 3 -r 5 "typst compile {{.IGNORE_FONTS}} {{.STATIC_FONTS}} local-testing/test.typ local-testing/out/test-stable.pdf"

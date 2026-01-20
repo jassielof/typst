@@ -19,10 +19,7 @@
       [#w],
       context [#measure(text(weight: w, lorem(10)))],
       [
-        - #text(weight: w, lorem(10))
-        - #text(weight: w, lorem(10), style: "italic")
-        - #text(weight: w, lorem(10), style: "oblique")
-
+        #text(weight: w, lorem(10))
       ],
       context text.font,
     )
