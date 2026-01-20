@@ -9,7 +9,7 @@ use unicode_segmentation::UnicodeSegmentation;
 
 use super::InstanceParameters;
 use super::exceptions::find_exception;
-use super::variant::{Field, SlantAxis, StaticField, VariableField};
+use super::variant::{Field, OpticalSizeAxis, SlantAxis, StaticField, VariableField};
 use crate::text::{
     Font, FontStretch, FontStyle, FontVariant, FontVariantCoverage, FontWeight,
     is_default_ignorable,
@@ -106,9 +106,17 @@ impl FontBook {
     ///
     /// For variable fonts, the returned `FontKey` includes the instance
     /// parameters needed to instantiate the font at the requested variant.
-    pub fn select(&self, family: &str, variant: FontVariant) -> Option<FontKey> {
+    ///
+    /// If `optical_size` is provided (in points), variable fonts with an `opsz`
+    /// axis will be instantiated at that optical size.
+    pub fn select(
+        &self,
+        family: &str,
+        variant: FontVariant,
+        optical_size: Option<f32>,
+    ) -> Option<FontKey> {
         let ids = self.families.get(family)?;
-        self.find_best_variant(None, variant, ids.iter().copied())
+        self.find_best_variant(None, variant, optical_size, ids.iter().copied())
     }
 
     /// Iterate over all variants of a family.
@@ -125,11 +133,15 @@ impl FontBook {
     /// - is as close as possible to the font `like` (if any)
     /// - is as close as possible to the given `variant`
     /// - is suitable for shaping the given `text`
+    ///
+    /// If `optical_size` is provided (in points), variable fonts with an `opsz`
+    /// axis will be instantiated at that optical size.
     pub fn select_fallback(
         &self,
         like: Option<&FontInfo>,
         variant: FontVariant,
         text: &str,
+        optical_size: Option<f32>,
     ) -> Option<FontKey> {
         // Find the fonts that contain the text's first non-space and
         // non-ignorable char ...
@@ -145,7 +157,7 @@ impl FontBook {
             .map(|(index, _)| index);
 
         // ... and find the best variant among them.
-        self.find_best_variant(like, variant, ids)
+        self.find_best_variant(like, variant, optical_size, ids)
     }
 
     /// Find the font in the passed iterator that
@@ -176,6 +188,7 @@ impl FontBook {
         &self,
         like: Option<&FontInfo>,
         variant: FontVariant,
+        optical_size: Option<f32>,
         ids: impl IntoIterator<Item = usize>,
     ) -> Option<FontKey> {
         let mut best = None;
@@ -252,6 +265,18 @@ impl FontBook {
                         instance_params.set_italic(is_italic);
                     }
                     SlantAxis::None => {}
+                }
+
+                // Set optical size axis based on the text size (in points)
+                // This enables automatic optical sizing for variable fonts
+                if let OpticalSizeAxis::Opsz { min, max, default } =
+                    &info.variant_coverage.optical_size_axis
+                {
+                    // Use the provided optical size, or fall back to the font's default
+                    let opsz_value = optical_size.unwrap_or(*default);
+                    // Clamp to the font's supported range
+                    let clamped_opsz = opsz_value.clamp(*min, *max);
+                    instance_params.set_optical_size(clamped_opsz);
                 }
             }
 
@@ -376,6 +401,7 @@ impl FontInfo {
             let mut weight = Field::Static(StaticField(base_weight));
             let mut stretch = Field::Static(StaticField(base_stretch));
             let mut slant_axis = SlantAxis::None;
+            let mut optical_size_axis = OpticalSizeAxis::None;
 
             // Check for variable font axes
             if ttf.is_variable() {
@@ -419,10 +445,18 @@ impl FontInfo {
                         slant_axis =
                             SlantAxis::Ital { default_italic: axis.def_value > 0.5 };
                     }
+                    // opsz axis (optical size) - continuous, typically in points
+                    if axis.tag == Tag::from_bytes(b"opsz") {
+                        optical_size_axis = OpticalSizeAxis::Opsz {
+                            min: axis.min_value,
+                            max: axis.max_value,
+                            default: axis.def_value,
+                        };
+                    }
                 }
             }
 
-            FontVariantCoverage::with_slant(style, weight, stretch, slant_axis)
+            FontVariantCoverage::with_axes(style, weight, stretch, slant_axis, optical_size_axis)
         };
 
         // Determine the unicode coverage.

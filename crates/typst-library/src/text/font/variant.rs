@@ -89,6 +89,55 @@ pub enum SlantAxis {
     },
 }
 
+/// Information about a variable font's optical size (opsz) axis.
+#[derive(Debug, Clone, Default)]
+#[derive(Serialize, Deserialize)]
+pub enum OpticalSizeAxis {
+    /// No optical size axis (static font or variable font without opsz).
+    #[default]
+    None,
+    /// Has an opsz (optical size) axis with the given range.
+    /// Values are typically in points (e.g., 8-144).
+    Opsz {
+        /// Minimum optical size value.
+        min: f32,
+        /// Maximum optical size value.
+        max: f32,
+        /// Default optical size value.
+        default: f32,
+    },
+}
+
+impl PartialEq for OpticalSizeAxis {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::None, Self::None) => true,
+            (
+                Self::Opsz { min: min1, max: max1, default: default1 },
+                Self::Opsz { min: min2, max: max2, default: default2 },
+            ) => {
+                min1.to_bits() == min2.to_bits()
+                    && max1.to_bits() == max2.to_bits()
+                    && default1.to_bits() == default2.to_bits()
+            }
+            _ => false,
+        }
+    }
+}
+
+impl Eq for OpticalSizeAxis {}
+
+impl std::hash::Hash for OpticalSizeAxis {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        std::mem::discriminant(self).hash(state);
+        if let Self::Opsz { min, max, default } = self {
+            min.to_bits().hash(state);
+            max.to_bits().hash(state);
+            default.to_bits().hash(state);
+        }
+    }
+}
+
 /// Properties describing the coverage of a font variant, supporting variable fonts.
 ///
 /// For static fonts, each property is a single value.
@@ -104,6 +153,8 @@ pub struct FontVariantCoverage {
     pub stretch: Field<FontStretch>,
     /// Information about the slant/italic axis for variable fonts.
     pub slant_axis: SlantAxis,
+    /// Information about the optical size axis for variable fonts.
+    pub optical_size_axis: OpticalSizeAxis,
 }
 
 impl FontVariantCoverage {
@@ -118,6 +169,7 @@ impl FontVariantCoverage {
             weight,
             stretch,
             slant_axis: SlantAxis::None,
+            optical_size_axis: OpticalSizeAxis::None,
         }
     }
 
@@ -128,7 +180,30 @@ impl FontVariantCoverage {
         stretch: Field<FontStretch>,
         slant_axis: SlantAxis,
     ) -> Self {
-        Self { style, weight, stretch, slant_axis }
+        Self {
+            style,
+            weight,
+            stretch,
+            slant_axis,
+            optical_size_axis: OpticalSizeAxis::None,
+        }
+    }
+
+    /// Create a new variant coverage with slant and optical size axis information.
+    pub fn with_axes(
+        style: FontStyle,
+        weight: Field<FontWeight>,
+        stretch: Field<FontStretch>,
+        slant_axis: SlantAxis,
+        optical_size_axis: OpticalSizeAxis,
+    ) -> Self {
+        Self {
+            style,
+            weight,
+            stretch,
+            slant_axis,
+            optical_size_axis,
+        }
     }
 
     /// Check if this font has a variable slant or italic axis.
@@ -235,9 +310,17 @@ impl FontVariantCoverage {
         }
     }
 
-    /// Check if this is a variable font (has variable weight, stretch, or slant).
+    /// Check if this font has an optical size axis.
+    pub fn has_optical_size_axis(&self) -> bool {
+        !matches!(self.optical_size_axis, OpticalSizeAxis::None)
+    }
+
+    /// Check if this is a variable font (has variable weight, stretch, slant, or optical size).
     pub fn is_variable(&self) -> bool {
-        self.weight.is_variable() || self.stretch.is_variable() || self.has_slant_axis()
+        self.weight.is_variable()
+            || self.stretch.is_variable()
+            || self.has_slant_axis()
+            || self.has_optical_size_axis()
     }
 }
 

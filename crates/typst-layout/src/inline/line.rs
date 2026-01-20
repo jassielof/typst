@@ -460,13 +460,16 @@ pub fn apply_shift<'a>(
     let mut baseline = styles.resolve(TextElem::baseline);
     let mut compensation = Abs::zero();
     if let Some(scripts) = styles.get_ref(TextElem::shift_settings) {
+        // Get text size for optical size axis
+        let size = styles.resolve(TextElem::size);
+        let optical_size = Some(size.to_pt() as f32);
         let font_metrics = styles
             .get_ref(TextElem::font)
             .into_iter()
             .find_map(|family| {
                 world
                     .book()
-                    .select(family.as_str(), variant(styles))
+                    .select(family.as_str(), variant(styles), optical_size)
                     .and_then(|key| world.font_by_key(&key))
             })
             .map_or(*scripts.kind.default_metrics(), |f| {

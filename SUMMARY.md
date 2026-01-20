@@ -57,6 +57,16 @@ Properties:
 
 > Adjust the style from upright to slanted. Negative values produce right-leaning forms, also known to typographers as an 'oblique' style. Positive values produce left-leaning forms, also called a 'backslanted' or 'reverse oblique' style.
 
+## Testing fonts
+
+The goal is to test against variable fonts that have a wide range of axes, or the most variable fonts features.
+
+### Google Sans Flex
+
+
+
+### Roboto Flex
+
 ## References
 
 - [Axis definitions from Google Fonts](https://fonts.google.com/variablefonts#axis-definitions)

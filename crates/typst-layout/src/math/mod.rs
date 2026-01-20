@@ -596,11 +596,14 @@ fn get_font(
     span: Span,
 ) -> SourceResult<Font> {
     let variant = variant(styles);
+    // Get the text size for optical size axis
+    let size = styles.resolve(TextElem::size);
+    let optical_size = Some(size.to_pt() as f32);
     families(styles)
         .find_map(|family| {
             world
                 .book()
-                .select(family.as_str(), variant)
+                .select(family.as_str(), variant, optical_size)
                 .and_then(|key| world.font_by_key(&key))
                 .filter(|_| family.covers().is_none())
         })

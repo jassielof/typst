@@ -488,10 +488,12 @@ impl<'a> ShapedText<'a> {
             // When there are no glyphs, we just use the vertical metrics of the
             // first available font.
             let world = engine.world;
+            // Convert text size to points for optical size axis
+            let optical_size = Some(size.to_pt() as f32);
             for family in families(self.styles) {
                 if let Some(font) = world
                     .book()
-                    .select(family.as_str(), self.variant)
+                    .select(family.as_str(), self.variant, optical_size)
                     .and_then(|key| world.font_by_key(&key))
                 {
                     expand(&font, TextEdgeBounds::Zero);
@@ -588,14 +590,17 @@ impl<'a> ShapedText<'a> {
     ) -> Option<Self> {
         let world = engine.world;
         let book = world.book();
+        let size = base.styles.resolve(TextElem::size);
+        // Convert text size to points for optical size axis
+        let optical_size = Some(size.to_pt() as f32);
         let fallback_func = if fallback {
-            Some(|| book.select_fallback(None, base.variant, "-"))
+            Some(|| book.select_fallback(None, base.variant, "-", optical_size))
         } else {
             None
         };
         let mut chain = families(base.styles)
             .filter(|family| family.covers().is_none_or(|c| c.is_match("-")))
-            .map(|family| book.select(family.as_str(), base.variant))
+            .map(|family| book.select(family.as_str(), base.variant, optical_size))
             .chain(fallback_func.iter().map(|f| f()))
             .flatten();
 
@@ -604,7 +609,6 @@ impl<'a> ShapedText<'a> {
             let ttf = font.ttf();
             let glyph_id = ttf.glyph_index('-')?;
             let x_advance = font.to_em(ttf.glyph_hor_advance(glyph_id)?);
-            let size = base.styles.resolve(TextElem::size);
             let (c, text) = if soft { (SHY, SHY_STR) } else { (HYPHEN, HYPHEN_STR) };
 
             Some(ShapedText {
@@ -855,6 +859,9 @@ pub trait SharedShapingContext<'a> {
     fn variant(&self) -> FontVariant;
 
     fn fallback(&self) -> bool;
+
+    /// The text size (for optical size axis in variable fonts).
+    fn size(&self) -> Abs;
 }
 
 impl<'a> SharedShapingContext<'a> for ShapingContext<'a> {
@@ -877,6 +884,10 @@ impl<'a> SharedShapingContext<'a> for ShapingContext<'a> {
     fn fallback(&self) -> bool {
         self.fallback
     }
+
+    fn size(&self) -> Abs {
+        self.size
+    }
 }
 
 pub fn get_font_and_covers<'a, C, F>(
@@ -892,11 +903,13 @@ where
     // Find the next available family.
     let world = ctx.world();
     let book = world.book();
+    // Convert text size to points for optical size axis
+    let optical_size = Some(ctx.size().to_pt() as f32);
     let mut selection = None;
     let mut covers = None;
     for family in families.by_ref() {
         selection = book
-            .select(family.as_str(), ctx.variant())
+            .select(family.as_str(), ctx.variant(), optical_size)
             .and_then(|key| world.font_by_key(&key))
             .filter(|font| !ctx.used().contains(font));
         if selection.is_some() {
@@ -909,7 +922,7 @@ where
     if selection.is_none() && ctx.fallback() {
         let first = ctx.first().map(Font::info);
         selection = book
-            .select_fallback(first, ctx.variant(), text)
+            .select_fallback(first, ctx.variant(), text, optical_size)
             .and_then(|key| world.font_by_key(&key))
             .filter(|font| !ctx.used().contains(font));
     }

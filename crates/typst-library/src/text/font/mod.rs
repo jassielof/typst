@@ -9,7 +9,7 @@ mod variant;
 pub use self::book::{Coverage, FontBook, FontFlags, FontInfo, FontKey};
 pub use self::variant::{
     Field, FontStretch, FontStyle, FontVariant, FontVariantCoverage, FontWeight,
-    SlantAxis, StaticField, VariableField,
+    OpticalSizeAxis, SlantAxis, StaticField, VariableField,
 };
 
 use std::cell::OnceCell;
@@ -721,6 +721,12 @@ impl InstanceParameters {
             tag: *b"ital",
             value: if italic { 1.0 } else { 0.0 },
         });
+    }
+
+    /// Set the optical size axis value (opsz).
+    /// The value is typically in points (e.g., 12.0 for 12pt text).
+    pub fn set_optical_size(&mut self, size_pt: f32) {
+        self.0.push(AxisValue { tag: *b"opsz", value: size_pt });
     }
 
     /// Set a custom axis value.

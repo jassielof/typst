@@ -1,10 +1,11 @@
 # Typst Compiler Architecture
+
 Wondering how to contribute or just curious how Typst works? This document
 covers the general structure and architecture of Typst's compiler, so you get an
 understanding of what's where and how everything fits together.
 
-
 ## Directories
+
 Let's start with a broad overview of the directories in this repository:
 
 - `crates/typst`: The main compiler crate which defines the complete language
@@ -33,8 +34,8 @@ Let's start with a broad overview of the directories in this repository:
 - `tests`: Integration tests for Typst compilation.
 - `tools`: Tooling for development.
 
-
 ## Compilation
+
 The source-to-PDF compilation process of a Typst file proceeds in four phases.
 
 1. **Parsing:** Turns a source string into a syntax tree.
@@ -49,8 +50,8 @@ Typst. However, the compiler is still carefully written with incrementality in
 mind. Below we discuss the four phases and how incrementality affects each of
 them.
 
-
 ## Parsing
+
 The syntax tree and parser are located in `crates/typst-syntax`. Parsing is
 a pure function `&str -> SyntaxNode` without any further dependencies. The
 result is a concrete syntax tree reflecting the whole file structure, including
@@ -81,8 +82,8 @@ This is important because they are used pervasively throughout the compiler,
 also as input to memoized functions. The less they change, the better for
 incremental compilation.
 
-
 ## Evaluation
+
 The evaluation phase lives in `crates/typst-eval`. It takes a parsed `Source`
 file and evaluates it to a `Module`. A module consists of the `Content` that was
 written in it and a `Scope` with the bindings that were defined within it.
@@ -115,8 +116,8 @@ has the same syntax and captures, even if the closure values stems from a
 different module evaluation (i.e. if a module is reevaluated, previous calls to
 closures defined in the module can still be reused).
 
-
 ## Layout
+
 The layout phase takes `Content` and produces one `Frame` per page for it. To
 layout `Content`, we first have to _realize_ it by applying all relevant show
 rules to the content. Since show rules may be defined as Typst closures,
@@ -144,8 +145,8 @@ Layout caching happens at the granularity of the element. This is important
 because overall layout is the most expensive compilation phase, so we want to
 reuse as much as possible.
 
-
 ## Export
+
 Exporters live in separate crates. They turn layouted frames into an output file
 format.
 
@@ -156,8 +157,8 @@ format.
   some complex compiler work because the export will start with `Content`
   instead of `Frames` (layout is the browser's job).
 
-
 ## IDE
+
 The `crates/typst-ide` crate implements IDE functionality for Typst. It
 builds heavily on the other modules (most importantly, `syntax` and `eval`).
 
@@ -188,8 +189,8 @@ of the active file and layout code that somewhere within evaluates source code
 in the active file needs to re-run. This is all handled automatically by
 `comemo` because the tracer is wrapped in a `comemo::TrackedMut` container.
 
-
 ## Tests
+
 Typst has an extensive suite of integration tests. These tests cover parsing,
 evaluation, realization, layout, and rendering. PDF output is sadly untested so
 far, but most bugs are in earlier phases of the compiler. For more details about
