@@ -63,15 +63,61 @@ The goal is to test against variable fonts that have a wide range of axes, or th
 
 ### Google Sans Flex
 
+- Optical size
+- Weight
+- Width
+- Slant: Has fake italics via predefined slanting, so obliques
+- Roundness
+- Grade
 
+Has roundness
 
 ### Roboto Flex
+
+Most axis-feature rich variable font I could found.
+
+- Weight
+- Grade
+- Optical size
+- Slant
+- Width
+- Thick stroke
+- Thin stroke
+- Counter width
+- Uppercase height
+- Lowercase height
+- Ascender height
+- Descender height
+- Figure height
+
+### Inter
+
+- Italic
+- Weight
+- Optical size
+
+Has italics
+
+### Recursive
+
+- Weight
+- Slant
+- Casual
+- Cursive
+- Monospace
+
+Has monospace, cursive and casual axes.
+
+## Implementation notes
+
 
 ## References
 
 - [Axis definitions from Google Fonts](https://fonts.google.com/variablefonts#axis-definitions)
 - <https://github.com/yeslogic/allsorts-tools/blob/master/src/subset.rs>
 - <https://github.com/yeslogic/allsorts/releases/tag/v0.15.0>
+- <https://helpx.adobe.com/after-effects/using/variable-font-axes-support.html>
+- <https://fonts.adobe.com/>
 
 ### Related issues and comments
 
