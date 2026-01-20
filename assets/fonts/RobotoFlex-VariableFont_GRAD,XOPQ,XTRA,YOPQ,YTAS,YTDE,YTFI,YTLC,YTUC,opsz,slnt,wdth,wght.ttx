@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ttFont sfntVersion="\x00\x01\x00\x00" ttLibVersion="4.61">
+
+  <fvar>
+
+    <!-- Optical Size -->
+    <Axis>
+      <AxisTag>opsz</AxisTag>
+      <Flags>0x0</Flags>
+      <MinValue>8.0</MinValue>
+      <DefaultValue>14.0</DefaultValue>
+      <MaxValue>144.0</MaxValue>
+      <AxisNameID>256</AxisNameID>
+    </Axis>
+
+    <!-- Weight -->
+    <Axis>
+      <AxisTag>wght</AxisTag>
+      <Flags>0x0</Flags>
+      <MinValue>100.0</MinValue>
+      <DefaultValue>400.0</DefaultValue>
+      <MaxValue>1000.0</MaxValue>
+      <AxisNameID>257</AxisNameID>
+    </Axis>
+
+    <!-- Grade -->
+    <Axis>
+      <AxisTag>GRAD</AxisTag>
+      <Flags>0x0</Flags>
+      <MinValue>-200.0</MinValue>
+      <DefaultValue>0.0</DefaultValue>
+      <MaxValue>150.0</MaxValue>
+      <AxisNameID>258</AxisNameID>
+    </Axis>
+
+    <!-- Width -->
+    <Axis>
+      <AxisTag>wdth</AxisTag>
+      <Flags>0x0</Flags>
+      <MinValue>25.0</MinValue>
+      <DefaultValue>100.0</DefaultValue>
+      <MaxValue>151.0</MaxValue>
+      <AxisNameID>259</AxisNameID>
+    </Axis>
+
+    <!-- Slant -->
+    <Axis>
+      <AxisTag>slnt</AxisTag>
+      <Flags>0x0</Flags>
+      <MinValue>-10.0</MinValue>
+      <DefaultValue>0.0</DefaultValue>
+      <MaxValue>0.0</MaxValue>
+      <AxisNameID>260</AxisNameID>
+    </Axis>
+
+    <!-- Parametric Thick Stroke -->
+    <Axis>
+      <AxisTag>XOPQ</AxisTag>
+      <Flags>0x1</Flags>
+      <MinValue>27.0</MinValue>
+      <DefaultValue>96.0</DefaultValue>
+      <MaxValue>175.0</MaxValue>
+      <AxisNameID>261</AxisNameID>
+    </Axis>
+
+    <!-- Parametric Thin Stroke -->
+    <Axis>
+      <AxisTag>YOPQ</AxisTag>
+      <Flags>0x1</Flags>
+      <MinValue>25.0</MinValue>
+      <DefaultValue>79.0</DefaultValue>
+      <MaxValue>135.0</MaxValue>
+      <AxisNameID>262</AxisNameID>
+    </Axis>
+
+    <!-- Parametric Counter Width -->
+    <Axis>
+      <AxisTag>XTRA</AxisTag>
+      <Flags>0x1</Flags>
+      <MinValue>323.0</MinValue>
+      <DefaultValue>468.0</DefaultValue>
+      <MaxValue>603.0</MaxValue>
+      <AxisNameID>263</AxisNameID>
+    </Axis>
+
+    <!-- Parametric Uppercase Height -->
+    <Axis>
+      <AxisTag>YTUC</AxisTag>
+      <Flags>0x1</Flags>
+      <MinValue>528.0</MinValue>
+      <DefaultValue>712.0</DefaultValue>
+      <MaxValue>760.0</MaxValue>
+      <AxisNameID>264</AxisNameID>
+    </Axis>
+
+    <!-- Parametric Lowercase Height -->
+    <Axis>
+      <AxisTag>YTLC</AxisTag>
+      <Flags>0x1</Flags>
+      <MinValue>416.0</MinValue>
+      <DefaultValue>514.0</DefaultValue>
+      <MaxValue>570.0</MaxValue>
+      <AxisNameID>265</AxisNameID>
+    </Axis>
+
+    <!-- Parametric Ascender Height -->
+    <Axis>
+      <AxisTag>YTAS</AxisTag>
+      <Flags>0x1</Flags>
+      <MinValue>649.0</MinValue>
+      <DefaultValue>750.0</DefaultValue>
+      <MaxValue>854.0</MaxValue>
+      <AxisNameID>266</AxisNameID>
+    </Axis>
+
+    <!-- Parametric Descender Depth -->
+    <Axis>
+      <AxisTag>YTDE</AxisTag>
+      <Flags>0x1</Flags>
+      <MinValue>-305.0</MinValue>
+      <DefaultValue>-203.0</DefaultValue>
+      <MaxValue>-98.0</MaxValue>
+      <AxisNameID>267</AxisNameID>
+    </Axis>
+
+    <!-- Parametric Figure Height -->
+    <Axis>
+      <AxisTag>YTFI</AxisTag>
+      <Flags>0x1</Flags>
+      <MinValue>560.0</MinValue>
+      <DefaultValue>738.0</DefaultValue>
+      <MaxValue>788.0</MaxValue>
+      <AxisNameID>268</AxisNameID>
+    </Axis>
+
+    <!-- Thin -->
+    <NamedInstance flags="0x0" subfamilyNameID="269">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="100.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="0.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- ExtraLight -->
+    <NamedInstance flags="0x0" subfamilyNameID="270">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="200.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="0.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Light -->
+    <NamedInstance flags="0x0" subfamilyNameID="271">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="300.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="0.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Regular -->
+    <NamedInstance flags="0x0" subfamilyNameID="272">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="400.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="0.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Medium -->
+    <NamedInstance flags="0x0" subfamilyNameID="273">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="500.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="0.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- SemiBold -->
+    <NamedInstance flags="0x0" subfamilyNameID="274">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="600.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="0.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Bold -->
+    <NamedInstance flags="0x0" subfamilyNameID="275">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="700.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="0.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- ExtraBold -->
+    <NamedInstance flags="0x0" subfamilyNameID="276">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="800.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="0.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Black -->
+    <NamedInstance flags="0x0" subfamilyNameID="277">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="900.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="0.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- ExtraBlack -->
+    <NamedInstance flags="0x0" subfamilyNameID="278">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="1000.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="0.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Thin Italic -->
+    <NamedInstance flags="0x0" subfamilyNameID="279">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="100.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="-10.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- ExtraLight Italic -->
+    <NamedInstance flags="0x0" subfamilyNameID="280">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="200.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="-10.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Light Italic -->
+    <NamedInstance flags="0x0" subfamilyNameID="281">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="300.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="-10.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Italic -->
+    <NamedInstance flags="0x0" subfamilyNameID="282">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="400.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="-10.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Medium Italic -->
+    <NamedInstance flags="0x0" subfamilyNameID="283">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="500.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="-10.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- SemiBold Italic -->
+    <NamedInstance flags="0x0" subfamilyNameID="284">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="600.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="-10.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Bold Italic -->
+    <NamedInstance flags="0x0" subfamilyNameID="285">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="700.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="-10.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- ExtraBold Italic -->
+    <NamedInstance flags="0x0" subfamilyNameID="286">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="800.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="-10.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- Black Italic -->
+    <NamedInstance flags="0x0" subfamilyNameID="287">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="900.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="-10.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+
+    <!-- ExtraBlack Italic -->
+    <NamedInstance flags="0x0" subfamilyNameID="288">
+      <coord axis="opsz" value="14.0"/>
+      <coord axis="wght" value="1000.0"/>
+      <coord axis="GRAD" value="0.0"/>
+      <coord axis="wdth" value="100.0"/>
+      <coord axis="slnt" value="-10.0"/>
+      <coord axis="XOPQ" value="96.0"/>
+      <coord axis="YOPQ" value="79.0"/>
+      <coord axis="XTRA" value="468.0"/>
+      <coord axis="YTUC" value="712.0"/>
+      <coord axis="YTLC" value="514.0"/>
+      <coord axis="YTAS" value="750.0"/>
+      <coord axis="YTDE" value="-203.0"/>
+      <coord axis="YTFI" value="738.0"/>
+    </NamedInstance>
+  </fvar>
+
+</ttFont>

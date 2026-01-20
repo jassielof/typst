@@ -38,7 +38,7 @@
 ) = {
   heading(level: 3)[#axis (#raw(tag, block: false))]
   description
-
+  parbreak()
   if mapping != none {
     heading(level: 4)[Mapping to Typst]
     mapping
@@ -57,8 +57,9 @@
   if testing-fonts != none {
     heading(level: 4)[Testing fonts]
     testing-fonts
+    parbreak()
   }
-
+  
   if references != none {
     heading(level: 4)[References]
     references
@@ -74,7 +75,12 @@
   min-value: 0,
   step-value: 1,
   description: [Adjust the style from roman to italic. This can be provided as a continuous range within a single font file, like most axes, or as a toggle between two roman and italic files that form a family as a pair. Although, there might be cases where the font designer uses it as slant (see #link("https://fonts.adobe.com/fonts/basenji-variable")[Basenji Variable and others from the same foundry]).],
-  testing-fonts: link("https://fonts.google.com/specimen/Inter"),
+  testing-fonts: [
+    - #link("https://fonts.google.com/specimen/Inter"): But it comes as a separate file.
+    - #link("https://fonts.adobe.com/fonts/retail-variable"): Has true italics axis.
+    - #link("https://fonts.adobe.com/fonts/basenji-variable"): Serves as an example of a font that uses the italic axis as slant.
+      - I emailed the designer, as for why they did it this way and basically: #quote[So you’re correct on the theory, and I agree with your reasoning. The decision wasn’t about typographic accuracy so much as making sure the fonts behaved consistently for the widest range of users. At this point I’m not planning to change those axes, but I do appreciate you flagging it and articulating the distinction so clearly.]
+  ],
 )
 
 #axis-definition(
