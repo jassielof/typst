@@ -21,6 +21,7 @@
 ]
 
 #outline()
+#pagebreak()
 
 == Axis definitions
 #let axis-definition(

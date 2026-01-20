@@ -2,8 +2,8 @@ version: "3"
 
 vars:
   IGNORE_FONTS: --ignore-embedded-fonts --ignore-system-fonts
-  VARIABLE_FONTS: --font-path local-testing/fonts/variable
-  STATIC_FONTS: --font-path local-testing/fonts/static
+  VARIABLE_FONTS: --font-path assets/fonts/variable
+  STATIC_FONTS: --font-path assets/fonts/static
   CARGO_RUN_COMPILE_VARIABLE: cargo run -- compile {{.IGNORE_FONTS}} {{.VARIABLE_FONTS}}
   CARGO_RUN_COMPILE_STATIC: cargo run -- compile {{.IGNORE_FONTS}} {{.STATIC_FONTS}}
 
@@ -16,11 +16,9 @@ tasks:
     cmds:
       - "{{.CARGO_RUN_COMPILE_VARIABLE}} local-testing/exhaustive.typ local-testing/out/exhaustive.pdf"
       - typst compile {{.IGNORE_FONTS}} {{.STATIC_FONTS}} local-testing/exhaustive.typ local-testing/out/exhaustive-static.pdf
-  measured-weights:
+  weight:
     cmds:
-      - "{{.CARGO_RUN_COMPILE_VARIABLE}} local-testing/measured-weights.typ local-testing/out/measured-weights.pdf"
-      - typst compile {{.IGNORE_FONTS}} {{.STATIC_FONTS}} local-testing/measured-weights.typ local-testing/out/measured-weights-stable.pdf
+      - "{{.CARGO_RUN_COMPILE_VARIABLE}} tests/variable-fonts/weight.typ"
   italic:
     cmds:
-      - "{{.CARGO_RUN_COMPILE_VARIABLE}} local-testing/italic.typ local-testing/out/italic.pdf"
-      - typst compile {{.IGNORE_FONTS}} {{.STATIC_FONTS}} local-testing/italic.typ local-testing/out/italic-stable.pdf
+      - "{{.CARGO_RUN_COMPILE_VARIABLE}} tests/variable-fonts/italic.typ"
