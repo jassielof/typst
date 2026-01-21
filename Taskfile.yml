@@ -16,6 +16,9 @@ tasks:
   italic:
     cmds:
       - "{{.CARGO_RUN_COMPILE_VARIABLE}} tests/variable-fonts/italic.typ"
+  optical-size:
+    cmds:
+      - "{{.CARGO_RUN_COMPILE_VARIABLE}} tests/variable-fonts/optical-size.typ"
   get-fvar-tables:
     cmds:
       - uv run --with fonttools scripts/get-fvar.py

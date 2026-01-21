@@ -59,7 +59,7 @@
     testing-fonts
     parbreak()
   }
-  
+
   if references != none {
     heading(level: 4)[References]
     references
@@ -107,7 +107,7 @@
   step-value: 0.1,
   description: [Adapt the style to specific text sizes. At smaller sizes, letters typically become optimized for more legibility. At larger sizes, optimized for headlines, with more extreme weights and widths. In CSS this axis is activated automatically when it is available.],
   testing-fonts: [
-    - #link("https://fonts.google.com/specimen/Google+Sans+Flex/")[Google Sans Flex]
+    - #link("https://fonts.google.com/specimen/Google+Sans+Flex/")[Google Sans Flex]: Has the widest range (6--144).
   ],
 )
 
