@@ -28,6 +28,7 @@
   axis: none,
   tag: none,
   default-value: none,
+  behavior: none,
   max-value: none,
   min-value: none,
   step-value: none,
@@ -42,6 +43,11 @@
   if mapping != none {
     heading(level: 4)[Mapping to Typst]
     mapping
+  }
+
+  if behavior != none {
+    heading(level: 4)[Behavior]
+    behavior
   }
 
   table(
@@ -71,7 +77,7 @@
   tag: "ital",
   default-value: 0,
   max-value: 1,
-  mapping: [Should automatically map to `emph()` or when using `text(style: "italic")`],
+  mapping: [Should automatically map to `emph()` or when using `text(style: "italic")`, includes the shorthand `_<content>_`],
   min-value: 0,
   step-value: 1,
   description: [Adjust the style from roman to italic. This can be provided as a continuous range within a single font file, like most axes, or as a toggle between two roman and italic files that form a family as a pair. Although, there might be cases where the font designer uses it as slant (see #link("https://fonts.adobe.com/fonts/basenji-variable")[Basenji Variable and others from the same foundry]).],
@@ -87,6 +93,10 @@
   axis: [Weight],
   tag: "wght",
   mapping: [Maps directly to `strong()` and `text(weight)`],
+  behavior: [
+    - When the weight goes out of the range of the axis, the nearest value is used.
+    - When the axis is not present in the font, no adjustment is made.
+  ],
   default-value: 400,
   max-value: 1000,
   min-value: 1,
@@ -99,7 +109,14 @@
 
 #axis-definition(
   axis: [Optical size],
-  mapping: [Maps directly to `strong()` and `text(size)`],
+  mapping: [Maps directly to `text(size)`],
+  behavior: [
+    - When the size goes out of the range of the axis, the nearest value is used.
+    - When the axis is not present in the font, no adjustment is made.
+
+    Possible requirements:
+    - There should be an option for the user to not want to use optical size, either adding it as a dictionary to the size as `text(size: (optical: false, value: ...))` or via global settings similar to text features (`text(axes: (...))`). This kind of toggle might be wnated or not in all the other axes, although it's (at least for me) weird that someone would want a worse quality, when there's the chance.
+  ],
   tag: "opsz",
   default-value: 14,
   max-value: 1200,
