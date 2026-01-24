@@ -15,7 +15,7 @@ pub struct FuzzWorld {
 impl FuzzWorld {
     pub fn new(text: &str) -> Self {
         let data = typst_assets::fonts().next().unwrap();
-        let font = Font::new(Bytes::new(data), 0).unwrap();
+        let font = Font::new(Bytes::new(data), 0, Default::default()).unwrap();
         let book = FontBook::from_fonts([&font]);
         Self {
             library: LazyHash::new(Library::default()),

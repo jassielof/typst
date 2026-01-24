@@ -12,7 +12,6 @@ mod table;
 mod text;
 
 use comemo::Tracked;
-use typst_library::World;
 use typst_library::diag::{At, SourceResult, warning};
 use typst_library::engine::Engine;
 use typst_library::foundations::{NativeElement, Packed, Resolve, Style, StyleChain};
@@ -28,6 +27,7 @@ use typst_library::math::{EquationElem, families};
 use typst_library::model::ParElem;
 use typst_library::routines::Arenas;
 use typst_library::text::{Font, FontFlags, TextEdgeBounds, TextElem, variant};
+use typst_library::{World, WorldExt};
 use typst_syntax::Span;
 use typst_utils::{LazyHash, Numeric};
 
@@ -135,10 +135,9 @@ pub fn layout_equation_block(
         let mut last_first_pos = Point::zero();
         let mut regions = regions;
 
-        loop {
+        while let Some(&(_, first_pos)) = rows.peek() {
             // Keep track of the position of the first row in this region,
             // so that the offset can be reverted later.
-            let Some(&(_, first_pos)) = rows.peek() else { break };
             last_first_pos = first_pos;
 
             let mut frames = vec![];
@@ -597,12 +596,15 @@ fn get_font(
     span: Span,
 ) -> SourceResult<Font> {
     let variant = variant(styles);
+    // Get the text size for optical size axis
+    let size = styles.resolve(TextElem::size);
+    let optical_size = Some(size.to_pt() as f32);
     families(styles)
         .find_map(|family| {
             world
                 .book()
-                .select(family.as_str(), variant)
-                .and_then(|id| world.font(id))
+                .select(family.as_str(), variant, optical_size)
+                .and_then(|key| world.font_by_key(&key))
                 .filter(|_| family.covers().is_none())
         })
         .ok_or("no font could be found")
