@@ -1006,7 +1006,49 @@ pub fn variant(styles: StyleChain) -> FontVariant {
         .weight
         .thicken(delta.clamp(i16::MIN as i64, i16::MAX as i64) as i16);
 
-    if styles.get(TextElem::emph).0 {
+    // Handle emphasis toggle with explicit style support.
+    // We need to distinguish between:
+    // 1. Explicit style from a show rule on emph itself (e.g., #show emph: set text(style: "oblique"))
+    //    → Use that style for emph=true, toggle to normal for nested emph (emph=false)
+    // 2. Explicit style from other sources (e.g., raw inside emph)
+    //    → Don't toggle at all, keep the explicit style
+    let emph_id = TextElem::emph.index();
+    let style_id = TextElem::style.index();
+
+    // Check if there's an explicit style property and whether it's from emph's show rule
+    let mut has_style_inner_to_emph = false;
+    let mut has_style_at_or_beyond_emph = false;
+    let mut found_emph = false;
+
+    for entry in styles.entries() {
+        if let Some(prop) = entry.property() {
+            if prop.is(TextElem::ELEM, style_id) {
+                if found_emph {
+                    has_style_at_or_beyond_emph = true;
+                } else {
+                    has_style_inner_to_emph = true;
+                }
+            } else if prop.is(TextElem::ELEM, emph_id) {
+                found_emph = true;
+            }
+        }
+    }
+
+    let emph_toggle = styles.get(TextElem::emph).0;
+
+    if has_style_inner_to_emph {
+        // Style is set in a more specific context (e.g., raw inside emph)
+        // Don't toggle at all - keep the explicit style
+    } else if has_style_at_or_beyond_emph {
+        // Style is from emph's show rule or outer context
+        // Toggle based on emph state:
+        // - emph=true (odd emphases): keep the explicit style
+        // - emph=false (even/nested emphases): force to normal
+        if !emph_toggle {
+            variant.style = FontStyle::Normal;
+        }
+    } else if emph_toggle {
+        // No explicit style, standard toggle behavior
         variant.style = match variant.style {
             FontStyle::Normal => FontStyle::Italic,
             FontStyle::Italic => FontStyle::Normal,
