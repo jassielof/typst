@@ -13,8 +13,9 @@ use typst_library::foundations::{Regex, Smart, StyleChain};
 use typst_library::layout::{Abs, Dir, Em, Frame, FrameItem, Point, Rel, Size};
 use typst_library::model::{JustificationLimits, ParElem};
 use typst_library::text::{
-    Font, FontFamily, FontVariant, Glyph, Lang, Region, ShiftSettings, TextEdgeBounds,
-    TextElem, TextItem, families, features, is_default_ignorable, language, variant,
+    Font, FontAxes, FontFamily, FontVariant, Glyph, Lang, Region, ShiftSettings,
+    TextEdgeBounds, TextElem, TextItem, axes, families, features, is_default_ignorable,
+    language, variant,
 };
 use typst_library::{World, WorldExt};
 use typst_utils::SliceExt;
@@ -490,10 +491,22 @@ impl<'a> ShapedText<'a> {
             let world = engine.world;
             // Convert text size to points for optical size axis
             let optical_size = Some(size.to_pt() as f32);
+            // Get custom axes from styles
+            let custom_axes = axes(self.styles);
+            let custom_axes_slice = if custom_axes.0.is_empty() {
+                None
+            } else {
+                Some(custom_axes.0.as_slice())
+            };
             for family in families(self.styles) {
                 if let Some(font) = world
                     .book()
-                    .select(family.as_str(), self.variant, optical_size)
+                    .select(
+                        family.as_str(),
+                        self.variant,
+                        optical_size,
+                        custom_axes_slice,
+                    )
                     .and_then(|key| world.font_by_key(&key))
                 {
                     expand(&font, TextEdgeBounds::Zero);
@@ -593,14 +606,33 @@ impl<'a> ShapedText<'a> {
         let size = base.styles.resolve(TextElem::size);
         // Convert text size to points for optical size axis
         let optical_size = Some(size.to_pt() as f32);
+        // Get custom axes from styles
+        let custom_axes = axes(base.styles);
+        let custom_axes_slice =
+            if custom_axes.0.is_empty() { None } else { Some(custom_axes.0.as_slice()) };
         let fallback_func = if fallback {
-            Some(|| book.select_fallback(None, base.variant, "-", optical_size))
+            Some(|| {
+                book.select_fallback(
+                    None,
+                    base.variant,
+                    "-",
+                    optical_size,
+                    custom_axes_slice,
+                )
+            })
         } else {
             None
         };
         let mut chain = families(base.styles)
             .filter(|family| family.covers().is_none_or(|c| c.is_match("-")))
-            .map(|family| book.select(family.as_str(), base.variant, optical_size))
+            .map(|family| {
+                book.select(
+                    family.as_str(),
+                    base.variant,
+                    optical_size,
+                    custom_axes_slice,
+                )
+            })
             .chain(fallback_func.iter().map(|f| f()))
             .flatten();
 
@@ -862,6 +894,9 @@ pub trait SharedShapingContext<'a> {
 
     /// The text size (for optical size axis in variable fonts).
     fn size(&self) -> Abs;
+
+    /// Custom variable font axes from style chain.
+    fn axes(&self) -> FontAxes;
 }
 
 impl<'a> SharedShapingContext<'a> for ShapingContext<'a> {
@@ -888,6 +923,10 @@ impl<'a> SharedShapingContext<'a> for ShapingContext<'a> {
     fn size(&self) -> Abs {
         self.size
     }
+
+    fn axes(&self) -> FontAxes {
+        axes(self.styles)
+    }
 }
 
 pub fn get_font_and_covers<'a, C, F>(
@@ -905,11 +944,15 @@ where
     let book = world.book();
     // Convert text size to points for optical size axis
     let optical_size = Some(ctx.size().to_pt() as f32);
+    // Get custom axes from styles
+    let custom_axes = ctx.axes();
+    let custom_axes_slice =
+        if custom_axes.0.is_empty() { None } else { Some(custom_axes.0.as_slice()) };
     let mut selection = None;
     let mut covers = None;
     for family in families.by_ref() {
         selection = book
-            .select(family.as_str(), ctx.variant(), optical_size)
+            .select(family.as_str(), ctx.variant(), optical_size, custom_axes_slice)
             .and_then(|key| world.font_by_key(&key))
             .filter(|font| !ctx.used().contains(font));
         if selection.is_some() {
@@ -922,7 +965,7 @@ where
     if selection.is_none() && ctx.fallback() {
         let first = ctx.first().map(Font::info);
         selection = book
-            .select_fallback(first, ctx.variant(), text, optical_size)
+            .select_fallback(first, ctx.variant(), text, optical_size, custom_axes_slice)
             .and_then(|key| world.font_by_key(&key))
             .filter(|font| !ctx.used().contains(font));
     }

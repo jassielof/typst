@@ -13,7 +13,7 @@ use typst_library::layout::{
 };
 use typst_library::math::ir::MathProperties;
 use typst_library::math::{EquationElem, MathSize, families};
-use typst_library::text::{Font, Glyph, TextElem, TextItem, features, language, variant};
+use typst_library::text::{Font, Glyph, TextElem, TextItem, axes, features, language, variant};
 use typst_library::visualize::{FixedStroke, Paint};
 use typst_syntax::Span;
 use typst_utils::{Get, default_math_class};
@@ -282,6 +282,7 @@ impl GlyphFragment {
             text,
             families(styles).collect(),
             size,
+            axes(styles),
         )?;
 
         for glyph in &mut glyphs {

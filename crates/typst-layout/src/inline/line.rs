@@ -5,7 +5,7 @@ use typst_library::foundations::Resolve;
 use typst_library::introspection::{SplitLocator, Tag, TagFlags};
 use typst_library::layout::{Abs, Dir, Em, Fr, Frame, FrameItem, Point};
 use typst_library::model::ParLineMarker;
-use typst_library::text::{Lang, TextElem, variant};
+use typst_library::text::{Lang, TextElem, axes, variant};
 use typst_library::{WorldExt, engine::Engine};
 use typst_utils::Numeric;
 
@@ -463,13 +463,20 @@ pub fn apply_shift<'a>(
         // Get text size for optical size axis
         let size = styles.resolve(TextElem::size);
         let optical_size = Some(size.to_pt() as f32);
+        // Get custom axes from styles
+        let custom_axes = axes(styles);
+        let custom_axes_slice = if custom_axes.0.is_empty() {
+            None
+        } else {
+            Some(custom_axes.0.as_slice())
+        };
         let font_metrics = styles
             .get_ref(TextElem::font)
             .into_iter()
             .find_map(|family| {
                 world
                     .book()
-                    .select(family.as_str(), variant(styles), optical_size)
+                    .select(family.as_str(), variant(styles), optical_size, custom_axes_slice)
                     .and_then(|key| world.font_by_key(&key))
             })
             .map_or(*scripts.kind.default_metrics(), |f| {

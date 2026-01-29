@@ -703,7 +703,13 @@ Summary of diff against upstream/main
 ==== Discord
 
 ```
-From laurmaedje
+From Malo:
+
+I don't think the difficulty with variable font support is about specific axes but rather about the variableness itself, meaning it wouldn't be harder to add support for all axes than for a particular axis.
+```
+
+```
+From laurmaedje:
 
 I would probably not expose slant via a high level interface (at least initially) precisely because there is no clear mapping. I think it's fine if it's only accessible via a low level axes parameter.
 ```

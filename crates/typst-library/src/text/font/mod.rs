@@ -734,6 +734,16 @@ impl InstanceParameters {
         self.0.push(AxisValue { tag: *tag, value });
     }
 
+    /// Apply custom axes from a FontAxes struct.
+    ///
+    /// This will add the custom axes values, which may override previously set
+    /// values if they share the same tag.
+    pub fn apply_custom_axes(&mut self, custom_axes: &[(Tag, f32)]) {
+        for (tag, value) in custom_axes {
+            self.0.push(AxisValue { tag: tag.to_bytes(), value: *value });
+        }
+    }
+
     /// Iterate over all axis coordinates.
     pub fn coordinates(&self) -> impl Iterator<Item = (&[u8; 4], f32)> + '_ {
         self.0.iter().map(|av| (&av.tag, av.value))

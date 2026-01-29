@@ -3,7 +3,7 @@ use comemo::Tracked;
 use rustybuzz::{BufferFlags, UnicodeBuffer};
 use typst_library::World;
 use typst_library::layout::{Abs, Em};
-use typst_library::text::{Font, FontFamily, FontVariant, Glyph};
+use typst_library::text::{Font, FontAxes, FontFamily, FontVariant, Glyph};
 use typst_syntax::Span;
 
 use crate::inline::{SharedShapingContext, create_shape_plan, get_font_and_covers};
@@ -19,6 +19,7 @@ pub fn shape(
     text: &str,
     families: Vec<&FontFamily>,
     size: Abs,
+    axes: FontAxes,
 ) -> Option<(Font, Vec<Glyph>)> {
     let mut ctx = ShapingContext {
         world,
@@ -30,6 +31,7 @@ pub fn shape(
         glyphs: vec![],
         font: None,
         size,
+        axes,
     };
 
     shape_impl(&mut ctx, text, families.into_iter());
@@ -48,6 +50,7 @@ struct ShapingContext<'a> {
     glyphs: Vec<Glyph>,
     font: Option<Font>,
     size: Abs,
+    axes: FontAxes,
 }
 
 impl<'a> SharedShapingContext<'a> for ShapingContext<'a> {
@@ -73,6 +76,10 @@ impl<'a> SharedShapingContext<'a> for ShapingContext<'a> {
 
     fn size(&self) -> Abs {
         self.size
+    }
+
+    fn axes(&self) -> FontAxes {
+        self.axes.clone()
     }
 }
 

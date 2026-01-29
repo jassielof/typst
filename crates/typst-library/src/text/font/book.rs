@@ -109,14 +109,18 @@ impl FontBook {
     ///
     /// If `optical_size` is provided (in points), variable fonts with an `opsz`
     /// axis will be instantiated at that optical size.
+    ///
+    /// If `custom_axes` is provided, those axes will be applied on top of the
+    /// automatically-determined values, allowing user override of axis values.
     pub fn select(
         &self,
         family: &str,
         variant: FontVariant,
         optical_size: Option<f32>,
+        custom_axes: Option<&[(ttf_parser::Tag, f32)]>,
     ) -> Option<FontKey> {
         let ids = self.families.get(family)?;
-        self.find_best_variant(None, variant, optical_size, ids.iter().copied())
+        self.find_best_variant(None, variant, optical_size, custom_axes, ids.iter().copied())
     }
 
     /// Iterate over all variants of a family.
@@ -136,12 +140,16 @@ impl FontBook {
     ///
     /// If `optical_size` is provided (in points), variable fonts with an `opsz`
     /// axis will be instantiated at that optical size.
+    ///
+    /// If `custom_axes` is provided, those axes will be applied on top of the
+    /// automatically-determined values, allowing user override of axis values.
     pub fn select_fallback(
         &self,
         like: Option<&FontInfo>,
         variant: FontVariant,
         text: &str,
         optical_size: Option<f32>,
+        custom_axes: Option<&[(ttf_parser::Tag, f32)]>,
     ) -> Option<FontKey> {
         // Find the fonts that contain the text's first non-space and
         // non-ignorable char ...
@@ -157,7 +165,7 @@ impl FontBook {
             .map(|(index, _)| index);
 
         // ... and find the best variant among them.
-        self.find_best_variant(like, variant, optical_size, ids)
+        self.find_best_variant(like, variant, optical_size, custom_axes, ids)
     }
 
     /// Find the font in the passed iterator that
@@ -184,11 +192,15 @@ impl FontBook {
     ///
     /// For variable fonts, if the requested value is within the font's range,
     /// the distance is 0, and instance parameters will be included in the key.
+    ///
+    /// If `custom_axes` is provided, those axes will be applied on top of the
+    /// automatically-determined values after the font is selected.
     fn find_best_variant(
         &self,
         like: Option<&FontInfo>,
         variant: FontVariant,
         optical_size: Option<f32>,
+        custom_axes: Option<&[(ttf_parser::Tag, f32)]>,
         ids: impl IntoIterator<Item = usize>,
     ) -> Option<FontKey> {
         let mut best = None;
@@ -278,6 +290,12 @@ impl FontBook {
                     let clamped_opsz = opsz_value.clamp(*min, *max);
                     instance_params.set_optical_size(clamped_opsz);
                 }
+            }
+
+            // Apply any custom axes specified by the user.
+            // These are applied last so they can override the automatically-determined values.
+            if let Some(axes) = custom_axes {
+                instance_params.apply_custom_axes(axes);
             }
 
             FontKey::with_params(id, instance_params)
