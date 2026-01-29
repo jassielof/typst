@@ -17,7 +17,7 @@
 
   So we should focus on them, rather full fledged support *with mapped function* for all possible axes, we could make a tracking issue for it, with subissues for each possible axis as necessities arise.
 
-  For the rest of less used, uncommon, rare, and proprietary axes, those should be accessible via a text/font property, like axes or something, or well be mapped if it's importnat and easy to.
+  The rest of axes will be available similar to `text(features: ...)` but via `text(axes: ...)` where the user can provide a dictionary of axis tags and values to set them directly. As some are less common or even proprietary.
 ]
 
 #outline()
@@ -72,12 +72,16 @@
   }
 }
 
+=== Registered ones
 #axis-definition(
   axis: [Italic],
   tag: "ital",
   default-value: 0,
   max-value: 1,
   mapping: [Should automatically map to `emph()` or when using `text(style: "italic")`, includes the shorthand `_<content>_`],
+  behavior: [
+    In the case of continuous italic axis or misuse of it, such as the Basenji font case, it should get the range's max value and use that, so it doesn't produce unexpected results (e.g. Basenji has 0--15, but it's used as slant, if we had a strict implementation, then italic attempt to use 1, when it should get the max value, and use 15 instead, this case isn't for all fonts, but only for those with continous ranges or misuse of the axis as slant).
+  ],
   min-value: 0,
   step-value: 1,
   description: [Adjust the style from roman to italic. This can be provided as a continuous range within a single font file, like most axes, or as a toggle between two roman and italic files that form a family as a pair. Although, there might be cases where the font designer uses it as slant (see #link("https://fonts.adobe.com/fonts/basenji-variable")[Basenji Variable and others from the same foundry]).],
@@ -95,7 +99,7 @@
   mapping: [Maps directly to `strong()` and `text(weight)`],
   behavior: [
     - When the weight goes out of the range of the axis, the nearest value is used.
-    - When the axis is not present in the font, no adjustment is made.
+    - When the axis is not present in the font, no adjustment is made. (*As well for other axes*, unless Typst decides to implement fake bolding, in which that would take precedence over the axis absence, but it's too complex for me, so i'll just ignore it).
   ],
   default-value: 400,
   max-value: 1000,
@@ -112,9 +116,9 @@
   mapping: [Maps directly to `text(size)`],
   behavior: [
     - When the size goes out of the range of the axis, the nearest value is used.
-    - When the axis is not present in the font, no adjustment is made.
+    - When the axis is not present in the font, no adjustment is made (similar to the case of weight).
 
-    Possible requirements:
+    Possible requirements, yet to be discussed, so not overcomplicating this (just use it, this should be considered after further discussion):
     - There should be an option for the user to not want to use optical size, either adding it as a dictionary to the size as `text(size: (optical: false, value: ...))` or via global settings similar to text features (`text(axes: (...))`). This kind of toggle might be wnated or not in all the other axes, although it's (at least for me) weird that someone would want a worse quality, when there's the chance.
   ],
   tag: "opsz",
@@ -134,6 +138,7 @@
   default-value: 0,
   max-value: 90,
   min-value: -90,
+  mapping: [Given that there's no current or clear mapping, this feature will be only accessible via `text.axes`],
   step-value: 1,
   description: [Adjust the style from upright to slanted. Negative values produce right-leaning forms, also known to typographers as an 'oblique' style. Positive values produce left-leaning forms, also called a 'backslanted' or 'reverse oblique' style.],
   testing-fonts: [
@@ -147,6 +152,7 @@
   tag: "wdth",
   default-value: 100,
   max-value: 200,
+  mapping: [Again, similar to slant, only accessible via `text.axes` since there's no clear mapping, and further discussion is needed.],
   min-value: 25,
   step-value: 0.1,
   description: [Adjust the style from narrower to wider, by varying the proportions of counters, strokes, spacing and kerning, and other aspects of the type. This typically changes the typographic color in a subtle way, and so may be used in conjunction with Weight and Grade axes.],
@@ -154,6 +160,9 @@
     - #link("https://fonts.google.com/specimen/Google+Sans+Flex/")[Google Sans Flex]
   ],
 )
+
+=== Non-registered ones
+These are only to be accessible via `text.axes`, as they are less common or proprietary.
 
 #axis-definition(
   axis: [AR Retinal Resolution],
@@ -679,245 +688,7 @@
 - Gravity
 
 == Implementation notes
-=== Architecture Overview
-The variable fonts implementation follows a layered architecture, inspired by the allsorts crate and building upon LaurenzV's closed PR approach:
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         User-Facing API Layer                           │
-│  text(weight: 450, style: "italic", size: 12pt, ...)                   │
-└─────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      Semantic Axis Mapping Layer                        │
-│  - weight → wght axis                                                   │
-│  - style (italic/oblique) → ital/slnt axis                             │
-│  - size → opsz axis (automatic)                                        │
-│  - stretch → wdth axis                                                  │
-└─────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    Font Selection & Instantiation                       │
-│  FontBook::select() / select_fallback()                                │
-│  → Returns FontKey with InstanceParameters                              │
-└─────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                     Variable Font Infrastructure                        │
-│  InstanceParameters::set_axis(&[u8; 4], f32)                           │
-│  → Generic axis value application via ttf-parser/rustybuzz             │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
-=== Key Components
-<key-components>
-==== 1. Axis Metadata Storage (`crates/typst-library/src/text/font/variant.rs`)
-<axis-metadata-storage-cratestypst-librarysrctextfontvariant.rs>
-Defines data structures to store variable font axis information:
-
-#figure(
-  align(center)[#table(
-    columns: (40%, 60%),
-    align: (auto, auto),
-    table.header([Type], [Purpose]),
-    table.hline(),
-    [`Field<T>`],
-    [Enum for static or variable values (with range +
-      default)],
-    [`StaticField<T>`], [Fixed value for non-variable fonts],
-    [`VariableField<T>`], [Range + default for variable axes],
-    [`SlantAxis`],
-    [Slant/italic axis info (`None`, `Slnt{...}`,
-      `Ital{...}`)],
-    [`OpticalSizeAxis`],
-    [Optical size axis info (`None`,
-      `Opsz{min, max, default}`)],
-    [`FontVariantCoverage`],
-    [Complete coverage info including all
-      axes],
-  )],
-  kind: table,
-)
-
-==== 2. Axis Detection (`crates/typst-library/src/text/font/book.rs`)
-In `FontInfo::from_ttf()`, variable axes are detected from the `fvar` table:
-
-```rust
-if ttf.is_variable() {
-    for axis in ttf.variation_axes() {
-        match axis.tag {
-            b"wght" => /* weight axis */,
-            b"wdth" => /* width/stretch axis */,
-            b"slnt" => /* slant axis */,
-            b"ital" => /* italic axis */,
-            b"opsz" => /* optical size axis */,
-        }
-    }
-}
-```
-
-==== 3. Instance Parameters (`crates/typst-library/src/text/font/mod.rs`)
-<instance-parameters-cratestypst-librarysrctextfontmod.rs>
-`InstanceParameters` stores axis values to apply when instantiating a
-variable font:
-
-```rust
-pub struct InstanceParameters(SmallVec<[AxisValue; 2]>);
-
-impl InstanceParameters {
-    pub fn set_weight(&mut self, weight: FontWeight);
-    pub fn set_stretch(&mut self, stretch: FontStretch);
-    pub fn set_slant(&mut self, degrees: f32);
-    pub fn set_italic(&mut self, italic: bool);
-    pub fn set_optical_size(&mut self, size_pt: f32);
-    pub fn set_axis(&mut self, tag: &[u8; 4], value: f32);  // Generic
-}
-```
-
-==== 4. Font Selection (`crates/typst-library/src/text/font/book.rs`)
-<font-selection-cratestypst-librarysrctextfontbook.rs>
-`FontBook::select()` and `select_fallback()` now:
-
-+ Find the best matching font based on variant coverage
-+ Build `InstanceParameters` with appropriate axis values
-+ Return a `FontKey` containing both font index and instance parameters
-
-```rust
-pub fn select(
-    &self,
-    family: &str,
-    variant: FontVariant,
-    optical_size: Option<f32>,  // Text size in points
-) -> Option<FontKey>;
-```
-
-==== 5. Font Instantiation (`crates/typst-library/src/lib.rs`)
-<font-instantiation-cratestypst-librarysrclib.rs>
-`WorldExt::font_by_key()` handles variable font instantiation:
-
-```rust
-fn font_by_key(&self, key: &FontKey) -> Option<Font> {
-    if key.instance_params.is_empty() {
-        return self.font(key.index);  // Static font
-    }
-    // Create variable font instance with axis values (memoized)
-    create_variable_font_instance(data, index, key.instance_params.clone())
-}
-```
-
-==== 6. Shaping Integration (`crates/typst-layout/src/inline/shaping.rs`)
-<shaping-integration-cratestypst-layoutsrcinlineshaping.rs>
-The shaping context passes font size for optical sizing:
-
-```rust
-pub trait SharedShapingContext<'a> {
-    fn size(&self) -> Abs;  // For optical size axis
-    fn variant(&self) -> FontVariant;
-    // ...
-}
-```
-
-=== Axis Implementation Status
-<axis-implementation-status>
-#figure(
-  align(center)[#table(
-    columns: 5,
-    align: (auto, auto, auto, auto, auto),
-    table.header([Axis], [Tag], [Detected], [Auto-Applied], [User-Exposed]),
-    table.hline(),
-    [Weight], [`wght`], [✅], [✅], [✅ `text(weight: ...)`],
-    [Width/Stretch], [`wdth`], [✅], [✅], [✅ `text(stretch: ...)`],
-    [Italic], [`ital`], [✅], [✅], [✅ `text(style: "italic")`],
-    [Slant],
-    [`slnt`],
-    [✅],
-    [✅],
-    [⚠️ Via style only, no direct
-      control],
-    [Optical Size], [`opsz`], [✅], [✅], [✅ Automatic from text size],
-    [Custom axes],
-    [`****`],
-    [❌],
-    [❌],
-    [❌ Future:
-      `text(axes: (...))`],
-  )],
-  kind: table,
-)
-
-=== Key Design Decisions
-<key-design-decisions>
-+ #strong[Automatic optical sizing]: Like CSS
-  `font-optical-sizing: auto`, the `opsz` axis is automatically set
-  based on text size in points.
-
-+ #strong[Semantic mapping over raw values]: Users control
-  weight/style/stretch through existing Typst APIs, not raw axis values.
-  This matches 95%+ of use cases.
-
-+ #strong[Memoized instantiation]: Variable font instances are cached
-  via `comemo::memoize` to avoid re-parsing for repeated requests.
-
-+ #strong[Graceful fallback]: If a variable font doesn't have an axis,
-  it's simply not set---no errors.
-
-+ #strong[Range clamping]: Axis values are clamped to the font's
-  supported range to prevent invalid instances.
-
-=== Files Modified
-<files-modified>
-#figure(
-  align(center)[#table(
-    columns: (40%, 60%),
-    align: (auto, auto),
-    table.header([File], [Changes]),
-    table.hline(),
-    [`crates/typst-library/src/text/font/variant.rs`],
-    [Added
-      `OpticalSizeAxis`, updated `FontVariantCoverage`],
-    [`crates/typst-library/src/text/font/mod.rs`],
-    [Added
-      `set_optical_size()` to `InstanceParameters`, exported
-      `OpticalSizeAxis`],
-    [`crates/typst-library/src/text/font/book.rs`],
-    [Added `opsz`
-      detection, updated `select()`/`select_fallback()` with optical size
-      parameter],
-    [`crates/typst-library/src/lib.rs`],
-    [Variable font instantiation in
-      `font_by_key()`],
-    [`crates/typst-layout/src/inline/shaping.rs`],
-    [Added `size()` to
-      `SharedShapingContext`, pass optical size to font selection],
-    [`crates/typst-layout/src/math/shaping.rs`],
-    [Added `size` field,
-      implemented `size()` for math context],
-    [`crates/typst-layout/src/math/fragment.rs`],
-    [Pass size to math
-      shaping],
-    [`crates/typst-layout/src/math/mod.rs`],
-    [Pass optical size in
-      `get_font()`],
-    [`crates/typst-layout/src/inline/line.rs`],
-    [Pass optical size in
-      `apply_shift()`],
-    [`crates/typst-library/src/visualize/image/svg.rs`],
-    [Updated for
-      new `select()` signature (passes `None` for optical size)],
-  )],
-  kind: table,
-)
-
-=== Future Work
-+ #strong[User-exposed slant control]: Allow `text(slant: -12deg)` for
-  direct slant axis control
-+ #strong[Generic axis API]: `text(axes: (ROND: 100, CASL: 0.5))` for
-  arbitrary axes
-+ #strong[Font object integration]: As mentioned in LaurenzV's PR, a
-  `font` object could expose axis information and control
+Summary of diff against upstream/main
 
 == References
 - #link("https://fonts.google.com/variablefonts#axis-definitions")[Axis definitions from Google Fonts]
@@ -926,8 +697,17 @@ pub trait SharedShapingContext<'a> {
 - #link("https://helpx.adobe.com/after-effects/using/variable-font-axes-support.html")
 - #link("https://fonts.adobe.com/")
 - #link("https://learn.microsoft.com/en-us/typography/opentype/spec/dvaraxisreg")
+  - #link("https://learn.microsoft.com/en-us/typography/opentype/spec/fvar")
 
 === Related issues and comments
+==== Discord
+
+```
+From laurmaedje
+
+I would probably not expose slant via a high level interface (at least initially) precisely because there is no clear mapping. I think it's fine if it's only accessible via a low level axes parameter.
+```
+
 ==== #link("https://github.com/typst/typst/issues/185")[Support variable fonts]
 No relevan information, just user request to support it. It's the main
 issue to support variable fonts.
@@ -977,42 +757,7 @@ So, to implement full support for variable fonts, I recommend Flutter have those
 
 === Related projects
 ==== LaurenzV closed PR
-Main initial attempt for supporting variable fonts in typst, but closed
-due to:
-
-```md
-This PR is still in-progress and aims to add some initial support for variable fonts. Initial because the aim is not to give the user full control over setting custom variation coordinates (this could be good future work, but probably makes more sense to implement in conjunction with the planned `font` object). The aim is to automatically select a correct instance based on the `wght` (font weight), `wdth` (font stretch), and `ital`/`slnt` (italic) axes, which I think should over 95%+ of the use cases.
-
-It also adds support for embedding CFF2 fonts in PDFs by converting them to a TTF font, which is not the best approach (better would be to convert to CFF), but it should do the job. CFF2 fonts are pretty rare ([less than 1% of variable fonts](https://almanac.httparchive.org/en/2024/fonts#variable-fonts)), but based on past issues it seems like some systems do use some CFF2-based Noto fonts, so this is definitely worth fixing. > > Fixes #185 (tracking support for specifying variable font axes is probably worth opening a new issue for).
-
-Example:
-
-``typ
-  #for (font, d_text) in (
-    ("Cantarell", "I love using variable fonts!"),
-    ("Noto Sans CJK SC", "我太喜欢使用可变字体了!"),
-    ("Roboto", "I love using variable fonts!"),
-  ) {
-    [= #font]
-    for i in range(100, 900, step: 100) {
-      text(weight: i, font: font)[#d_text \ ]
-    }
-  }
-``
-
-Result: [test.pdf](https://github.com/user-attachments/files/21813827/test.pdf)
-
-TODOs:
-- Properly hook up the wdth and slant/italic axes.
-- Bulk test with many fonts to ensure it works as expected.
-- Fix or find a workaround for the pixglyph bug that makes CFF2 fonts render as black rectangles in PNG export.
-- Investigate whether the code leads to regressions in SVG rendering, where variable fonts are currently not supported.
-- Add test cases
-- Clean up code + documentation
-
-```
-
-It's located as a closed PR and submodule in `./modules/typst-laurenzv-variable-fonts`.
+Main initial attempt for supporting variable fonts in typst, but closed.
 
 ==== All sort crate
 Located in `./modules/allsorts`, as a git submodule for reference, since they have a working variable font implementation.
