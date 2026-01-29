@@ -10,6 +10,7 @@ use crate::inline::{SharedShapingContext, create_shape_plan, get_font_and_covers
 
 /// Shape some text in math.
 #[comemo::memoize]
+#[allow(clippy::too_many_arguments)]
 pub fn shape(
     world: Tracked<dyn World + '_>,
     variant: FontVariant,
