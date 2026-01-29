@@ -8,8 +8,8 @@
   fallback: false,
 )
 
-#text(axes: (slnt: -10), size: 100pt, lorem(1))
-#text(axes: (slnt: 0), size: 100pt, lorem(1))
+#text(axes: (ROND: 1), size: 100pt, lorem(1))
+#text(axes: (ROND: 100), size: 100pt, lorem(1))
 
 
 #for r in range(1, 101, step: 1) {
