@@ -2,12 +2,14 @@ use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::sync::Arc;
 
 use comemo::Tracked;
 use typst::diag::{At, FileError, FileResult, SourceResult, StrResult, bail};
 use typst::engine::Engine;
 use typst::foundations::{
-    Array, Bytes, Context, Datetime, IntoValue, NoneValue, Repr, Smart, Value, func,
+    Array, Bytes, Context, Datetime, Duration, IntoValue, LocatableSelector, NoneValue,
+    Repr, Selector, Smart, Value, func,
 };
 use typst::layout::{Abs, Margin, PageElem};
 use typst::model::{Numbering, NumberingPattern};
@@ -15,9 +17,12 @@ use typst::syntax::{FileId, Source, Span};
 use typst::text::{Font, FontBook, TextElem, TextSize};
 use typst::utils::{LazyHash, singleton};
 use typst::visualize::Color;
-use typst::{Feature, Library, LibraryExt, World};
+use typst::{Features, Library, LibraryExt, World};
+use typst_kit::datetime::Time;
 use typst_kit::files::{FileLoader, FileStore};
-use typst_syntax::{Lines, VirtualRoot};
+use typst_syntax::package::PackageSpec;
+use typst_syntax::{RootedPath, VirtualPath, VirtualRoot};
+use unscanny::Scanner;
 
 /// A world that provides access to the tests environment.
 #[derive(Clone)]
@@ -72,19 +77,9 @@ impl World for TestWorld {
         self.base.fonts.get(index).cloned()
     }
 
-    fn today(&self, _: Option<i64>) -> Option<Datetime> {
-        Some(Datetime::from_ymd(1970, 1, 1).unwrap())
-    }
-}
-
-impl TestWorld {
-    /// Retrieves line metadata for a file.
-    pub fn lines(&self, id: FileId) -> FileResult<Lines<String>> {
-        Ok(if id == self.main.id() {
-            self.main.lines().clone()
-        } else {
-            self.base.files.file(id)?.lines()?
-        })
+    fn today(&self, offset: Option<Duration>) -> Option<Datetime> {
+        let datetime = Datetime::from_ymd_hms(1970, 1, 1, 12, 0, 0).unwrap();
+        Time::fixed(datetime).unwrap().today(offset)
     }
 }
 
@@ -122,10 +117,31 @@ impl TestFiles {
         let root = match id.root() {
             VirtualRoot::Project => PathBuf::new(),
             VirtualRoot::Package(spec) => {
+                assert_eq!(spec.namespace, "test");
                 format!("tests/packages/{}-{}", spec.name, spec.version).into()
             }
         };
         id.vpath().realize(&root)
+    }
+
+    /// Get the rooted path for a loaded file.
+    pub fn rooted_path(path: &str) -> RootedPath {
+        let mut s = Scanner::new(path);
+        let root = if s.eat_if("tests/packages/") {
+            let name = s.eat_until('-');
+            s.expect('-');
+            let version = s.eat_until('/');
+            s.expect('/');
+            VirtualRoot::Package(PackageSpec {
+                namespace: "test".into(),
+                name: name.into(),
+                version: version.parse().unwrap(),
+            })
+        } else {
+            VirtualRoot::Project
+        };
+        let vpath = VirtualPath::new(s.after()).unwrap();
+        RootedPath::new(root, vpath)
     }
 }
 
@@ -154,15 +170,14 @@ fn library() -> Library {
     // Set page width to 120pt with 10pt margins, so that the inner page is
     // exactly 100pt wide. Page height is unbounded and font size is 10pt so
     // that it multiplies to nice round numbers.
-    let mut lib = Library::builder()
-        .with_features([Feature::Html, Feature::A11yExtras].into_iter().collect())
-        .build();
+    let mut lib = Library::builder().with_features(Features::all()).build();
 
     // Hook up helpers into the global scope.
     lib.global.scope_mut().define_func::<test>();
     lib.global.scope_mut().define_func::<test_repr>();
     lib.global.scope_mut().define_func::<print>();
     lib.global.scope_mut().define_func::<lines>();
+    lib.global.scope_mut().define_func::<selector_within>();
     lib.global
         .scope_mut()
         .define("conifer", Color::from_u8(0x9f, 0xEB, 0x52, 0xFF));
@@ -225,4 +240,14 @@ fn lines(
         .collect::<SourceResult<Array>>()?
         .join(Some('\n'.into_value()), None, None)
         .at(span)
+}
+
+/// This exists just to test `within` selectors (which are already used
+/// internally) while they are not yet publicly exposed.
+#[func]
+fn selector_within(selector: LocatableSelector, ancestor: LocatableSelector) -> Selector {
+    Selector::Within {
+        selector: Arc::new(selector.0),
+        ancestor: Arc::new(ancestor.0),
+    }
 }

@@ -257,6 +257,7 @@ impl FontResolver<'_> {
             self.book.select_fallback(like, variant, c.encode_utf8(&mut [0; 4]), None, None)?;
 
         self.get_or_load(key.index, db)
+            .filter(|id| !exclude_fonts.contains(id))
     }
 
     /// Tries to retrieve the ID for the index or loads the font, allocating

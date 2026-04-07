@@ -90,6 +90,7 @@ impl<'a> Collector<'a, '_, '_> {
                 self.output.push(Child::Flush);
             } else if let Some(elem) = child.to_packed::<ColbreakElem>() {
                 self.output.push(Child::Break(elem.weak.get(styles)));
+                self.par_situation = ParSituation::First;
             } else if child.is::<PagebreakElem>() {
                 bail!(
                     child.span(), "pagebreaks are not allowed inside of containers";
@@ -414,7 +415,7 @@ impl SingleChild<'_> {
 fn layout_single_impl(
     routines: &Routines,
     world: Tracked<dyn World + '_>,
-    introspector: Tracked<Introspector>,
+    introspector: Tracked<dyn Introspector + '_>,
     traced: Tracked<Traced>,
     sink: TrackedMut<Sink>,
     route: Tracked<Route>,
@@ -514,7 +515,7 @@ impl<'a> MultiChild<'a> {
 fn layout_multi_impl(
     routines: &Routines,
     world: Tracked<dyn World + '_>,
-    introspector: Tracked<Introspector>,
+    introspector: Tracked<dyn Introspector + '_>,
     traced: Tracked<Traced>,
     sink: TrackedMut<Sink>,
     route: Tracked<Route>,

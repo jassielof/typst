@@ -186,6 +186,52 @@ fn test_path_to_package() {
     output.stderr.must_contain("error: panicked with: (7, 42)");
 }
 
+#[test]
+fn test_network_access_hint() {
+    // Using a CLI test because the error message differs across operating
+    // systems. If the test runner could handle that, we could migrate to a
+    // normal test.
+    let project = tempfs();
+    let main = project.write("main.typ", "#image(\"https://example.org/image.png\")");
+    let output = exec().arg("compile").arg(main).must_fail();
+    output.stderr.must_contain("hint: network access is not supported");
+}
+
+#[test]
+fn test_tracepoints() {
+    let project = tempfs();
+    let main = project.write(
+        "main.typ",
+        r#"#show strong: _ => include "chap" + "ter1.typ"
+           *Slightly unusual
+            strong text*"#,
+    );
+    project.write(
+        "chapter1.typ",
+        r#"#import "system.typ": my-figure
+           #my-figure(
+             "tigers.jpg"
+           )"#,
+    );
+    project.write("system.typ", "#let my-figure(p) = image(p)");
+    let output = exec().arg("compile").arg(&main).must_fail();
+    output
+        .stderr
+        .must_contain("while calling `my-figure` at")
+        .must_contain("chapter1.typ:2:12")
+        .must_contain("my-figure(…)");
+    output
+        .stderr
+        .must_contain("while including `chapter1.typ` at")
+        .must_contain("main.typ:1:19")
+        .must_contain(r#"include "chap" + "ter1.typ""#);
+    output
+        .stderr
+        .must_contain("while showing strong element at")
+        .must_contain("main.typ:2:11")
+        .must_contain("*Slightly unusual…*");
+}
+
 /// Executes a command with the Typst CLI.
 fn exec() -> Command {
     Command::new(env!("CARGO_BIN_EXE_typst"))
