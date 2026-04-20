@@ -35,5 +35,6 @@
     include "assets/index.typ"
   }
 
+  include "content/index.typ"
   extra-chapters
 }

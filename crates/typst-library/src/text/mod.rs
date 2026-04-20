@@ -396,8 +396,7 @@ pub struct TextElem {
     #[ghost]
     pub bottom_edge: BottomEdge,
 
-    /// An
-    /// #link("https://en.wikipedia.org/wiki/ISO_639")[ISO 639-1/2/3 language code.]
+    /// An #link("https://en.wikipedia.org/wiki/ISO_639")[ISO 639-1/2/3 language code.]
     ///
     /// Setting the correct language affects various parts of Typst:
     ///
@@ -445,8 +444,8 @@ pub struct TextElem {
     #[ghost]
     pub lang: Lang,
 
-    /// An
-    /// #link("https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2")[ISO 3166-1 alpha-2 region code.]
+    /// An #link("https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2")[ISO 3166-1
+    /// alpha-2 region code.]
     ///
     /// This lets the text processing pipeline make more informed choices.
     ///

@@ -1,8 +1,10 @@
-#import "../../components/index.typ": docs-chapter, docs-figure, info, kbd, short-or-long
+#import "../../components/index.typ": (
+  docs-chapter, docs-figure, info, kbd, short-or-long,
+)
 
 #show: docs-chapter.with(
   title: "Formatting",
-  route: "/tutorial/2-formatting",
+  route: "/tutorial/formatting",
   description: "Typst's tutorial.",
 )
 
@@ -54,11 +56,12 @@ water).
 ]
 
 = #short-or-long[Autocomplete][The autocomplete panel] <autocomplete>
-If you followed along and tried a few things in the app, you might have noticed that always after you enter a `#` character, a panel pops up to show you the available functions, and, within an argument list, the available parameters. That's the autocomplete panel. It can be very useful while you are writing your document: You can apply its suggestions by hitting the Return key or navigate to the desired completion with the arrow keys. The panel can be dismissed by hitting the Escape key and opened again by typing `#` or hitting #kbd[Ctrl] + #kbd[Space]. Use the autocomplete panel to discover the right arguments for functions. Most suggestions come with a small description of what they do.
+If you followed along and tried a few things in the app, you might have noticed that always after you enter a `#` character, a panel pops up to show you the available functions, and, within an argument list, the available parameters. That's the autocomplete panel. It can be very useful while you are writing your document: You can apply its suggestions by hitting the Return key or navigate to the desired completion with the arrow keys. The panel can be dismissed by hitting the Escape key and opened again by typing `#` or hitting #kbd("Ctrl") + #kbd("Space"). Use the autocomplete panel to discover the right arguments for functions. Most suggestions come with a small description of what they do.
 
 #docs-figure(
   "2-formatting-autocomplete.png",
   alt: "Autocomplete panel",
+  shadow: false,
 )
 
 = #short-or-long[Page Setup][Set up the page] <page-setup>

@@ -38,7 +38,9 @@ use crate::layout::{Alignment, Em, Length, Rel};
 /// )
 /// ```
 ///
-/// = #short-or-long[Effect On Other Elements][Effect on the position of other elements] <effect-on-other-elements>
+/// = #short-or-long[Effect On Other Elements][
+///   Effect on the position of other elements
+/// ] <effect-on-other-elements>
 /// Overlaid elements don't take space in the flow of content, but a `place`
 /// call inserts an invisible block-level element in the flow. This can affect
 /// the layout by breaking the current paragraph. To avoid this, you can wrap

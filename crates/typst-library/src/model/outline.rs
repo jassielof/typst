@@ -97,7 +97,9 @@ use crate::text::{LocalName, SpaceElem, TextElem};
 /// == ACME Tools
 /// ```
 ///
-/// == #short-or-long[Building An Entry][Building an outline entry from its parts] <building-an-entry>
+/// == #short-or-long[Building An Entry][
+///   Building an outline entry from its parts
+/// ] <building-an-entry>
 /// For full control, you can also write a transformational show rule on
 /// `outline.entry`. However, the logic for properly formatting and indenting
 /// outline entries is quite complex and the outline entry itself only contains
@@ -107,7 +109,8 @@ use crate::text::{LocalName, SpaceElem, TextElem};
 /// match these to compose an entry from just the parts you like.
 ///
 /// The default show rule for an outline entry looks like this
-/// #footnote[The outline of equations is the exception to this rule as it does not have a body and thus does not use indented layout.]:
+/// #footnote[The outline of equations is the exception to this rule as it does
+/// not have a body and thus does not use indented layout.]:
 ///
 /// ```typ
 /// #show outline.entry: it => link(

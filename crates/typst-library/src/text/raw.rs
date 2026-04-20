@@ -235,7 +235,8 @@ pub struct RawElem {
 
     /// Additional syntax definitions to load. The syntax definitions should be
     /// in the
-    /// #link("https://www.sublimetext.com/docs/syntax.html")[`sublime-syntax` file format].
+    /// #link("https://www.sublimetext.com/docs/syntax.html")[`sublime-syntax`
+    /// file format].
     ///
     /// You can pass any of the following values:
     ///

@@ -1,7 +1,9 @@
-#import "../../components/index.typ": docs-chapter, docs-table, example, info, short-or-long
+#import "../../components/index.typ": (
+  docs-chapter, docs-table, example, info, short-or-long,
+)
 
 #show: docs-chapter.with(
-  title: "Guide for LaTeX Users { \\# }",
+  title: "Guide for LaTeX Users",
   route: "/guides/for-latex-users",
   description: "Are you a LaTeX user? This guide explains the differences and similarities between Typst and LaTeX so you can get started quickly.",
 )

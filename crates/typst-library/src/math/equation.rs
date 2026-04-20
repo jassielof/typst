@@ -104,7 +104,8 @@ pub struct EquationElem {
     ///
     /// This should describe the full equation in natural language and will be
     /// made available to Assistive Technology. You can learn more in the
-    /// @guides:accessibility:textual-representations[Textual Representations section of the Accessibility Guide].
+    /// @guides:accessibility:textual-representations[Textual Representations
+    /// section of the Accessibility Guide].
     ///
     /// ```example
     /// #math.equation(

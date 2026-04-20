@@ -13,8 +13,8 @@ use crate::layout::Abs;
 /// Each fractionally sized element gets space based on the ratio of its
 /// fraction to the sum of all fractions.
 ///
-/// For more details, also see the @h[h] and @v[v] functions and the
-/// @grid[grid function].
+/// For more details, also see the @h and @v functions and the
+/// @grid[`grid` function].
 ///
 /// = Example <example>
 /// ```example

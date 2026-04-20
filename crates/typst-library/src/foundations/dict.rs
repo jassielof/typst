@@ -53,7 +53,10 @@ pub use crate::__dict as dict;
 /// Dictionaries can be added with the `+` operator and
 /// @reference:scripting:blocks[joined together]. They can also be
 /// @arguments:spreading[spread] into a function call or another dictionary
-/// #footnote[When spreading into a dictionary, if all items between the parentheses are spread, you have to begin the container with `(:`, as in `(: ..dict, ..other_dict)`. Otherwise the container is inferred to be an array and an error is raised.]
+/// #footnote[When spreading into a dictionary, if all items between the
+/// parentheses are spread, you have to begin the container with `(:`, as in
+/// `(: ..dict, ..other_dict)`. Otherwise the container is inferred to be an
+/// array and an error is raised.]
 /// with the `..spread` operator. In each case, if a key appears multiple times,
 /// the last value will override the others.
 ///

@@ -34,7 +34,7 @@ use crate::foundations::{Context, Func, Str, Value, cast, func};
 /// )
 /// ```
 ///
-/// = Numbering patterns and numbering functions <numbering-patterns-and-numbering-functions>
+/// = Numbering patterns and numbering functions <patterns-and-functions>
 /// There are multiple instances where you can provide a numbering pattern or
 /// function in Typst. For example, when defining how to number
 /// @heading[headings] or @figure[figures]. Every time, the expected format is

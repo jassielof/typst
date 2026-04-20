@@ -175,13 +175,27 @@ static TO_SRGB: LazyLock<Box<moxcms::Transform8BitExecutor>> = LazyLock::new(|| 
 ///   table.header[Map][Details],
 ///
 ///   [`turbo`],
-///   [A perceptually uniform rainbow-like color map. Read #link("https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html")[this blog post] for more details.],
+///   [
+///     A perceptually uniform rainbow-like color map. Read
+///     #link("https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html")[this blog post]
+///     for more details.
+///   ],
 ///
 ///   [`cividis`],
-///   [A blue to gray to yellow color map. See #link("https://bids.github.io/colormap/")[this blog post] for more details.],
+///   [
+///     A blue to gray to yellow color map. See
+///     #link("https://bids.github.io/colormap/")[this blog post] for more
+///     details.
+///   ],
 ///
 ///   [`rainbow`],
-///   [Cycles through the full color spectrum. This color map is best used by setting the interpolation color space to @color.hsl[HSL]. The rainbow gradient is *not suitable* for data visualization because it is not perceptually uniform, so the differences between values become unclear to your readers. It should only be used for decorative purposes.],
+///   [
+///     Cycles through the full color spectrum. This color map is best used by
+///     setting the interpolation color space to @color.hsl[HSL]. The rainbow
+///     gradient is *not suitable* for data visualization because it is not
+///     perceptually uniform, so the differences between values become unclear
+///     to your readers. It should only be used for decorative purposes.
+///   ],
 ///
 ///   [`spectral`],
 ///   [Red to yellow to blue color map.],
