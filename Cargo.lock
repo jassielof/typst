@@ -3034,7 +3034,7 @@ dependencies = [
 [[package]]
 name = "typst-dev-assets"
 version = "0.14.2"
-source = "git+https://github.com/typst/typst-dev-assets?rev=c4e80f3#c4e80f363066e92e38eac25be1fca5f98acfbe9a"
+source = "git+https://github.com/typst/typst-dev-assets?rev=d4f999b#d4f999b8005b49bc23eb16efe2c7b45ad025c425"
 
 [[package]]
 name = "typst-docs"
