@@ -193,6 +193,9 @@ fn create_variable_font_instance(
 /// - `Library::builder().build()` if you want to customize the library
 #[derive(Debug, Clone, Hash)]
 pub struct Library {
+    /// Defines implementation of various Typst compiler routines as a table of
+    /// function pointers.
+    pub routines: &'static Routines,
     /// The module that contains the definitions that are available everywhere.
     pub global: Module,
     /// The module that contains the definitions available in math mode.
@@ -247,6 +250,7 @@ impl LibraryBuilder {
         let inputs = self.inputs.unwrap_or_default();
         let global = global(self.routines, math.clone(), inputs, &self.features);
         Library {
+            routines: self.routines,
             global: global.clone(),
             math,
             styles: Styles::new(),
