@@ -229,7 +229,9 @@ impl FontResolver<'_> {
             })
             .chain(self.families.iter().copied())
             // SVG fonts don't have a specific size context or custom axes, so we pass None
-            .filter_map(|named| self.book.select(&named.to_lowercase(), variant, None, None))
+            .filter_map(|named| {
+                self.book.select(&named.to_lowercase(), variant, None, None)
+            })
             .find_map(|key| self.get_or_load(key.index, db))
     }
 
@@ -253,8 +255,13 @@ impl FontResolver<'_> {
         let variant = like.map(|info| info.variant()).unwrap_or_default();
 
         // Select the font (no optical size context or custom axes in SVG fallback).
-        let key =
-            self.book.select_fallback(like, variant, c.encode_utf8(&mut [0; 4]), None, None)?;
+        let key = self.book.select_fallback(
+            like,
+            variant,
+            c.encode_utf8(&mut [0; 4]),
+            None,
+            None,
+        )?;
 
         self.get_or_load(key.index, db)
             .filter(|id| !exclude_fonts.contains(id))

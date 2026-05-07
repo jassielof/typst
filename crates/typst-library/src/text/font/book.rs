@@ -120,7 +120,13 @@ impl FontBook {
         custom_axes: Option<&[(ttf_parser::Tag, f32)]>,
     ) -> Option<FontKey> {
         let ids = self.families.get(family)?;
-        self.find_best_variant(None, variant, optical_size, custom_axes, ids.iter().copied())
+        self.find_best_variant(
+            None,
+            variant,
+            optical_size,
+            custom_axes,
+            ids.iter().copied(),
+        )
     }
 
     /// Iterate over all variants of a family.
@@ -474,7 +480,13 @@ impl FontInfo {
                 }
             }
 
-            FontVariantCoverage::with_axes(style, weight, stretch, slant_axis, optical_size_axis)
+            FontVariantCoverage::with_axes(
+                style,
+                weight,
+                stretch,
+                slant_axis,
+                optical_size_axis,
+            )
         };
 
         // Determine the unicode coverage.

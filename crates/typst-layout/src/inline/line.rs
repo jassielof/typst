@@ -465,18 +465,20 @@ pub fn apply_shift<'a>(
         let optical_size = Some(size.to_pt() as f32);
         // Get custom axes from styles
         let custom_axes = axes(styles);
-        let custom_axes_slice = if custom_axes.0.is_empty() {
-            None
-        } else {
-            Some(custom_axes.0.as_slice())
-        };
+        let custom_axes_slice =
+            if custom_axes.0.is_empty() { None } else { Some(custom_axes.0.as_slice()) };
         let font_metrics = styles
             .get_ref(TextElem::font)
             .into_iter()
             .find_map(|family| {
                 world
                     .book()
-                    .select(family.as_str(), variant(styles), optical_size, custom_axes_slice)
+                    .select(
+                        family.as_str(),
+                        variant(styles),
+                        optical_size,
+                        custom_axes_slice,
+                    )
                     .and_then(|key| world.font_by_key(&key))
             })
             .map_or(*scripts.kind.default_metrics(), |f| {

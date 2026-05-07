@@ -47,8 +47,8 @@ fn test_fonts_path() {
     let fonts = tempfs();
     let mut expected = HashSet::new();
     for (i, data) in typst_dev_assets::fonts().enumerate() {
-        let font =
-            typst::text::Font::new(Bytes::new(data), 0, InstanceParameters::new()).unwrap();
+        let font = typst::text::Font::new(Bytes::new(data), 0, InstanceParameters::new())
+            .unwrap();
         fonts.write(format!("{i}.ttf"), data);
         expected.insert(font.info().family.clone());
     }

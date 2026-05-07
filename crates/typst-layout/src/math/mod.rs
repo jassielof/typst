@@ -603,11 +603,8 @@ fn get_font(
     let optical_size = Some(size.to_pt() as f32);
     // Get custom axes from styles
     let custom_axes = axes(styles);
-    let custom_axes_slice = if custom_axes.0.is_empty() {
-        None
-    } else {
-        Some(custom_axes.0.as_slice())
-    };
+    let custom_axes_slice =
+        if custom_axes.0.is_empty() { None } else { Some(custom_axes.0.as_slice()) };
     families(styles)
         .find_map(|family| {
             world
