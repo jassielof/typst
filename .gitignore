@@ -32,3 +32,5 @@ Summary.*
 assets/
 Taskfile.yaml
 scripts/
+modules/
+
