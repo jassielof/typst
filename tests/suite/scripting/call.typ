@@ -23,12 +23,12 @@
 #g([A], [B])
 #g()[A][B]
 
---- call-aliased-function eval ---
+--- call-aliased-function paged ---
 // Call function assigned to variable.
 #let alias = type
 #test(alias(alias), type)
 
---- call-complex-callee-expression eval ---
+--- call-complex-callee-expression paged ---
 // Callee expressions.
 #{
   // Wrapped in parens.
@@ -39,83 +39,83 @@
   test(adder(2)(5), 7)
 }
 
---- call-bad-type-bool-literal eval ---
+--- call-bad-type-bool-literal paged ---
 // Error: 2-6 expected function, found boolean
 #true()
 
---- call-bad-type-string-var eval ---
+--- call-bad-type-string-var paged ---
 #let x = "x"
 
 // Error: 2-3 expected function, found string
 #x()
 
---- call-shadowed-builtin-function eval ---
+--- call-shadowed-builtin-function paged ---
 #let image = "image"
 
 // Error: 2-7 expected function, found string
 // Hint: 2-7 use `std.image` to access the shadowed standard library function
 #image("image")
 
---- call-bad-type-int-expr eval ---
+--- call-bad-type-int-expr paged ---
 #let f(x) = x
 
 // Error: 2-6 expected function, found integer
 #f(1)(2)
 
---- call-bad-type-content-expr eval ---
+--- call-bad-type-content-expr paged ---
 #let f(x) = x
 
 // Error: 2-6 expected function, found content
 #f[1](2)
 
---- call-args-trailing-comma eval ---
+--- call-args-trailing-comma paged ---
 // Trailing comma.
 #test(1 + 1, 2,)
 
---- call-args-duplicate eval ---
+--- call-args-duplicate paged ---
 // Error: 26-30 duplicate argument: font
 #set text(font: "Arial", font: "Helvetica")
 
---- call-args-bad-positional-as-named eval ---
+--- call-args-bad-positional-as-named paged ---
 // Error: 4-15 the argument `amount` is positional
 // Hint: 4-15 try removing `amount:`
 #h(amount: 0.5)
 
---- call-args-bad-colon eval ---
+--- call-args-bad-colon paged ---
 // Error: 7-8 unexpected colon
 #func(:)
 
---- call-args-bad-token eval ---
+--- call-args-bad-token paged ---
 // Error: 10-12 unexpected end of block comment
 // Hint: 10-12 consider escaping the `*` with a backslash or opening the block comment with `/*`
 #func(a:1*/)
 
---- call-args-missing-comma eval ---
+--- call-args-missing-comma paged ---
 // Error: 8 expected comma
 #func(1 2)
 
---- call-args-bad-name-and-incomplete-pair eval ---
+--- call-args-bad-name-and-incomplete-pair paged ---
 // Error: 7-8 expected identifier, found integer
 // Error: 9 expected expression
 #func(1:)
 
---- call-args-bad-name-int eval ---
+--- call-args-bad-name-int paged ---
 // Error: 7-8 expected identifier, found integer
 #func(1:2)
 
---- call-args-bad-name-string eval ---
+--- call-args-bad-name-string paged ---
 // Error: 7-12 expected identifier, found string
 #func("abc": 2)
 
---- call-args-bad-name-group eval ---
+--- call-args-bad-name-group paged ---
 // Error: 7-10 expected identifier, found group
 #func((x):1)
 
---- call-args-lone-underscore eval ---
+--- call-args-lone-underscore paged ---
 // Test that lone underscore works.
 #test((1, 2, 3).map(_ => {}).len(), 3)
 
---- call-args-spread-override eval ---
+--- call-args-spread-override paged ---
 // Test standard argument overriding.
 #{
   let f(style: "normal", weight: "regular") = {
@@ -128,7 +128,7 @@
   test(myf(style: "italic"), "(style: italic, weight: bold)")
 }
 
---- call-args-spread-forward eval ---
+--- call-args-spread-forward paged ---
 // Test multiple calls.
 #{
   let f(b, c: "!") = b + c
@@ -136,7 +136,7 @@
   test(g("a", "b", c: "c"), "abc")
 }
 
---- call-args-spread-type-repr eval ---
+--- call-args-spread-type-repr paged ---
 // Test doing things with arguments.
 #{
   let save(..args) = {
@@ -147,7 +147,7 @@
   save(1, 2, three: true)
 }
 
---- call-args-spread-array-and-dict eval ---
+--- call-args-spread-array-and-dict paged ---
 // Test spreading array and dictionary.
 #{
   let more = (3, -3, 6, 10)
@@ -162,18 +162,18 @@
   test(tostr(a: 1, ..more, b: 2), "arguments(a: 1, c: 3, d: 4, b: 2)")
 }
 
---- call-args-spread-none eval ---
+--- call-args-spread-none paged ---
 // None is spreadable.
 #let f() = none
 #f(..none)
 #f(..if false {})
 #f(..for x in () [])
 
---- call-args-spread-string-invalid eval ---
+--- call-args-spread-string-invalid paged ---
 // Error: 11-19 cannot spread string
 #calc.min(.."nope")
 
---- call-args-content-block-unclosed eval ---
+--- call-args-content-block-unclosed paged ---
 // Error: 6-7 unclosed delimiter
 #func[`a]`
 
@@ -182,27 +182,27 @@
 #let foo(..body) = repr(body.pos())
 #foo(a: "1", b: "2", 1, 2, 3, 4, 5, 6)
 
---- issue-3144-unexpected-arrow eval ---
+--- issue-3144-unexpected-arrow paged ---
 #let f(a: 10) = a(1) + 1
 #test(f(a: _ => 5), 6)
 
---- issue-3502-space-and-comments-around-destructuring-colon eval ---
+--- issue-3502-space-and-comments-around-destructuring-colon paged ---
 #let ( key :  /* hi */ binding ) = ( key: "ok" )
 #test(binding, "ok")
 
---- issue-3502-space-around-dict-colon eval ---
+--- issue-3502-space-around-dict-colon paged ---
 #test(( key : "value" ).key, "value")
 
---- issue-3502-space-around-param-colon eval ---
+--- issue-3502-space-around-param-colon paged ---
 // Test that a space after a named parameter is permissible.
 #let f( param : v ) = param
 #test(f( param /* ok */ : 2 ), 2)
 
---- call-args-unclosed eval ---
+--- call-args-unclosed paged ---
 // Error: 7-8 unclosed delimiter
 #{func(}
 
---- call-args-unclosed-string eval ---
+--- call-args-unclosed-string paged ---
 // Error: 6-7 unclosed delimiter
 // Error: 1:7-2:1 unclosed string
 #func("]

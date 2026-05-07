@@ -54,7 +54,7 @@
   Seven.
 ]
 
---- if-else-if-else eval ---
+--- if-else-if-else paged ---
 // Test else if.
 
 #let nth(n) = {
@@ -71,7 +71,7 @@
 #test(nth(4), "4th")
 #test(nth(5), "5th")
 
---- if-expression eval ---
+--- if-expression paged ---
 // Value of if expressions.
 
 #{
@@ -92,18 +92,18 @@
   test(z, none)
 }
 
---- if-condition-string-invalid eval ---
+--- if-condition-string-invalid paged ---
 // Condition must be boolean.
 // If it isn't, neither branch is evaluated.
 // Error: 5-14 expected boolean, found string
 #if "a" + "b" { nope } else { nope }
 
---- if-condition-invalid-and-wrong-type eval ---
+--- if-condition-invalid-and-wrong-type paged ---
 // Make sure that we don't complain twice.
 // Error: 5-12 cannot add integer and string
 #if 1 + "2" {}
 
---- if-incomplete eval ---
+--- if-incomplete paged ---
 // Error: 4 expected expression
 #if
 

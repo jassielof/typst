@@ -3,9 +3,7 @@ Footnote #footnote[Hi] in text.
 
 --- footnote-tags-different-lang pdftags pdfstandard(ua-1) ---
 Footnote #footnote[
-  // The footnote number is still in English ("en"), so the link tag
-  // holding the number should specify its language to be English, so
-  // as to override the parent tag's language, which is German ("de").
+  // The footnote number is still in english
   #set text(lang: "de")
   Hallo
 ] in text.

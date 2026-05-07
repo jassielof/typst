@@ -26,7 +26,7 @@
   #footnote[hi]
 ])
 
---- logical-children-tags-place-in-tiling pdftags pdfstandard(ua-1) empty ---
+--- logical-children-tags-place-in-tiling pdftags pdfstandard(ua-1) ---
 #rect(width: 90pt, height: 90pt, fill: tiling(size: (30pt, 30pt))[
   #place(float: true, top + right)[hi]
 ])

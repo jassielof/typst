@@ -19,7 +19,7 @@
   dont-care
 }
 
---- while-loop-expr eval ---
+--- while-loop-expr paged ---
 // Value of while loops.
 
 #test(while false {}, none)
@@ -27,21 +27,21 @@
 #let i = 0
 #test(type(while i < 1 [#(i += 1)]), content)
 
---- while-loop-condition-content-invalid eval ---
+--- while-loop-condition-content-invalid paged ---
 // Condition must be boolean.
 // Error: 8-14 expected boolean, found content
 #while [nope] [nope]
 
---- while-loop-condition-always-true eval ---
+--- while-loop-condition-always-true paged ---
 // Error: 8-25 condition is always true
 #while 2 < "hello".len() {}
 
---- while-loop-limit eval ---
+--- while-loop-limit paged ---
+// Error: 2:2-2:24 loop seems to be infinite
 #let i = 1
-// Error: 2-24 loop seems to be infinite
 #while i > 0 { i += 1 }
 
---- while-loop-incomplete eval ---
+--- while-loop-incomplete paged ---
 // Error: 7 expected expression
 #while
 

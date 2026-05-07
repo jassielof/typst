@@ -1,4 +1,4 @@
---- decimal-constructor eval ---
+--- decimal-constructor paged ---
 #test(decimal(10), decimal("10.0"))
 #test(decimal("-7654.321"), decimal("-7654.321"))
 #test(decimal("\u{2212}7654.321"), decimal("-7654.321"))
@@ -8,39 +8,39 @@
 #test(decimal(true), decimal("1.0"))
 #test(type(decimal(10)), decimal)
 
---- decimal-constructor-bad-type eval ---
+--- decimal-constructor-bad-type paged ---
 // Error: 10-17 expected decimal, integer, boolean, float, or string, found type
 #decimal(decimal)
 
---- decimal-constructor-bad-value eval ---
+--- decimal-constructor-bad-value paged ---
 // Error: 10-17 invalid decimal: 1.2.3
 #decimal("1.2.3")
 
---- decimal-constructor-float-literal eval ---
+--- decimal-constructor-float-literal paged ---
 // Warning: 18-25 creating a decimal using imprecise float literal
 // Hint: 18-25 use a string in the decimal constructor to avoid loss of precision: `decimal("1.32523")`
 #let _ = decimal(1.32523)
 
---- decimal-constructor-float-inf eval ---
+--- decimal-constructor-float-inf paged ---
 // Error: 10-19 float is not a valid decimal: float.inf
 #decimal(float.inf)
 
---- decimal-constructor-float-negative-inf eval ---
+--- decimal-constructor-float-negative-inf paged ---
 // Error: 10-20 float is not a valid decimal: -float.inf
 #decimal(-float.inf)
 
---- decimal-constructor-float-nan eval ---
+--- decimal-constructor-float-nan paged ---
 // Error: 10-19 float is not a valid decimal: float.nan
 #decimal(float.nan)
 
---- decimal-scale-is-observable eval ---
+--- decimal-scale-is-observable paged ---
 // Ensure equal decimals with different scales produce different strings.
 #let f1(x) = str(x)
 #let f2(x) = f1(x)
 #test(f2(decimal("3.140")), "3.140")
 #test(f2(decimal("3.14000")), "3.14000")
 
---- decimal-repr eval ---
+--- decimal-repr paged ---
 // Test the `repr` function with decimals.
 #test(repr(decimal("12.0")), "decimal(\"12.0\")")
 #test(repr(decimal("3.14")), "decimal(\"3.14\")")
@@ -78,11 +78,11 @@
 #calc.round(decimal("-3.9191919191919191919191919195"), digits: 4) \
 #calc.round(decimal("5.0000000000"), digits: 4)
 
---- decimal-expected-float-error eval ---
+--- decimal-expected-float-error paged ---
 // Error: 11-25 expected integer, float, or angle, found decimal
 // Hint: 11-25 if loss of precision is acceptable, explicitly cast the decimal to a float with `float(value)`
 #calc.sin(decimal("1.1"))
 
---- decimal-expected-integer-error eval ---
+--- decimal-expected-integer-error paged ---
 // Error: 11-25 expected integer, found decimal
 #calc.odd(decimal("1.1"))

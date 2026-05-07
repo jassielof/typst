@@ -40,11 +40,11 @@ And quark! @quark
 Now we have multiple bibliographies containing @glacier-melt @keshav2007read
 #bibliography(("/assets/bib/works.bib", "/assets/bib/works_too.bib"))
 
---- bibliography-source-path paged empty ---
+--- bibliography-source-path paged ---
 #show heading: none
 #bibliography(path("/assets/bib/works_too.bib"))
 
---- bibliography-source-types paged empty ---
+--- bibliography-source-types paged ---
 #let src = ```yaml
 hi:
   type: Book
@@ -57,7 +57,7 @@ hi:
   bytes(src.text)
 ))
 
---- bibliography-duplicate-key eval ---
+--- bibliography-duplicate-key paged ---
 // Error: 15-65 duplicate bibliography keys: netwok, issue201, arrgh, quark, distress, glacier-melt, tolkien54, DBLP:books/lib/Knuth86a, sharing, restful, mcintosh_anxiety, psychology25
 #bibliography(("/assets/bib/works.bib", "/assets/bib/works.bib"))
 
@@ -101,7 +101,7 @@ hi:
 // Error: 2-62 CSL style "Alphanumeric" is not suitable for bibliographies
 #bibliography("/assets/bib/works.bib", style: "alphanumeric")
 
---- bibliography-empty-key eval ---
+--- bibliography-empty-key paged ---
 #let src = ```yaml
 "":
   type: Book
@@ -122,12 +122,12 @@ hi:
 
 #bibliography("/assets/bib/works_too.bib")
 
---- bibliography-chicago-fullnotes-warning paged empty ---
+--- bibliography-chicago-fullnotes-warning paged ---
 // Test warning for deprecated alias.
 // Warning: 47-66 style "chicago-fullnotes" has been deprecated in favor of "chicago-notes"
 #bibliography("/assets/bib/works.bib", style: "chicago-fullnotes", title: none)
 
---- bibliography-modern-humanities-research-association-warning paged empty ---
+--- bibliography-modern-humanities-research-association-warning paged ---
 // Test warning for deprecated alias.
 // Warning: 47-87 style "modern-humanities-research-association" has been deprecated in favor of "modern-humanities-research-association-notes"
 #bibliography("/assets/bib/works.bib", style: "modern-humanities-research-association", title: none)

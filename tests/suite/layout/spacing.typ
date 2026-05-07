@@ -107,7 +107,7 @@ A #h(1fr) B
 #v(1fr, weak: true)
 2
 
---- spacing-missing-amount eval ---
+--- spacing-missing-amount paged ---
 // Missing spacing.
 // Error: 10-13 missing argument: amount
 Totally #h() ignored

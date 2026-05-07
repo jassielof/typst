@@ -38,7 +38,7 @@ To the right! Where the sunlight peeks behind the mountain.
 #align(start)[يبدأ]
 #align(end)[نهاية]
 
---- alignment-fields-x eval ---
+--- alignment-fields-x paged ---
 // Test 2d alignment 'horizontal' field.
 #test((start + top).x, start)
 #test((end + top).x, end)
@@ -59,7 +59,7 @@ To the right! Where the sunlight peeks behind the mountain.
 #test((bottom + end).x, end)
 #test((horizon + center).x, center)
 
---- alignment-fields-y eval ---
+--- alignment-fields-y paged ---
 // Test 2d alignment 'vertical' field.
 #test((start + top).y, top)
 #test((end + top).y, top)
@@ -80,12 +80,12 @@ To the right! Where the sunlight peeks behind the mountain.
 #test((bottom + end).y, bottom)
 #test((horizon + center).y, horizon)
 
---- alignment-type eval ---
+--- alignment-type paged ---
 #test(type(center), alignment)
 #test(type(horizon), alignment)
 #test(type(center + horizon), alignment)
 
---- alignment-axis eval ---
+--- alignment-axis paged ---
 // Test alignment methods.
 #test(start.axis(), "horizontal")
 #test(end.axis(), "horizontal")
@@ -96,7 +96,7 @@ To the right! Where the sunlight peeks behind the mountain.
 #test(bottom.axis(), "vertical")
 #test(horizon.axis(), "vertical")
 
---- alignment-inv eval ---
+--- alignment-inv paged ---
 #test(start.inv(), end)
 #test(end.inv(), start)
 #test(left.inv(), right)
@@ -124,15 +124,15 @@ To the right! Where the sunlight peeks behind the mountain.
 #test((bottom + end).inv(), (start + top))
 #test((horizon + center).inv(), (center + horizon))
 
---- alignment-add-two-horizontal eval ---
+--- alignment-add-two-horizontal paged ---
 // Error: 8-22 cannot add two horizontal alignments
 #align(center + right, [A])
 
---- alignment-add-two-vertical eval ---
+--- alignment-add-two-vertical paged ---
 // Error: 8-20 cannot add two vertical alignments
 #align(top + bottom, [A])
 
---- alignment-add-vertical-and-2d eval ---
+--- alignment-add-vertical-and-2d paged ---
 // Error: 8-30 cannot add a vertical and a 2D alignment
 #align(top + (bottom + right), [A])
 

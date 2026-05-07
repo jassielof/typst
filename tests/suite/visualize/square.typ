@@ -2,12 +2,8 @@
 
 --- square paged ---
 // Default square.
-#stack(
-  dir: ltr,
-  spacing: 0.5em,
-  square(),
-  square[hey!]
-)
+#box(square())
+#box(square[hey!])
 
 --- square-auto-sized paged ---
 // Test auto-sized square.
@@ -37,7 +33,7 @@
   But, soft! what light through yonder window breaks?
 ]
 
---- square-size-width-and-height eval ---
+--- square-size-width-and-height paged ---
 // Size wins over width and height.
 // Error: 09-20 unexpected argument: width
 #square(width: 10cm, height: 20cm, size: 1cm, fill: rgb("eb5278"))
@@ -62,14 +58,10 @@
 --- square-circle-alignment paged ---
 // Test alignment in automatically sized square and circle.
 #set text(8pt)
-#stack(
-  dir: ltr,
-  spacing: 0.5em,
-  square(inset: 4pt)[
-    Hey there, #align(center + bottom, rotate(180deg, [you!]))
-  ],
-  circle(align(center + horizon, [Hey.]))
-)
+#box(square(inset: 4pt)[
+  Hey there, #align(center + bottom, rotate(180deg, [you!]))
+])
+#box(circle(align(center + horizon, [Hey.])))
 
 --- square-circle-overspecified paged ---
 // Test that minimum wins if both width and height are given.
@@ -105,7 +97,7 @@
 #square(height: 150%)
 #square(height: 150%)[Hello there]
 
---- square-size-relative-invalid eval ---
+--- square-size-relative-invalid paged ---
 // Size cannot be relative because we wouldn't know
 // relative to which axis.
 // Error: 15-18 expected length or auto, found ratio

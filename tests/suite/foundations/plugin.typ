@@ -1,6 +1,6 @@
 // Test WebAssembly plugins.
 
---- plugin-basic eval ---
+--- plugin-basic paged ---
 #let p = plugin("/assets/plugins/hello.wasm")
 #test(p.hello(), bytes("Hello from wasm!!!"))
 #test(p.double_it(bytes("hey!")), bytes("hey!.hey!"))
@@ -9,18 +9,18 @@
   bytes("value3-value1-value2"),
 )
 
---- plugin-func eval ---
+--- plugin-func paged ---
 #let p = plugin("/assets/plugins/hello.wasm")
 #test(type(p.hello), function)
 #test(("a", "b").map(bytes).map(p.double_it), ("a.a", "b.b").map(bytes))
 
---- plugin-import eval ---
+--- plugin-import paged ---
 #import plugin("/assets/plugins/hello.wasm"): hello, double_it
 
 #test(hello(), bytes("Hello from wasm!!!"))
 #test(double_it(bytes("hey!")), bytes("hey!.hey!"))
 
---- plugin-transition eval ---
+--- plugin-transition paged ---
 #let empty = plugin("/assets/plugins/hello-mut.wasm")
 #test(str(empty.get()), "[]")
 
@@ -40,38 +40,38 @@
 #test(hello == world, false)
 #test(hello == hello2, true)
 
---- plugin-wrong-number-of-arguments eval ---
+--- plugin-wrong-number-of-arguments paged ---
 #let p = plugin("/assets/plugins/hello.wasm")
 
 // Error: 2-20 plugin function takes 0 arguments, but 1 was given
 #p.hello(bytes(""))
 
---- plugin-wrong-argument-type eval ---
+--- plugin-wrong-argument-type paged ---
 #let p = plugin("/assets/plugins/hello.wasm")
 
 // Error: 10-14 expected bytes, found boolean
 // Error: 27-29 expected bytes, found integer
 #p.hello(true, bytes(()), 10)
 
---- plugin-error eval ---
+--- plugin-error paged ---
 #let p = plugin("/assets/plugins/hello.wasm")
 
 // Error: 2-17 plugin errored with: This is an `Err`
 #p.returns_err()
 
---- plugin-panic eval ---
+--- plugin-panic paged ---
 #let p = plugin("/assets/plugins/hello.wasm")
 
 // Error: 2-16 plugin panicked: wasm `unreachable` instruction executed
 #p.will_panic()
 
---- plugin-out-of-bounds-read eval ---
+--- plugin-out-of-bounds-read paged ---
 #let p = plugin("/assets/plugins/plugin-oob.wasm")
 
 // Error: 2-14 plugin tried to read out of bounds: pointer 0x40000000 is out of bounds for read of length 1
 #p.read_oob()
 
---- plugin-out-of-bounds-write eval ---
+--- plugin-out-of-bounds-write paged ---
 #let p = plugin("/assets/plugins/plugin-oob.wasm")
 
 // Error: 2-27 plugin tried to write out of bounds: pointer 0x40000000 is out of bounds for write of length 3

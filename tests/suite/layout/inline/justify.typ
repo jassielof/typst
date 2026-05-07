@@ -167,26 +167,26 @@ int main() {
   it
 }
 
---- justify-limits-tracking-wrong-type eval ---
+--- justify-limits-tracking-wrong-type paged ---
 // Error: 1:32-4:2 `min` value of `tracking` is invalid (expected length, found ratio)
 #set par(justification-limits: (
   spacing: (min: 100%, max: 100%),
   tracking: (min: 90%, max: 110%),
 ))
 
---- justify-limits-tracking-min-positive eval ---
+--- justify-limits-tracking-min-positive paged ---
 // Error: 32-65 `min` value of `tracking` is invalid (length must be negative or zero)
 #set par(justification-limits: (tracking: (min: 1em, max: -1em)))
 
---- justify-limits-tracking-max-negative eval ---
+--- justify-limits-tracking-max-negative paged ---
 // Error: 32-66 `max` value of `tracking` is invalid (length must be positive or zero)
 #set par(justification-limits: (tracking: (min: -1em, max: -1em)))
 
---- justify-limits-spacing-max-negative eval ---
+--- justify-limits-spacing-max-negative paged ---
 // Error: 32-78 `max` value of `spacing` is invalid (length must be positive or zero)
 #set par(justification-limits: (spacing: (min: 100% - 10pt, max: 120% - 1pt)))
 
---- justify-limits-spacing-ratio-negative eval ---
+--- justify-limits-spacing-ratio-negative paged ---
 // Error: 32-76 `min` value of `spacing` is invalid (ratio must be positive)
 #set par(justification-limits: (spacing: (min: -50% - 1pt, max: 50% + 1pt)))
 
@@ -274,9 +274,3 @@ int main() {
 // Test whether `Formal` would be in one line.
 #set par(justify: true)
 #table(columns: 1, [Formal])
-
---- issue-6062-justify-cjk-latin-spacing paged ---
-// Test whether cjk-latin-spacing would be stretched evenly when justified.
-#set par(justify: true)
-あaあ#linebreak(justify: true)
-ああaa aaああ#linebreak(justify: true)

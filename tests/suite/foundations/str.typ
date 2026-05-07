@@ -1,6 +1,6 @@
 // Test the string methods.
 
---- str-constructor eval ---
+--- str-constructor paged ---
 // Test conversion to string.
 #test(str(123), "123")
 #test(str(123, base: 3), "11120")
@@ -9,7 +9,7 @@
 #test(str(50.14), "50.14")
 #test(str(10 / 3).len() > 10, true)
 
---- str-from-float eval ---
+--- str-from-float paged ---
 // Test the `str` function with floats.
 #test(str(12.0), "12")
 #test(str(3.14), "3.14")
@@ -23,7 +23,7 @@
 #test(str(-3.14), "−3.14")
 #test(str(4.0 - 8.0), "−4")
 
---- str-from-decimal eval ---
+--- str-from-decimal paged ---
 // Test the `str` function with decimals.
 #test(str(decimal("12")), "12")
 #test(str(decimal("12.0")), "12.0")
@@ -41,7 +41,7 @@
 #test(str(decimal("4.0") - decimal("8.0")), "−4.0")
 #test(str(decimal("4") - decimal("8")), "−4")
 
---- str-from-int eval ---
+--- str-from-int paged ---
 // Test the `str` function with integers.
 #test(str(12), "12")
 #test(str(1234567890), "1234567890")
@@ -53,60 +53,60 @@
 #test(str(-0987654321), "−987654321")
 #test(str(4 - 8), "−4")
 
---- str-constructor-bad-type eval ---
+--- str-constructor-bad-type paged ---
 // Error: 6-8 expected integer, float, decimal, version, bytes, label, type, or string, found content
 #str([])
 
---- str-constructor-bad-base eval ---
+--- str-constructor-bad-base paged ---
 // Error: 17-19 base must be between 2 and 36
 #str(123, base: 99)
 
---- str-constructor-unary eval ---
+--- str-constructor-unary paged ---
 // Error: 17-18 base must be between 2 and 36
 // Hint: 17-18 generate a unary representation with `"1" * 999`
 #str(999, base: 1)
 
---- str-constructor-unsupported-base eval ---
+--- str-constructor-unsupported-base paged ---
 // Error: 18-19 base is only supported for integers
 #str(1.23, base: 2)
 
---- str-constructor-unsupported-base-ten eval ---
+--- str-constructor-unsupported-base-ten paged ---
 // Error: 18-20 base is only supported for integers
 #str(1.23, base: 10)
 
---- str-from-and-to-unicode eval ---
+--- str-from-and-to-unicode paged ---
 // Test the unicode function.
 #test(str.from-unicode(97), "a")
 #test(str.to-unicode("a"), 97)
 
---- str-from-unicode-bad-type eval ---
+--- str-from-unicode-bad-type paged ---
 // Error: 19-22 expected integer, found content
 #str.from-unicode([a])
 
---- str-to-unicode-bad-type eval ---
+--- str-to-unicode-bad-type paged ---
 // Error: 17-21 expected exactly one character
 #str.to-unicode("ab")
 
---- str-from-unicode-negative eval ---
+--- str-from-unicode-negative paged ---
 // Error: 19-21 number must be at least zero
 #str.from-unicode(-1)
 
---- str-from-unicode-bad-value eval ---
+--- str-from-unicode-bad-value paged ---
 // Error: 2-28 0x110000 is not a valid codepoint
 #str.from-unicode(0x110000) // 0x10ffff is the highest valid code point
 
---- str-normalize eval ---
+--- str-normalize paged ---
 // Test the `normalize` method.
 #test("e\u{0301}".normalize(form: "nfc"), "é")
 #test("é".normalize(form: "nfd"), "e\u{0301}")
 #test("ſ\u{0301}".normalize(form: "nfkc"), "ś")
 #test("ſ\u{0301}".normalize(form: "nfkd"), "s\u{0301}")
 
---- string-len eval ---
+--- string-len paged ---
 // Test the `len` method.
 #test("Hello World!".len(), 12)
 
---- string-first-and-last eval ---
+--- string-first-and-last paged ---
 // Test the `first` and `last` methods.
 #test("Hello".first(), "H")
 #test("Hello".last(), "o")
@@ -117,15 +117,15 @@
 #test("hey".last(default: "d"), "y")
 #test("".last(default: "d"), "d")
 
---- string-first-empty eval ---
+--- string-first-empty paged ---
 // Error: 2-12 string is empty
 #"".first()
 
---- string-last-empty eval ---
+--- string-last-empty paged ---
 // Error: 2-11 string is empty
 #"".last()
 
---- string-at eval ---
+--- string-at paged ---
 // Test the `at` method.
 #test("Hello".at(1), "e")
 #test("Hello".at(4), "o")
@@ -133,22 +133,22 @@
 #test("Hello".at(-2), "l")
 #test("Hey: 🏳️‍🌈 there!".at(5), "🏳️‍🌈")
 
---- string-at-default eval ---
+--- string-at-default paged ---
 // Test `at`'s 'default' parameter.
 #test("z", "Hello".at(5, default: "z"))
 
---- string-at-not-a-char-boundary eval ---
+--- string-at-not-a-char-boundary paged ---
 // Error: 2-14 string index 2 is not a character boundary
 #"🏳️‍🌈".at(2)
 
---- string-at-out-of-bounds eval ---
+--- string-at-out-of-bounds paged ---
 // Error: 2-15 no default value was specified and string index out of bounds (index: 5, len: 5)
 #"Hello".at(5)
 
---- string-at-at-default-other-type eval ---
+--- string-at-at-default-other-type paged ---
 #test("Hello".at(5, default: (a: 10)), (a: 10))
 
---- string-slice eval ---
+--- string-slice paged ---
 // Test the `slice` method.
 #test("abc".slice(1, 2), "b")
 #test("abc🏡def".slice(2, 7), "c🏡")
@@ -157,24 +157,24 @@
 #test("x🏡yz".slice(-2, count: 2), "yz")
 #test("x🏡yz".slice(-7, count: 7), "x🏡yz")
 
---- string-slice-count-end eval ---
+--- string-slice-count-end paged ---
 // Error: 2-29 `end` and `count` are mutually exclusive
 #"abc".slice(0, 1, count: 2)
 
---- string-slice-not-a-char-boundary eval ---
+--- string-slice-not-a-char-boundary paged ---
 // Error: 2-21 string index -1 is not a character boundary
 #"🏳️‍🌈".slice(0, -1)
 
---- string-clusters eval ---
+--- string-clusters paged ---
 // Test the `clusters` and `codepoints` methods.
 #test("abc".clusters(), ("a", "b", "c"))
 #test("abc".clusters(), ("a", "b", "c"))
 #test("🏳️‍🌈!".clusters(), ("🏳️‍🌈", "!"))
 
---- string-codepoints eval ---
+--- string-codepoints paged ---
 #test("🏳️‍🌈!".codepoints(), ("🏳", "\u{fe0f}", "\u{200d}", "🌈", "!"))
 
---- string-contains eval ---
+--- string-contains paged ---
 // Test the `contains` method.
 #test("abc".contains("b"), true)
 #test("b" in "abc", true)
@@ -185,13 +185,13 @@
 #test("abc".contains(regex("^[abc]$")), false)
 #test("abc".contains(regex("^[abc]+$")), true)
 
---- string-starts-with eval ---
+--- string-starts-with paged ---
 // Test the `starts-with` and `ends-with` methods.
 #test("Typst".starts-with("Ty"), true)
 #test("Typst".starts-with(regex("[Tt]ys")), false)
 #test("Typst".starts-with("st"), false)
 
---- string-ends-with eval ---
+--- string-ends-with paged ---
 #test("Typst".ends-with("st"), true)
 #test("Typst".ends-with(regex("\\d*")), true)
 #test("Typst".ends-with(regex("\\d+")), false)
@@ -200,7 +200,7 @@
 #test("typst113".ends-with(regex("1[0-9]")), true)
 #test("typst23".ends-with(regex("1[0-9]")), false)
 
---- string-find-and-position eval ---
+--- string-find-and-position paged ---
 // Test the `find` and `position` methods.
 #let date = regex("\\d{2}:\\d{2}")
 #test("Hello World".find("World"), "World")
@@ -208,7 +208,7 @@
 #test("It's 12:13 now".find(date), "12:13")
 #test("It's 12:13 now".position(date), 5)
 
---- string-match eval ---
+--- string-match paged ---
 // Test the `match` method.
 #test("Is there a".match("for this?"), none)
 #test(
@@ -216,7 +216,7 @@
   (start: 4, end: 8, text: "time", captures: ()),
 )
 
---- string-matches eval ---
+--- string-matches paged ---
 // Test the `matches` method.
 #test("Hello there".matches("\d"), ())
 #test("Day by Day.".matches("Day"), (
@@ -238,7 +238,7 @@
 #test(timesum("2:70"), "3:10")
 #test(timesum("1:20, 2:10, 0:40"), "4:10")
 
---- string-replace eval ---
+--- string-replace paged ---
 // Test the `replace` method with `Str` replacements.
 #test("ABC".replace("", "-"), "-A-B-C-")
 #test("Ok".replace("Ok", "Nope", count: 0), "Ok")
@@ -254,7 +254,7 @@
 #test("123".replace(regex("\\d$"), "_"), "12_")
 #test("123".replace(regex("\\d{1,2}$"), "__"), "1__")
 
---- string-replace-function eval ---
+--- string-replace-function paged ---
 // Test the `replace` method with `Func` replacements.
 
 #test("abc".replace(regex("[a-z]"), m => {
@@ -287,15 +287,15 @@
 }), "hello world")
 #test("aaa".replace("a", m => str(m.captures.len())), "000")
 
---- string-replace-function-bad-type eval ---
+--- string-replace-function-bad-type paged ---
 // Error: 23-24 expected string, found integer
 #"123".replace("123", m => 1)
 
---- string-replace-bad-type eval ---
+--- string-replace-bad-type paged ---
 // Error: 23-32 expected string or function, found array
 #"123".replace("123", (1, 2, 3))
 
---- string-trim-basic eval ---
+--- string-trim-basic paged ---
 // Test the `trim` method; the pattern is not provided.
 #let str = "Typst, LaTeX, Word, InDesign"
 #let array = ("Typst", "LaTeX", "Word", "InDesign")
@@ -311,7 +311,7 @@
 #test(" abc ".trim(at: end, repeat: true), " abc")
 #test("  abc".trim(at: start, repeat: false), "abc")
 
---- string-trim-pattern-str eval ---
+--- string-trim-pattern-str paged ---
 // Test the `trim` method; the pattern is a string.
 #test("aabcaa".trim("a", repeat: false), "abca")
 #test("aabca".trim("a", at: start), "bca")
@@ -319,7 +319,7 @@
 #test(" abc\n".trim("\n"), " abc")
 #test("whole".trim("whole", at: start), "")
 
---- string-trim-pattern-regex eval ---
+--- string-trim-pattern-regex paged ---
 // Test the `trim` method; the pattern is a regex.
 #test("".trim(regex(".")), "")
 #test("123abc456".trim(regex("\\d")), "abc")
@@ -338,11 +338,11 @@
 #test("abc12306".trim(regex("\\d"), at: end), "abc")
 #test("whole".trim(regex("whole"), at: end), "")
 
---- string-trim-at-bad-alignment eval ---
+--- string-trim-at-bad-alignment paged ---
 // Error: 17-21 expected either `start` or `end`
 #"abc".trim(at: left)
 
---- string-regex-backslash eval ---
+--- string-regex-backslash paged ---
 // Using single/double backslash will change semantical meaning of a valid
 // string escape sequence (ES).
 #let remove(source, pattern) = source.replace(regex(pattern), "")
@@ -357,18 +357,18 @@
 #test(remove(" word-wordle", "\bword\b"), " -wordle") // Invalid ES.
 #test(remove(" word-wordle", "\\bword\\b"), " -wordle") // Valid regex tokens.
 
---- string-split eval ---
+--- string-split paged ---
 // Test the `split` method.
 #test("abc".split(""), ("", "a", "b", "c", ""))
 #test("abc".split("b"), ("a", "c"))
 #test("a123c".split(regex("\\d")), ("a", "", "", "c"))
 #test("a123c".split(regex("\\d+")), ("a", "c"))
 
---- string-rev eval ---
+--- string-rev paged ---
 // Test the `rev` method.
 #test("abc".rev(), "cba")
 #test("ax̂e".rev(), "ex̂a")
 
---- string-unclosed eval ---
-// Error: 1:2-2:1 unclosed string
+--- string-unclosed paged ---
+// Error: 2-2:1 unclosed string
 #"hello\"

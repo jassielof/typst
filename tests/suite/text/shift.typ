@@ -53,7 +53,7 @@ A#super(highlight[4]) \
 A#super[#highlight[4]] B \
 A#super(highlight[4])
 
---- super-1em paged empty ---
+--- super-1em paged ---
 #set text(size: 10pt)
 #super(context test(1em.to-absolute(), 10pt))
 

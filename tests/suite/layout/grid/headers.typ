@@ -263,35 +263,35 @@
   [c],
 )
 
---- table-header-in-grid eval ---
+--- table-header-in-grid paged ---
+// Error: 2:3-2:20 cannot use `table.header` as a grid header
+// Hint: 2:3-2:20 use `grid.header` instead
 #grid(
-  // Error: 3-20 cannot use `table.header` as a grid header
-  // Hint: 3-20 use `grid.header` instead
   table.header([a]),
   [a],
 )
 
---- grid-header-in-table eval ---
+--- grid-header-in-table paged ---
+// Error: 2:3-2:19 cannot use `grid.header` as a table header
+// Hint: 2:3-2:19 use `table.header` instead
 #table(
-  // Error: 3-19 cannot use `grid.header` as a table header
-  // Hint: 3-19 use `table.header` instead
   grid.header([a]),
   [a],
 )
 
---- grid-header-in-grid-header eval ---
+--- grid-header-in-grid-header paged ---
 // Error: 14-28 cannot place a grid header within another header or footer
 #grid.header(grid.header[a])
 
---- table-header-in-grid-header eval ---
+--- table-header-in-grid-header paged ---
 // Error: 14-29 cannot place a table header within another header or footer
 #grid.header(table.header[a])
 
---- grid-header-in-table-header eval ---
+--- grid-header-in-table-header paged ---
 // Error: 15-29 cannot place a grid header within another header or footer
 #table.header(grid.header[a])
 
---- table-header-in-table-header eval ---
+--- table-header-in-table-header paged ---
 // Error: 15-30 cannot place a table header within another header or footer
 #table.header(table.header[a])
 

@@ -57,11 +57,11 @@ Hello *#x*
 
 @hello from the @unknown
 
---- set-if-bad-type eval ---
+--- set-if-bad-type paged ---
 // Error: 19-24 expected boolean, found integer
 #set text(red) if 1 + 2
 
---- set-shadowed-builtin eval ---
+--- set-shadowed-builtin paged ---
 #let text = "foo"
 // Error: 6-10 expected function, found string
 // Hint: 6-10 use `std.text` to access the shadowed standard library function
@@ -72,11 +72,11 @@ Hello *#x*
 #set std.text(fill: red)
 #text
 
---- set-in-expr eval ---
+--- set-in-expr paged ---
 // Error: 12-26 set is only allowed directly in code and content blocks
 #{ let x = set text(blue) }
 
---- set-bad-trivia eval ---
+--- set-bad-trivia paged ---
 // Error cases parsing set rules with trivia between the function and args.
 // Error: 10 expected argument list
 #set page

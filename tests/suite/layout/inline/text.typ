@@ -48,53 +48,53 @@ waltz vs #text(discretionary-ligatures: true)[waltz]
 #text(features: ("smcp",))[Smcp] \
 fi vs. #text(features: (liga: 0))[No fi]
 
---- text-stylistic-set-bad-type eval ---
+--- text-stylistic-set-bad-type paged ---
 // Error: 26-31 expected none, integer, or array, found boolean
 #set text(stylistic-set: false)
 
---- text-stylistic-set-out-of-bounds eval ---
+--- text-stylistic-set-out-of-bounds paged ---
 // Error: 26-28 stylistic set must be between 1 and 20
 #set text(stylistic-set: 25)
 
---- text-number-type-bad eval ---
+--- text-number-type-bad paged ---
 // Error: 24-25 expected "lining", "old-style", or auto, found integer
 #set text(number-type: 2)
 
---- text-features-bad eval ---
+--- text-features-bad paged ---
 // Error: 21-26 expected array or dictionary, found boolean
 #set text(features: false)
 
---- text-features-non-ascii eval ---
+--- text-features-non-ascii paged ---
 // Error: 21-30 feature tag may contain only printable ASCII characters
 // Hint: 21-30 found invalid cluster `"ƒ"`
 // Hint: 21-30 occurred in tag at index 0 (`"ƒeat"`)
 #set text(features: ("ƒeat",))
 
---- text-features-bad-padding eval ---
+--- text-features-bad-padding paged ---
 // Error: 21-30 spaces may only appear as padding following a feature tag
 // Hint: 21-30 occurred in tag at index 0 (`" tag"`)
 #set text(features: (" tag",))
 
---- text-features-empty-array eval ---
+--- text-features-empty-array paged ---
 // Error: 21-26 feature tag must be one to four characters in length
 // Hint: 21-26 found 0 characters
 // Hint: 21-26 occurred in tag at index 0 (`""`)
 #set text(features: ("",))
 
---- text-features-overlong-dict eval ---
+--- text-features-overlong-dict paged ---
 // Error: 21-41 feature tag must be one to four characters in length
 // Hint: 21-41 found 15 characters
 // Hint: 21-41 occurred in tag at index 0 (`"verylongfeature"`)
 #set text(features: (verylongfeature: 0))
 
---- text-features-array-kv eval ---
+--- text-features-array-kv paged ---
 // Error: 21-32 feature tag must be one to four characters in length
 // Hint: 21-32 found 6 characters
 // Hint: 21-32 occurred in tag at index 0 (`"feat=2"`)
 // Hint: 21-32 to set features with custom values, consider supplying a dictionary
 #set text(features: ("feat=2",))
 
---- text-features-bad-nested-type eval ---
+--- text-features-bad-nested-type paged ---
 // Error: 21-35 expected string, found boolean
 // Hint: 21-35 occurred in tag at index 1 (`false`)
 // Hint: 21-35 to set features with custom values, consider supplying a dictionary
@@ -129,10 +129,3 @@ My text has spaces.
 // Test word spacing relative to the font's space width.
 #set text(spacing: 50% + 1pt)
 This is tight.
-
---- issue-5855-misaligned-descender paged ---
-foo #box[foo] foo
-
-#set text(bottom-edge: "descender")
-
-foo #box[foo] foo

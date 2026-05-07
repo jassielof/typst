@@ -159,15 +159,15 @@ Hello-#text(red)[world]
 #set text(costs: (hyphenation: 10000%))
 #sample
 
---- costs-invalid-type eval ---
+--- costs-invalid-type paged ---
 // Error: 18-37 expected ratio, found auto
 #set text(costs: (hyphenation: auto))
 
---- costs-invalid-key eval ---
+--- costs-invalid-key paged ---
 // Error: 18-52 unexpected key "invalid-key", valid keys are "hyphenation", "runt", "widow", and "orphan"
 #set text(costs: (hyphenation: 1%, invalid-key: 3%))
 
---- costs-access paged empty ---
+--- costs-access paged ---
 #set text(costs: (hyphenation: 1%, runt: 2%))
 #set text(costs: (widow: 3%))
 #context test(text.costs, (hyphenation: 1%, runt: 2%, widow: 3%, orphan: 100%))

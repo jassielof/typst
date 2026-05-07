@@ -1,6 +1,6 @@
 // Test recursive function calls.
 
---- recursion-named eval ---
+--- recursion-named paged ---
 // Test with named function.
 #let fib(n) = {
   if n <= 2 {
@@ -12,31 +12,31 @@
 
 #test(fib(10), 55)
 
---- recursion-unnamed-invalid eval ---
+--- recursion-unnamed-invalid paged ---
 // Test with unnamed function.
 // Error: 17-18 unknown variable: f
 #let f = (n) => f(n - 1)
 #f(10)
 
---- recursion-named-returns-itself eval ---
+--- recursion-named-returns-itself paged ---
 // Test capturing with named function.
 #let f = 10
 #let f() = f
 #test(type(f()), function)
 
---- recursion-unnamed-does-not-return-itself eval ---
+--- recursion-unnamed-does-not-return-itself paged ---
 // Test capturing with unnamed function.
 #let f = 10
 #let f = () => f
 #test(type(f()), int)
 
---- recursion-shadowing eval ---
+--- recursion-shadowing paged ---
 // Test redefinition.
 #let f(x) = "hello"
 #let f(x) = if x != none { f(none) } else { "world" }
 #test(f(1), "world")
 
---- recursion-maximum-depth eval ---
+--- recursion-maximum-depth paged ---
 // Error: 15-21 maximum function call depth exceeded
 #let rec(n) = rec(n) + 1
 #rec(1)

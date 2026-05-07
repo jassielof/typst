@@ -1,4 +1,4 @@
---- parser-depth-exceeded-balanced eval ---
+--- parser-depth-exceeded-balanced paged ---
 #{
   let s = "()"
   let pat = "({})"
@@ -13,22 +13,20 @@
   eval(s)
 }
 
---- parser-depth-exceeded-unbalanced eval ---
+--- parser-depth-exceeded-unbalanced paged ---
 // Error: 7-17 unclosed delimiter
 // Error: 7-17 maximum parsing depth exceeded
 #eval(1024 * "(")
 
---- parser-depth-exceeded-unbalanced-arrow eval ---
+--- parser-depth-exceeded-unbalanced-arrow paged ---
 // https://issues.oss-fuzz.com/issues/42538221
 // Error: 7-20 the character `#` is not valid in code
-// Hint: 7-20 you are already in code mode
-// Hint: 7-20 try removing the `#`
 // Error: 7-20 unclosed delimiter
 // Error: 7-20 unexpected arrow
 // Error: 7-20 maximum parsing depth exceeded
 #eval(512 * "#((=>")
 
---- parser-depth-exceeded-unop eval ---
+--- parser-depth-exceeded-unop paged ---
 // https://issues.oss-fuzz.com/issues/415163163
 // Error: 7-17 maximum parsing depth exceeded
 // Error: 7-17 expected expression

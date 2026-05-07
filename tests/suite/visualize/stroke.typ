@@ -1,6 +1,6 @@
 // Test lines.
 
---- stroke-constructor eval ---
+--- stroke-constructor paged ---
 // Converting to stroke
 #test(stroke(red).paint, red)
 #test(stroke(red).thickness, auto)
@@ -15,11 +15,11 @@
 #test(stroke(cap: "round").thickness, auto)
 #test(stroke(cap: "round", thickness: auto).thickness, auto)
 
---- stroke-constructor-unknown-key eval ---
+--- stroke-constructor-unknown-key paged ---
 // Error: 9-21 unexpected key "foo", valid keys are "paint", "thickness", "cap", "join", "dash", and "miter-limit"
 #stroke((foo: "bar"))
 
---- stroke-fields-simple eval ---
+--- stroke-fields-simple paged ---
 // Test stroke fields for simple strokes.
 #test((1em + blue).paint, blue)
 #test((1em + blue).thickness, 1em)
@@ -28,7 +28,7 @@
 #test((1em + blue).dash, auto)
 #test((1em + blue).miter-limit, auto)
 
---- stroke-fields-complex eval ---
+--- stroke-fields-complex paged ---
 // Test complex stroke fields.
 #let r1 = rect(stroke: (paint: cmyk(1%, 2%, 3%, 4%), thickness: 4em + 2pt, cap: "round", join: "bevel", miter-limit: 5.0, dash: none))
 #let r2 = rect(stroke: (paint: cmyk(1%, 2%, 3%, 4%), thickness: 4em + 2pt, cap: "round", join: "bevel", miter-limit: 5.0, dash: (3pt, "dot", 4em)))

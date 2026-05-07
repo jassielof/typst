@@ -1,4 +1,4 @@
---- json eval ---
+--- json paged ---
 // Test reading JSON data.
 #let data = json("/assets/data/zoo.json")
 #test(data.len(), 3)
@@ -9,16 +9,16 @@
 #let data-from-path = json(path("/assets/data/zoo.json"))
 #test(data-from-path, data)
 
---- json-with-bom eval ---
+--- json-with-bom paged ---
 // Error: 7-43 failed to parse JSON (unexpected Byte Order Mark at 1:1)
 // Hint: 7-43 JSON requires UTF-8 without a BOM
 #json(bytes("\u{FEFF}{\"name\": \"BOM\"}"))
 
---- json-invalid eval ---
+--- json-invalid paged ---
 // Error: "/assets/data/bad.json" 3:14 failed to parse JSON (expected value at line 3 column 14)
 #json("/assets/data/bad.json")
 
---- json-decode-deprecated eval ---
+--- json-decode-deprecated paged ---
 // Warning: 15-21 `json.decode` is deprecated, directly pass bytes to `json` instead
 // Hint: 15-21 it will be removed in Typst 0.15.0
 #let _ = json.decode
@@ -29,7 +29,7 @@
 #let bignum = json("/assets/data/big-number.json")
 #bignum
 
---- json-decode-number eval ---
+--- json-decode-number paged ---
 #import "edge-case.typ": large-integer, representable-integer
 
 #for (name, source) in representable-integer {
@@ -48,7 +48,7 @@
   )
 }
 
---- json-encode-any eval ---
+--- json-encode-any paged ---
 #import "edge-case.typ": special-types-for-human
 #for value in special-types-for-human {
   test(

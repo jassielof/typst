@@ -130,11 +130,11 @@ a + 0.
 + E
 + F
 
---- enum-numbering-pattern-empty eval ---
+--- enum-numbering-pattern-empty paged ---
 // Error: 22-24 invalid numbering pattern
 #set enum(numbering: "")
 
---- enum-numbering-pattern-invalid eval ---
+--- enum-numbering-pattern-invalid paged ---
 // Error: 22-28 invalid numbering pattern
 #set enum(numbering: "(())")
 
@@ -181,7 +181,7 @@ a + 0.
    32. g
    64. h
 
---- enum-number-align-values paged empty ---
+--- enum-number-align-values paged ---
 // Test valid number align values (horizontal and vertical)
 #set enum(number-align: start)
 #set enum(number-align: end)

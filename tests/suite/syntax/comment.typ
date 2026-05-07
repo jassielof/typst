@@ -34,7 +34,7 @@ Second part
 First part          //
 Second part
 
---- issue-4632-sth-followed-by-comment eval ---
+--- issue-4632-sth-followed-by-comment paged ---
 // Test heading markers followed by comments.
 #test([
   =// Comment
@@ -69,7 +69,7 @@ Second part
 ])
 
 
---- comment-block-unclosed eval ---
+--- comment-block-unclosed paged ---
 // End should not appear without start.
 // Error: 7-9 unexpected end of block comment
 // Hint: 7-9 consider escaping the `*` with a backslash or opening the block comment with `/*`
