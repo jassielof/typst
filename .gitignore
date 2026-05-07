@@ -30,3 +30,5 @@ package-lock.json
 # Extra
 Summary.*
 assets/
+Taskfile.yaml
+scripts/
