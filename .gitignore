@@ -33,4 +33,4 @@ assets/
 Taskfile.yaml
 scripts/
 modules/
-
+.gitmodules
