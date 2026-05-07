@@ -1,4 +1,5 @@
 #let the-font = "Retail Variable"
+
 #set text(
   font: the-font,
   fallback: false,
