@@ -15,8 +15,8 @@ authors:
 references:
   - title: A Programmable Markup Language for Typesetting
     authors:
-      - family-names: Mädje
-        given-names: Laurenz
+    - family-names: Mädje
+      given-names: Laurenz
     year: 2022
     type: thesis
     thesis-type: Master's thesis
@@ -25,8 +25,8 @@ references:
       name: Technische Universität Berlin
   - title: Fast typesetting with incremental compilation
     authors:
-      - family-names: Haug
-        given-names: Martin
+    - family-names: Haug
+      given-names: Martin
     year: 2022
     type: thesis
     thesis-type: Master's thesis
@@ -34,8 +34,8 @@ references:
     url: https://doi.org/10.13140/RG.2.2.15606.88642
     institution:
       name: Technische Universität Berlin
-repository-code: "https://github.com/typst/typst"
-url: "https://typst.app/"
+repository-code: 'https://github.com/typst/typst'
+url: 'https://typst.app/'
 keywords:
   - typesetting
   - markup language
