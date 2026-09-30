@@ -1,0 +1,36 @@
+@@ repr  [src:b84e3fc7]
+Devuelve la representación en cadena de texto de un valor.
+
+Cuando se inserta en contenido, la mayoría de los valores se muestran como esta
+representación en monoespaciado y con resaltado de sintaxis. Las excepciones son
+`{none}`, los enteros, los flotantes, las cadenas de texto, el contenido y las
+funciones.
+
+= Ejemplo <example>
+```example
+#none vs #repr(none) \
+#"hello" vs #repr("hello") \
+#(1, 2) vs #repr((1, 2)) \
+#[*Hi*] vs #repr([*Hi*])
+```
+
+= #short-or-long[Solo depuración][Solo para depuración] <debugging-only>
+Esta función es para depuración. Su salida no debe considerarse estable y puede
+cambiar en cualquier momento.
+
+Para ser específicos, tener el mismo `repr` no garantiza que los valores sean
+equivalentes, y `repr` no es una inversa estricta de @eval. En el siguiente
+ejemplo, para mayor legibilidad, la @length se redondea a dos cifras
+significativas y se omiten la lista de parámetros y el cuerpo de la
+@function:unnamed[`function` sin nombre].
+
+```example
+#assert(2pt / 3 < 0.67pt)
+#repr(2pt / 3)
+
+#repr(x => x + 1)
+```
+
+
+@@ repr::value  [src:0391a735]
+El valor del que se produce la representación en cadena de texto.

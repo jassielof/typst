@@ -1,0 +1,13 @@
+@@ bool  [src:f2f4f5c2]
+Un tipo con dos estados.
+
+El tipo booleano tiene dos valores: `{true}` y `{false}`. Indica si algo está
+activo o habilitado.
+
+= Ejemplo <example>
+```example
+#false \
+#true \
+#(1 < 2)
+```
+

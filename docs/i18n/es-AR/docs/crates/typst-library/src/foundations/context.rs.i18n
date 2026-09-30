@@ -1,0 +1,5 @@
+@@ ContextElem  [src:95c7de27]
+Ejecuta un bloque `context`.
+
+@@ ContextElem::func  [src:afc164cb]
+La función a la que se llama con el contexto.

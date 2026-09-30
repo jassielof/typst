@@ -154,6 +154,7 @@ def cmd_stamp(a):
 
 # --------------------------------------------------------------------------- check
 
+FENCE_FULL = re.compile(r"^([ \t]*)(`{3,})[^\n`]*\n.*?^\1\2[ \t]*\n?", re.S | re.M)
 FENCE = re.compile(r"^([ \t]*)(`{3,})([^\n`]*)\n(.*?)^\1\2\s*$", re.S | re.M)
 
 
@@ -337,15 +338,88 @@ def cmd_translate(a):
     return 0
 
 
+# --------------------------------------------------------------------------- manual mode
+
+MASK = re.compile(r"⟦CODE (\d+)⟧")
+
+
+def mask_code(text):
+    """Replace fenced code blocks by ⟦CODE n⟧ so that a translator only sees prose."""
+    blocks = []
+
+    def sub(m):
+        blocks.append(m.group(0))
+        return f"⟦CODE {len(blocks)}⟧"
+
+    return FENCE_FULL.sub(sub, text), blocks
+
+
+def unmask_code(text, blocks):
+    found = [int(n) for n in MASK.findall(text)]
+    if sorted(found) != list(range(1, len(blocks) + 1)):
+        raise ValueError(f"code placeholders {found} do not match {len(blocks)} blocks")
+    return MASK.sub(lambda m: blocks[int(m.group(1)) - 1], text)
+
+
+def cmd_export(a):
+    """Print pending Rust doc entries of one file with code masked (for manual/LLM translation)."""
+    lang = Lang(a.lang)
+    src = rust_docs_for(a.file)
+    sc_path = sidecar_path(lang, a.file)
+    sc = parse_sidecar(sc_path.read_text()) if sc_path.exists() else {}
+    for key, markup in src.items():
+        if not a.all and key in sc and sc[key][0] == h(markup):
+            continue
+        masked, _ = mask_code(markup)
+        print(f"@@ {key}\n{masked}")
+    return 0
+
+
+def cmd_import(a):
+    """Read translated entries (same format as export) from stdin and store them."""
+    lang = Lang(a.lang)
+    src = rust_docs_for(a.file)
+    sc_path = sidecar_path(lang, a.file)
+    cur = parse_sidecar(sc_path.read_text()) if sc_path.exists() else {}
+    got = parse_sidecar(sys.stdin.read())
+    bad = 0
+    for key, (_, body) in got.items():
+        if key not in src:
+            print(f"unknown key {key}"); bad += 1; continue
+        try:
+            full = unmask_code(body, mask_code(src[key])[1])
+        except ValueError as e:
+            print(f"{key}: {e}"); bad += 1; continue
+        problems = check_pair(src[key], full, lang)
+        if problems:
+            print(f"{key}: " + "; ".join(problems)); bad += 1
+            if not a.force:
+                continue
+        cur[key] = (h(src[key]), full)
+    write_sidecar(sc_path, cur)
+    print(f"stored {len(got) - bad} entries ({bad} rejected)")
+    return 1 if bad else 0
+
+
+def rust_docs_for(rs):
+    res = subprocess.run(["cargo", "docit", "i18n-dump", rs], cwd=ROOT, text=True, capture_output=True)
+    if res.returncode != 0:
+        sys.exit(res.stderr)
+    return json.loads(res.stdout).get(rs, {})
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--lang", default="es-AR")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name, fn in (("status", cmd_status), ("check", cmd_check), ("stamp", cmd_stamp), ("translate", cmd_translate)):
+    for name, fn in (("status", cmd_status), ("check", cmd_check), ("stamp", cmd_stamp), ("translate", cmd_translate), ("export", cmd_export), ("import", cmd_import)):
         p = sub.add_parser(name)
         p.set_defaults(fn=fn)
         p.add_argument("--lang", default=argparse.SUPPRESS)
-        if name != "stamp":
+        if name in ("export", "import"):
+            p.add_argument("file", help="Rust source path relative to the repo root")
+            p.add_argument("--all" if name == "export" else "--force", action="store_true")
+        if name not in ("stamp", "export", "import"):
             p.add_argument("--no-docs", action="store_true", help="skip Rust doc comments (no cargo needed)")
         if name == "status":
             p.add_argument("-v", "--verbose", action="store_true")

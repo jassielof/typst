@@ -1,0 +1,50 @@
+@@ TargetElem  [src:454c0e4e]
+Este elemento existe únicamente para alojar el campo `target` de la cadena de
+estilos. Nunca se construye y no es visible para los usuarios.
+
+@@ TargetElem::target  [src:0b543bfa]
+El destino de compilación.
+
+@@ target  [src:9cde2234]
+Devuelve el destino de exportación actual.
+
+Esta función devuelve
+- `{"paged"}` en la exportación a @pdf[PDF], @format.png[PNG] y
+  @format.svg[SVG], o dentro de un @html.frame[marco HTML]
+- `{"html"}` en la exportación a @html[HTML]
+- `{"bundle"}` en la exportación a @format.bundle[Bundle]
+
+= Cuándo usarla <when-to-use-it>
+Esta función te permite dar formato correcto a tu documento en los destinos de
+exportación paginado, HTML y de varios archivos. Debería usarse principalmente en
+plantillas y reglas show, en lugar de directamente en el contenido. De esta
+manera, el contenido del documento puede ser totalmente independiente del destino
+de exportación y se puede compartir entre distintos destinos.
+
+= Destinos variables <varying-targets>
+Esta función es @reference:context[contextual], ya que el destino puede variar
+dentro de una misma compilación: al exportar a HTML, el destino será
+`{"paged"}` dentro de un @html.frame.
+
+= Ejemplo <example>
+```example
+#let kbd(it) = context {
+  if target() == "html" {
+    html.elem("kbd", it)
+  } else {
+    set text(fill: rgb("#1f2328"))
+    let r = 3pt
+    box(
+      fill: rgb("#f6f8fa"),
+      stroke: rgb("#d1d9e0b3"),
+      outset: (y: r),
+      inset: (x: r),
+      radius: r,
+      raw(it)
+    )
+  }
+}
+
+Press #kbd("F1") for help.
+```
+

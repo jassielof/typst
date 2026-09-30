@@ -1,0 +1,54 @@
+@@ Label  [src:e7a67cec]
+Una etiqueta para un elemento.
+
+Al insertar una etiqueta en el contenido, esta se adjunta al elemento anterior
+más cercano que no sea un espacio. El elemento anterior debe estar en el mismo
+ámbito que la etiqueta, lo que significa que, por ejemplo, `[Hello #[<label>]]`
+no funcionaría.
+
+Un elemento etiquetado se puede @ref[referenciar], @query[consultar] y
+@reference:styling[estilizar] a través de su etiqueta.
+
+Una vez construida, podés obtener el nombre de una etiqueta usando
+@str.constructor[`str`].
+
+= Ejemplo <example>
+```example
+#show <a>: set text(blue)
+#show label("b"): set text(red)
+
+= Heading <a>
+*Strong* #label("b")
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: podés crear una etiqueta
+encerrando su nombre entre paréntesis angulares. Esto funciona tanto en marcado
+como en código. El nombre de una etiqueta puede contener letras, números, `_`,
+`-`, `:` y `.`. Una etiqueta no puede estar vacía.
+
+Tené en cuenta que hay una diferencia sintáctica al usar la sintaxis dedicada de
+esta función. En el siguiente código, el `[<a>]` termina el título y, por lo
+tanto, se adjunta al título en sí, mientras que el `[#label("b")]` es parte del
+título y, por lo tanto, se adjunta al texto del título.
+
+```typ
+// Equivalent to `#heading[Introduction] <a>`.
+= Introduction <a>
+
+// Equivalent to `#heading[Conclusion #label("b")]`.
+= Conclusion #label("b")
+```
+
+Actualmente, las etiquetas solo se pueden adjuntar a elementos en modo marcado,
+no en modo código. Esto podría cambiar en el futuro.
+
+@@ Label::construct  [src:65e539ed]
+Crea una etiqueta a partir de una cadena de texto.
+
+@@ Label::construct::name  [src:d120b60d]
+El nombre de la etiqueta.
+
+A diferencia de la @label:syntax[sintaxis dedicada], este constructor acepta
+cualquier cadena de texto no vacía, incluidos los nombres con caracteres
+especiales.

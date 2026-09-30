@@ -1,0 +1,15 @@
+@@ NoneValue  [src:24fe4994]
+Un valor que indica la ausencia de cualquier otro valor.
+
+El tipo none tiene exactamente un valor: `{none}`.
+
+Cuando se lo inserta en el documento, no es visible. Este es también el valor
+que producen los bloques de código vacíos. Se puede
+@reference:scripting:blocks[unir] con cualquier valor, lo que da como resultado
+el otro valor.
+
+= Ejemplo <example>
+```example
+Not visible: #none
+```
+

@@ -1,0 +1,9 @@
+@@ AutoValue  [src:cb1f6f91]
+Un valor que indica un valor por defecto inteligente.
+
+El tipo auto tiene exactamente un valor: `{auto}`.
+
+Los parámetros que admiten el valor `{auto}` tienen algún valor por defecto
+inteligente o un comportamiento contextual. Un buen ejemplo es el parámetro de
+@text.dir[dirección del texto]. Establecerlo en `{auto}` permite que Typst
+determine automáticamente la dirección a partir del @text.lang[idioma del texto].

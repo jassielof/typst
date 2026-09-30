@@ -1,0 +1,66 @@
+@@ Type  [src:66b79b94]
+Describe una clase de valor.
+
+Para dar estilo a tu documento, tenés que trabajar con valores de distintas
+clases: longitudes que especifican el tamaño de tus elementos, colores para tu
+texto y tus formas, y más. Typst los categoriza en _tipos_ claramente definidos
+y te indica dónde espera cada tipo de valor.
+
+Además de los tipos básicos de valores numéricos y de los @int[tipos]
+@float[habituales] @str[de] @array[los] @dictionary[lenguajes de programación],
+Typst ofrece un tipo especial para el @content[_contenido._] Un valor de este
+tipo puede contener todo lo que podés ingresar en tu documento: texto, elementos
+como títulos y formas, e información de estilo.
+
+= Ejemplo <example>
+```example
+#let x = 10
+#if type(x) == int [
+  #x is an integer!
+] else [
+  #x is another value...
+]
+
+An image is of type
+#type(image("glacier.jpg")).
+```
+
+El tipo de `{10}` es `int`. Ahora bien, ¿cuál es el tipo de `int` o incluso de
+`type`?
+
+```example
+#type(int) \
+#type(type)
+```
+
+A diferencia de otros tipos como `int`, @none[none] y @auto[auto] no tienen un
+nombre que los represente. Para comprobar si un valor es uno de ellos,
+comparalo directamente con ellos, por ejemplo:
+
+```example
+#let val = none
+#if val == none [
+  Yep, it's none.
+]
+```
+
+Tené en cuenta que `type` devuelve @content para todos los elementos del
+documento. Para determinar programáticamente con qué clase de contenido estás
+tratando, mirá @content.func.
+
+@@ Type::construct  [src:054bd086]
+Determina el tipo de un valor.
+
+```example
+#type(12) \
+#type(14.7) \
+#type("hello") \
+#type(<glacier>) \
+#type([Hi]) \
+#type(x => x + 1) \
+#type(type)
+```
+
+
+@@ Type::construct::value  [src:af33e9c0]
+El valor cuyo tipo se quiere determinar.

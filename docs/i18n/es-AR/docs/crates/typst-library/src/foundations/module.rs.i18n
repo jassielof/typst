@@ -1,0 +1,38 @@
+@@ Module  [src:c7e7f0eb]
+Una colección de variables y funciones que suelen estar relacionadas con un
+único tema.
+
+Un módulo puede
+- ser incorporado
+- provenir de una @reference:scripting:modules[importación de archivo]
+- provenir de una @reference:scripting:packages[importación de paquete] (y, por
+  lo tanto, indirectamente de su archivo de punto de entrada)
+- ser el resultado de una llamada a la función @plugin[plugin]
+
+Podés acceder a las definiciones del módulo con la
+@reference:scripting:fields[notación de acceso a campos] e interactuar con él
+usando las @reference:scripting:modules[sintaxis de importación e inclusión].
+
+```example
+<<< #import "utils.typ"
+<<< #utils.add(2, 5)
+
+<<< #import utils: sub
+<<< #sub(1, 4)
+>>> #7
+>>>
+>>> #(-3)
+```
+
+Podés comprobar si una definición está presente en un módulo usando el operador
+`{in}`, con una cadena de texto a la izquierda. Esto puede ser útil para
+@std:conditional-access[acceder condicionalmente] a definiciones de un módulo.
+
+```example
+#("table" in std) \
+#("nope" in std)
+```
+
+Como alternativa, se puede convertir un módulo en un diccionario y, de esa
+manera, acceder a su contenido de forma dinámica, usando el
+@dictionary.constructor[constructor de diccionarios].

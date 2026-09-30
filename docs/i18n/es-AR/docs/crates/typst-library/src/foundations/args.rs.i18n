@@ -1,0 +1,112 @@
+@@ Args  [src:c58a2120]
+Argumentos capturados de una función.
+
+Los argumentos son _posicionales_ o _con nombre,_ y se puede acceder a ellos
+mediante los métodos @arguments.pos[`pos`], @arguments.named[`named`] y
+@arguments.at[`at`].
+
+Además, se puede acceder a los argumentos con nombre con la @arguments.at[sintaxis
+de campos], de forma similar a los @dictionary[diccionarios].
+
+= Sumideros de argumentos <argument-sinks>
+Al igual que las funciones incorporadas, las funciones personalizadas también
+pueden tomar una cantidad variable de argumentos. Podés especificar un
+_sumidero de argumentos_ que recolecta todos los argumentos sobrantes como
+`..sink`. El valor `sink` resultante es del tipo `arguments`. Expone métodos para
+acceder a los argumentos posicionales y con nombre.
+
+```example
+#let format(title, ..authors) = {
+  let by = authors
+    .pos()
+    .join(", ", last: " and ")
+
+  [*#title* \ _Written by #by;_]
+}
+
+#format("ArtosFlow", "Jane", "Joe")
+```
+
+= Expansión <spreading>
+De manera inversa a un sumidero de argumentos, podés _expandir_ argumentos,
+arrays y diccionarios en una llamada a función con el operador `..spread`:
+
+```example
+#let array = (2, 3, 5)
+#calc.min(..array)
+#let dict = (fill: blue)
+#text(..dict)[Hello]
+```
+
+
+@@ Args::at  [src:0f1b2a98]
+Devuelve el argumento posicional del índice especificado o el argumento con
+nombre del nombre especificado.
+
+Si la clave es un @int[entero], esto equivale a llamar primero a
+@arguments.pos[`pos`] y luego a @array.at. Si es una @str[cadena de texto],
+equivale a llamar primero a @arguments.named[`named`] y luego a
+@dictionary.at.
+
+También se puede acceder a los argumentos con nombre con la sintaxis de campos
+(por ejemplo, `{arguments(key: 42).key}`) si no hace falta un valor por defecto.
+A diferencia de los @dictionary[diccionarios], los campos de los argumentos no se
+pueden modificar.
+
+@@ Args::at::default  [src:7cd12281]
+Un valor por defecto para devolver si la clave no es válida.
+
+@@ Args::at::key  [src:d60538de]
+El índice o el nombre del argumento que se quiere obtener.
+
+@@ Args::construct  [src:03e03402]
+Construye argumentos expandibles en el lugar.
+
+Esta función se comporta como `{let args(..sink) = sink}`.
+
+```example
+#let args = arguments(stroke: red, inset: 1em, [Body])
+#box(..args)
+```
+
+
+@@ Args::construct::arguments  [src:3f3a001f]
+Los argumentos que se construyen.
+
+@@ Args::filter  [src:67a1ea39]
+Produce un nuevo `arguments` solo con los argumentos cuyo valor pasa la prueba.
+
+```example
+#{
+  arguments(-1, a: 0, b: 1, 2)
+    .filter(v => v > 0)
+}
+```
+
+
+@@ Args::filter::test  [src:c2d93b7c]
+La función que se aplica a cada valor. Debe devolver un booleano.
+
+@@ Args::len  [src:29963ee3]
+La cantidad de argumentos, posicionales o con nombre.
+
+@@ Args::map  [src:f03aaa54]
+Produce un nuevo `arguments` transformando el valor de cada argumento con la
+función indicada.
+
+```example
+#{
+  arguments(0, a: 1, 2)
+    .map(v => v + 1)
+}
+```
+
+
+@@ Args::map::mapper  [src:d9d38b05]
+La función que se aplica a cada valor.
+
+@@ Args::to_named  [src:20cc7a29]
+Devuelve los argumentos con nombre capturados como un diccionario.
+
+@@ Args::to_pos  [src:1419ca01]
+Devuelve los argumentos posicionales capturados como un array.
