@@ -87,7 +87,7 @@ fn i18n_docs(path: EcoString, key: EcoString) -> Value {
     let Some(state) = state() else { return Value::None };
     let mut sidecars = state.sidecars.lock().unwrap();
     let entries = sidecars.entry(path.to_string()).or_insert_with(|| {
-        let file = format!("{}.i18n", path.replace('\\', "/"));
+        let file = format!("{}.i18n", path.replace("\\", "/"));
         std::fs::read_to_string(state.root.join("docs").join(file))
             .map(|text| parse_sidecar(&text))
             .unwrap_or_default()
@@ -194,7 +194,7 @@ pub fn subcommand() -> Option<ExitCode> {
         for (key, value) in items {
             if let Value::Array(array) = value
                 && let Some(Value::Str(docs)) = array.at(1, None).ok()
-                && !docs.trim().is_empty()
+                && !docs.as_str().trim().is_empty()
             {
                 entries.insert(key.to_string(), docs.as_str().into());
             }
