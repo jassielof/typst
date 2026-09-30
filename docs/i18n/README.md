@@ -1,0 +1,104 @@
+# Documentación de Typst en español (es-AR, voseo)
+
+Este fork agrega una traducción de la documentación oficial **sin modificar los
+archivos de contenido upstream**, para que `git merge upstream/main` sea
+(casi siempre) trivial. Todo lo no traducido cae al inglés.
+
+```sh
+cargo docit compile --format pdf --lang es-AR   # -> docs/dist/docs-es-AR.pdf
+cargo docit compile --format pdf                # sin --lang: idéntico a upstream
+```
+
+El workflow `.github/workflows/docs-es-ar.yml` compila el PDF en español y lo
+guarda como artifact (`typst-docs-es-AR`) en cada push a `docs-translation` o a
+demanda (*Run workflow*).
+
+## Cómo funciona
+
+| Fuente de texto | Mecanismo | Dónde vive la traducción |
+| --- | --- | --- |
+| `docs/content/**/*.typ`, `docs/components/preface.typ` | **Overlay de archivos**: con `--lang`, si existe `docs/i18n/<lang>/files/<ruta>`, se carga ese archivo en vez del original | `docs/i18n/es-AR/files/**` |
+| Doc comments `///` de Rust | Hook en `live-docs` → `stdx.i18n-docs(path, key)` | `docs/i18n/es-AR/docs/<ruta .rs>.i18n` |
+| Strings de UI de `docs/components/*.typ` | `stdx.ui("Definitions")` con fallback al inglés | `docs/i18n/es-AR/ui.toml` |
+| Idioma del PDF | `set text(..stdx.text-lang)` (`lang: "es", region: "AR"`) | — |
+
+Formato de los sidecars de doc comments (`src:` es el hash del markup inglés
+original al traducir; así `status` detecta lo desactualizado):
+
+```
+@@ Array::first  [src:77a04e05]
+Devuelve el primer ítem del array...
+```
+
+`state.json` guarda el hash de cada archivo fuente traducido. El changelog no
+se traduce. Todo el código nuevo está en `docs/src/i18n.rs`, `docs/i18n/**`,
+`tools/i18n/**` y `.github/workflows/docs-es-ar.yml`.
+
+### Hooks en archivos upstream (todo el diff fuera de esas rutas)
+
+`docs/src/args.rs` (flag `--lang`), `docs/src/main.rs` (`mod i18n`, campo
+`lang`, ruta de salida, subcomando `i18n-dump`), `docs/src/world.rs` (init,
+overlay en `load`/`resolve`, `stdx`), `docs/components/live.typ` (2 líneas),
+`docs/components/styling.typ` (1 línea), `docs/components/category.typ`
+(strings de UI → `stdx.ui(...)`). Cada hook es un commit propio, así que se
+pueden revertir o rebasar por separado. Verificalo con:
+
+```sh
+git diff upstream/main --stat -- ':!docs/i18n' ':!tools/i18n' ':!docs/src/i18n.rs' ':!.github/workflows/docs-es-ar.yml'
+```
+
+## Flujo de sincronización con upstream
+
+```sh
+git remote add upstream https://github.com/typst/typst   # una sola vez
+git fetch upstream
+git merge upstream/main                                   # debería ser limpio
+python3 tools/i18n status                                 # nuevo / desactualizado / huérfano
+ANTHROPIC_API_KEY=... python3 tools/i18n translate       # traduce solo lo pendiente
+python3 tools/i18n check                                  # valida estructura
+cargo docit compile --format pdf --lang es-AR
+```
+
+Comandos de `tools/i18n` (solo Python 3.11+, sin dependencias; los que leen
+doc comments usan `cargo docit i18n-dump`, el mismo parser del build):
+
+- `status [-v] [--no-docs]`: cuenta y lista unidades `new` / `outdated` / `orphan`.
+- `check [--strict] [--no-docs]`: verifica que la traducción conserve bloques de
+  código (y su cantidad), llamadas `#...`, `@refs`, `<labels>`, URLs, texto `raw`,
+  balance de `[]`/`{}`, glosario y voseo. En la referencia los ejemplos deben
+  quedar intactos; en el tutorial solo se admite traducir prosa de ejemplo.
+- `translate [--only SUBSTR] [--limit N] [--dry-run]`: llama a la API de
+  Anthropic (`ANTHROPIC_API_KEY`; modelo con `I18N_MODEL`) con temperatura baja,
+  un lote por archivo, y reintenta una vez si `check` falla. Solo retraduce lo
+  pendiente y actualiza hashes.
+- `stamp PATH...`: marca como al día una traducción hecha a mano.
+
+Reglas y glosario que recibe el traductor: `docs/i18n/es-AR/rules.md` y
+`glossary.toml`.
+
+### Resolver conflictos
+
+Los hooks están separados del código upstream por líneas en blanco y son de una
+o pocas líneas. Un merge real solo conflictúa si upstream modifica **esas mismas
+líneas vecinas**; en ese caso, conservá ambos lados (el cambio upstream y la
+línea `i18n::...`). Para archivos copiados en el overlay (p. ej.
+`components/preface.typ`), `status` los marca `outdated` cuando cambia el
+original: reaplicá la traducción sobre el archivo nuevo.
+
+### Probar una fusión sin riesgo
+
+```sh
+git checkout -b sync-test docs-translation
+git merge upstream/main          # o una rama de prueba con cambios en doc comments
+python3 tools/i18n status        # ¿marca lo modificado como outdated?
+git checkout docs-translation && git branch -D sync-test
+```
+
+## Limitaciones conocidas
+
+- En modo `watch`, los cambios en `ui.toml` y en los `.i18n` no recargan en
+  caliente (los archivos del overlay sí).
+- Los sidecars se usan aunque estén desactualizados (`status` avisa; no hay
+  fallback automático al inglés por hash).
+- Faltan por traducir: la mayor parte de `reference/library`, `guides` y los
+  doc comments de Rust; el changelog queda en inglés a propósito.
