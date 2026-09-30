@@ -1,0 +1,401 @@
+@@ RawElem  [src:7f594ad3]
+Texto sin procesar (raw) con resaltado de sintaxis opcional.
+
+Muestra el texto literalmente y en una fuente monoespaciada. Normalmente se usa para incrustar código informático en un
+documento.
+
+El texto que se le da a este elemento ignorará la sintaxis de marcado, como `[*strong*]` o `[_emphasis_]`, y se mostrará
+literalmente. Si querés mostrar contenido con una fuente monoespaciada pero permitiendo la sintaxis de marcado, en lugar de
+usar @raw, podés establecer explícitamente la fuente del texto en una fuente monoespaciada con el parámetro @text.font.
+
+Los elementos raw se producen principalmente con su @raw:syntax[sintaxis dedicada], encerrando el texto entre uno o tres o más
+caracteres de acento grave (``` ` ```) a ambos lados. Al usar tres o más acentos graves, el texto que sigue inmediatamente a los
+acentos graves iniciales se tratará como una @raw.lang[etiqueta de lenguaje] usada para el resaltado de sintaxis, y el texto
+raw empieza después del primer espacio en blanco.
+
+= Ejemplo <example>
+````example
+Adding `rbx` to `rcx` gives
+the desired result.
+
+What is ```rust fn main()``` in Rust
+would be ```c int main()``` in C.
+
+```rust
+fn main() {
+    println!("Hello World!");
+}
+```
+
+This has ``` `backticks` ``` in it
+(but the spaces are trimmed). And
+``` here``` the leading space is
+also trimmed.
+````
+
+También podés construir un elemento @raw programáticamente a partir de una cadena de texto (y proporcionar la etiqueta de
+lenguaje mediante el parámetro opcional @raw.lang[`lang`]).
+
+```example
+#raw("fn " + "main() {}", lang: "rust")
+```
+
+Si no hay resaltado de sintaxis disponible por defecto para la etiqueta de lenguaje que especificaste (o si querés reemplazar
+la definición incorporada), podés proporcionar un archivo de especificación de sintaxis personalizado en el parámetro
+@raw.syntaxes[`syntaxes`].
+
+= Estilos <styling>
+Por defecto, el elemento `raw` usa la fuente `DejaVu Sans Mono` (incluida con Typst), con un tamaño de fuente menor de
+`{0.8em}` (es decir, el 80% del tamaño de fuente global). Esto se debe a que las fuentes monoespaciadas tienden a verse más
+grandes que las que no lo son.
+
+Podés personalizar estas propiedades con reglas show-set:
+
+````example
+// Switch to Cascadia Code for both
+// inline and block raw.
+#show raw: set text(font: "Cascadia Code")
+
+// Reset raw blocks to the same size as normal text,
+// but keep inline raw at the reduced size.
+#show raw.where(block: true): set text(1em / 0.8)
+
+Now using the `Cascadia Code` font for raw text.
+Here's some Python code. It looks larger now:
+
+```py
+def python():
+  return 5 + 5
+```
+````
+
+Además, podés personalizar los colores del resaltado de sintaxis estableciendo un tema personalizado con el parámetro
+@raw.theme[`theme`].
+
+Para personalizar por completo el aspecto de un bloque raw, puede ser útil una regla show sobre @raw.line, por ejemplo para
+agregar números de línea.
+
+Tené en cuenta que, en el texto raw, las características de composición como la @text.hyphenate[separación en sílabas], el
+@text.overhang[overhang], el @text.cjk-latin-spacing[espaciado CJK-latino] y (para los bloques raw) la
+@par.justify[justificación] estarán desactivadas por defecto.
+
+= Sintaxis <syntax>
+Esta función tiene una sintaxis dedicada que produce un elemento raw tanto en modo marcado como en modo código. Podés encerrar
+el texto entre uno o tres o más caracteres de acento grave (``` ` ```) a ambos lados para convertirlo en raw. La cantidad de
+acentos graves debe ser la misma a ambos lados y el texto encerrado no puede contener un grupo de esa cantidad de acentos graves
+seguidos. Escribir solo dos acentos graves (``` `` ```) produce texto raw vacío.
+
+Entre las diferencias notables con Markdown se cuentan que los acentos graves simples pueden encerrar texto que abarca varias
+líneas sin quitar la sangría, y que la sintaxis de tres o más acentos graves sigue interpretando las etiquetas de lenguaje cuando
+se usa en línea.
+
+El texto raw encerrado entre acentos graves _simples_ no tiene forma de especificar una etiqueta de lenguaje y siempre se trata
+como en línea para usar dentro de un párrafo, es decir, el parámetro @raw.block[`block`] es `{false}`.
+
+La sintaxis raw con _tres o más_ acentos graves tiene las siguientes propiedades:
+
+- *Después de los acentos graves iniciales, el bloque raw solo termina con una secuencia de la misma cantidad de acentos graves*
+
+  Para incluir texto que contiene una secuencia de acentos graves, los acentos graves inicial y final deben tener al menos un
+  acento grave más que la secuencia.
+
+- *Si el texto raw contiene un salto de línea, será a nivel de bloque; de lo contrario, será en línea*
+
+  Esto establece el parámetro @raw.block[`block`] en `{true}` o `{false}` según corresponda.
+
+- *El texto que sigue inmediatamente a los acentos graves iniciales, hasta el primer espacio en blanco, se trata como una
+  _etiqueta de lenguaje_ usada para el resaltado de sintaxis*
+
+  Está previsto cambiar las reglas específicas sobre qué texto se puede tratar como etiqueta de lenguaje, y están
+  @raw:language-tag-changes[explicadas en detalle más abajo.]
+
+- *Las líneas inicial y final tienen un comportamiento de recorte especial*
+
+  En la línea inicial, si todos los caracteres que siguen a los acentos graves iniciales o a la etiqueta de lenguaje son espacios
+  en blanco, se recortará la línea entera. Sin embargo, si hay caracteres que no son espacios en blanco en esa línea, solo se
+  recortará un único espacio que siga inmediatamente a los acentos graves iniciales o a la etiqueta de lenguaje, si lo hay.
+
+  Si la línea final es íntegramente espacios en blanco hasta los acentos graves de cierre, se recortará. De lo contrario, si el
+  último carácter que no es un espacio en blanco de la línea final es un acento grave, se recortará un carácter de espacio del
+  final de la línea, si lo hay.
+
+- *La sangría común al comienzo de las líneas se recorta*
+
+  Typst quitará los espacios en blanco iniciales al comienzo de las líneas del texto raw que son compartidos por todas las
+  líneas, es decir, la sangría común. Aunque esto excluye el texto de la línea con los acentos graves iniciales.
+
+  Typst primero encuentra la línea con la menor cantidad de caracteres de espacio en blanco iniciales que contiene algún
+  carácter que no es un espacio en blanco, incluida la línea con los acentos graves de cierre. Luego Typst recorta de cada línea
+  una cantidad de caracteres igual a la cantidad de caracteres de espacio en blanco iniciales de esa línea. Las líneas que son
+  solo espacios en blanco quitarán la misma cantidad de caracteres hasta quedar vacías, pero conservarán cualquier espacio en
+  blanco final adicional.
+
+  #let code-point = "https://www.unicode.org/glossary/#code_point"
+
+  Tené en cuenta que, por simplicidad, esta comprobación trata las tabulaciones y los espacios como caracteres equivalentes y que
+  opera sobre cantidades de #link(code-point)[puntos de código Unicode], es decir, caracteres, no sobre longitudes en bytes.
+
+Estas propiedades de la sintaxis de tres o más acentos graves permiten algunos casos de uso que pueden no ser evidentes:
+
+- Para escribir texto que contiene una secuencia de acentos graves, encerralo con uno o más acentos graves que la secuencia:
+  ````` ```` enclosed```backticks```` `````
+
+- Para escribir texto que empieza o termina con un acento grave, agregá un espacio dentro de los acentos graves de apertura y
+  de cierre: ```` ``` `backticks` ``` ````
+
+- Para escribir texto en línea resaltado con una etiqueta de lenguaje, agregá un espacio entre la etiqueta de lenguaje y el texto
+  ````rust ```rust fn main() {}``` ````
+
+- Para escribir texto en línea sin ninguna etiqueta de lenguaje, agregá un espacio después de los acentos graves iniciales:
+  ```` ``` text``` ```` o usá la sintaxis de acento grave simple: ``` `text` ```
+
+== Incrustar cadenas de texto con la sintaxis raw <embedding-strings>
+Un caso de uso común de la sintaxis raw es incrustar datos como cadenas de texto con formato, accediendo al campo `.text` del
+contenido raw para obtener la cadena subyacente. Esto también se puede combinar con el constructor de @bytes para convertir la
+cadena en bytes.
+
+````example
+An inline YAML dictionary via `.text`
+
+#yaml(bytes(
+  ```yaml
+  Magic:
+    limited-by: Mana
+  Pokémon:
+    limited-by: Energy
+  Yu-Gi-Oh:
+    limited-by: false
+  ```.text
+  //  ^^^^ used as a string
+))
+````
+
+== Cambios en las etiquetas de lenguaje <language-tag-changes>
+
+Al usar la sintaxis raw con tres o más acentos graves, el texto que sigue inmediatamente a los acentos graves iniciales (hasta el
+primer espacio en blanco) se trata como una @raw.lang[etiqueta de lenguaje]. Sin embargo, en la versión actual de Typst, solo se
+trata como etiqueta de lenguaje el texto que sería un identificador válido de Typst. El primer carácter que no sea válido para un
+identificador se interpretará como el inicio del texto raw.
+
+Por ejemplo, en la versión actual de Typst, si un bloque raw empieza con `C++`, el identificador `C` será la etiqueta de lenguaje y
+el texto raw empezará con `++`. Si un bloque raw empieza con `++C`, no tendrá etiqueta de lenguaje y el texto raw empezará con
+`++C`.
+
+Para usar etiquetas de lenguaje que no son válidas como identificadores en la versión actual de Typst, tenés que usar el parámetro
+@raw.lang[`lang`], ya sea llamando al constructor con una cadena de texto: ```typ #raw("text", lang: "...")```, o escribiendo una
+regla set: ```typ #set raw(lang: "...")```.
+
+En la próxima versión de Typst, _todo el texto_ hasta el primer espacio en blanco o acento grave se tratará como la etiqueta de
+lenguaje, lo que permite un conjunto de caracteres más amplio para las etiquetas de lenguaje. Las etiquetas que incluyan espacios o
+acentos graves seguirán necesitando establecerse manualmente mediante el parámetro @raw.lang[`lang`].
+
+Typst te avisará, emitiendo una advertencia, si tus bloques raw se van a interpretar de manera distinta en la próxima versión de
+Typst.
+
+@@ RawElem::align  [src:d9292e18]
+La alineación horizontal que debe tener cada línea de un bloque raw. Esta opción se ignora si no es un bloque raw (si se especificó
+`block: false` o se usaron acentos graves simples en modo marcado).
+
+Por defecto, se establece en `{start}`, lo que significa que el texto raw se alinea hacia el inicio de la dirección del texto dentro
+del bloque, sin importar la alineación del contexto actual (lo que te permite, por ejemplo, centrar el bloque raw en sí sin centrar
+el texto que contiene).
+
+````example
+#set raw(align: center)
+
+```typc
+let f(x) = x
+code = "centered"
+```
+````
+
+
+@@ RawElem::block  [src:bbf908c4]
+Si el texto raw se muestra como un bloque separado.
+
+En modo marcado, usar la notación de un acento grave lo establece en `{false}`. Usar la notación de tres acentos graves lo establece
+en `{true}` si el contenido encerrado contiene al menos un salto de línea.
+
+````example
+// Display inline code in a small box
+// that retains the correct baseline.
+#show raw.where(block: false): box.with(
+  fill: luma(240),
+  inset: (x: 3pt, y: 0pt),
+  outset: (y: 3pt),
+  radius: 2pt,
+)
+
+// Display block code in a larger block
+// with more padding.
+#show raw.where(block: true): block.with(
+  fill: luma(240),
+  inset: 10pt,
+  radius: 4pt,
+)
+
+With `rg`, you can search through your files quickly.
+This example searches the current directory recursively
+for the text `Hello World`:
+
+```bash
+rg "Hello World"
+```
+````
+
+
+@@ RawElem::lang  [src:f3a909c9]
+El lenguaje con el que se interpreta el texto raw para el resaltado de sintaxis.
+
+En la @html[exportación a HTML], esto establece el atributo `data-lang` del elemento @html.code generado.
+
+Además de las etiquetas de lenguaje típicas conocidas de Markdown, admite las etiquetas `{"typ"}`, `{"typc"}` y `{"typm"}` para
+@reference:syntax:markup[marcado de Typst], @reference:syntax:code[código de Typst] y @reference:syntax:math[matemática de Typst],
+respectivamente.
+
+#folding-details(
+  title: [Sintaxis disponibles],
+  docs-table(
+    table.header[Nombre][Etiquetas],
+    ..stdx.raw-langs.map(((name, tokens)) => (
+      name,
+      // Some tokens start with `.`. For example, `.env`. The Unicode
+      // Line Breaking Algorithm forbids breaking before `.`, even after
+      // spaces. Therefore, we add zero-width spaces to provide
+      // additional break opportunities. Note that
+      // https://github.com/typst/typst/issues/5317 might change the
+      // situation.
+      tokens.map(raw).join[, #sym.zws],
+    )).flatten()
+  )
+)
+
+````example
+```typ
+This is *Typst!*
+```
+
+This is ```typ also *Typst*```, but inline!
+````
+
+
+@@ RawElem::lines  [src:0c9e4f16]
+Las líneas de texto raw con estilo.
+
+Se hacen accesibles para el @raw.line[elemento `raw.line`]. Permite más control de estilo en las reglas `show`.
+
+@@ RawElem::syntaxes  [src:64ef6032]
+Definiciones de sintaxis adicionales que se cargan. Las definiciones de sintaxis deben estar en el
+#link("https://www.sublimetext.com/docs/syntax.html")[formato de archivo `sublime-syntax`].
+
+Podés pasar cualquiera de los siguientes valores:
+
+- Una cadena de ruta o @path desde donde cargar un archivo de sintaxis.
+- Bytes sin procesar a partir de los cuales se debe decodificar la sintaxis.
+- Un array en el que cada elemento es una de las opciones anteriores.
+
+Para una lista de las sintaxis incorporadas, mirá la documentación del @raw.lang[parámetro `lang`].
+
+````example
+#set raw(syntaxes: "SExpressions.sublime-syntax")
+
+```sexp
+(defun factorial (x)
+  (if (zerop x)
+    ; with a comment
+    1
+    (* x (factorial (- x 1)))))
+```
+````
+
+
+@@ RawElem::tab_size  [src:3de33217]
+El tamaño de una tabulación en espacios. Una tabulación se reemplaza por la cantidad de espacios necesaria para alinearse con el
+siguiente múltiplo del tamaño.
+
+````example
+#set raw(tab-size: 8)
+```tsv
+Year	Month	Day
+2000	2	3
+2001	2	1
+2002	3	10
+```
+````
+
+
+@@ RawElem::text  [src:77b96756]
+El texto raw.
+
+También podés usar los bloques raw de forma creativa para crear sintaxis personalizadas para tus automatizaciones.
+
+#example(
+  title: "Implementar un DSL con raw y reglas show",
+  ````
+  // Parse numbers in raw blocks with the
+  // `mydsl` tag and sum them up.
+  #show raw.where(lang: "mydsl"): it => {
+    let sum = 0
+    for part in it.text.split("+") {
+      sum += int(part.trim())
+    }
+    sum
+  }
+
+  ```mydsl
+  1 + 2 + 3 + 4 + 5
+  ```
+  ````
+)
+
+@@ RawElem::theme  [src:82d86a72]
+El tema que se usa para el resaltado de sintaxis. Los temas deben estar en el
+#link("https://www.sublimetext.com/docs/color_schemes_tmtheme.html")[formato de archivo `tmTheme`].
+
+Podés pasar cualquiera de los siguientes valores:
+
+- `{none}`: Desactiva el resaltado de sintaxis.
+- `{auto}`: Resalta con el tema por defecto de Typst.
+- Una cadena de ruta o @path desde donde cargar un archivo de tema.
+- Bytes sin procesar a partir de los cuales se debe decodificar el tema.
+
+Aplicar un tema solo afecta el color del texto resaltado específicamente. No tiene en cuenta las propiedades de primer plano y de
+fondo del tema, de modo que conservás el control sobre el color del texto raw. Podés aplicar vos mismo el color de primer plano con
+la función @text y el fondo con un @block.fill[bloque relleno]. También podrías usar la función @xml para extraer estas propiedades
+del tema.
+
+````example
+#set raw(theme: "halcyon.tmTheme")
+#show raw: it => block(
+  fill: rgb("#1d2433"),
+  inset: 8pt,
+  radius: 5pt,
+  text(fill: rgb("#a2aabc"), it)
+)
+
+```typ
+= Chapter 1
+#let hi = "Hello World"
+```
+````
+
+
+@@ RawLine  [src:4275e670]
+Una línea resaltada de texto raw.
+
+Es un elemento auxiliar que sintetizan los elementos @raw.
+
+Te permite acceder a varias propiedades de la línea, como el número de línea, el texto raw sin resaltar, el texto resaltado y si es
+la primera o la última línea del bloque raw.
+
+@@ RawLine::body  [src:d4f8ce8c]
+El texto raw resaltado.
+
+@@ RawLine::count  [src:bb2aa0f4]
+La cantidad total de líneas del bloque raw.
+
+@@ RawLine::number  [src:dc72d9b3]
+El número de línea de la línea raw dentro del bloque raw, empezando en 1.
+
+@@ RawLine::text  [src:583596cc]
+La línea de texto raw.
