@@ -145,7 +145,7 @@
     ])
   }
   if param.settable {
-    modifiers.push(with-tooltip[Settable][
+    modifiers.push(with-tooltip[#stdx.ui("Settable")][
       Settable parameters can be customized for all following uses of the
       function with a `set` rule.
     ])
