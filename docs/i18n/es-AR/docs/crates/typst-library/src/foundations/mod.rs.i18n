@@ -1,0 +1,120 @@
+@@ assert  [src:9cbbd61a]
+Asegura que se cumpla una condición.
+
+Falla con un error si la condición no se cumple. No produce ninguna salida en el
+documento.
+
+Si querés comprobar la igualdad entre dos valores, mirá @assert.eq y
+@assert.ne.
+
+= Ejemplo <example>
+```typ
+#assert(1 < 2, message: "math broke")
+```
+
+
+@@ assert::condition  [src:998c760b]
+La condición que debe ser verdadera para que la aserción pase.
+
+@@ assert::eq  [src:0859e00d]
+Asegura que dos valores sean iguales.
+
+Falla con un error si el primer valor no es igual al segundo. No produce ninguna
+salida en el documento.
+
+```typ
+#assert.eq(10, 10)
+```
+
+
+@@ assert::eq::left  [src:ec338762]
+El primer valor que se compara.
+
+@@ assert::eq::message  [src:a62ca1a8]
+Un mensaje opcional que se muestra en caso de error en lugar de las
+representaciones de los valores comparados.
+
+@@ assert::eq::right  [src:98aba422]
+El segundo valor que se compara.
+
+@@ assert::message  [src:b6e899b3]
+El mensaje de error cuando la aserción falla.
+
+@@ assert::ne  [src:61c08d1b]
+Asegura que dos valores no sean iguales.
+
+Falla con un error si el primer valor es igual al segundo. No produce ninguna
+salida en el documento.
+
+```typ
+#assert.ne(3, 4)
+```
+
+
+@@ assert::ne::left  [src:ec338762]
+El primer valor que se compara.
+
+@@ assert::ne::message  [src:a62ca1a8]
+Un mensaje opcional que se muestra en caso de error en lugar de las
+representaciones de los valores comparados.
+
+@@ assert::ne::right  [src:98aba422]
+El segundo valor que se compara.
+
+@@ eval  [src:d5d370bf]
+Evalúa una cadena de texto como código Typst.
+
+Esta función solo debería usarse como último recurso.
+
+= Ejemplo <example>
+```example
+#eval("1 + 1") \
+#eval("(1, 2, 3, 4)").len() \
+#eval("*Markup!*", mode: "markup") \
+```
+
+
+@@ eval::mode  [src:906b9c43]
+El @reference:syntax:modes[modo sintáctico] en el que se analiza la cadena de
+texto.
+
+```example
+#eval("= Heading", mode: "markup")
+#eval("1_2^3", mode: "math")
+```
+
+
+@@ eval::scope  [src:1a9068a4]
+Un ámbito de definiciones que se ponen a disposición.
+
+```example
+#eval("x + 1", scope: (x: 2)) \
+#eval(
+  "abc/xyz",
+  mode: "math",
+  scope: (
+    abc: $a + b + c$,
+    xyz: $x + y + z$,
+  ),
+)
+```
+
+
+@@ eval::source  [src:64126939]
+Una cadena de código Typst para evaluar.
+
+@@ panic  [src:c24a04b7]
+Falla con un error.
+
+Los argumentos se muestran al usuario (no se renderizan en el documento) como
+cadenas de texto, convirtiéndolos con `repr` si es necesario.
+
+= Ejemplo <example>
+El siguiente código produce el error `panicked with: this is wrong`.
+```typ
+#panic("this is wrong")
+```
+
+
+@@ panic::values  [src:458dd070]
+Los valores con los que se entra en pánico y que se muestran al usuario.

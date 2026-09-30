@@ -1,0 +1,138 @@
+@@ f64  [src:501f5edc]
+Un número de punto flotante.
+
+Una representación de precisión limitada de un número real. Typst usa 64 bits
+para almacenar los flotantes. Dondequiera que se espere un flotante, también
+podés pasar un @int[entero].
+
+Podés convertir un valor en flotante con el constructor de este tipo.
+
+= Ejemplo <example>
+```example
+#3.14 \
+#1e4 \
+#(10 / 4)
+```
+
+
+@@ f64::INF  [src:8523f4ee]
+Infinito ($+oo$) como valor.
+
+Este valor es mayor que todo número real.
+
+El infinito negativo ($-oo$) se puede obtener negando este valor:
+`{-float.inf}`.
+
+```example
+#(9999999 < float.inf) \
+#(-float.inf < -9999999)
+```
+
+
+@@ f64::NAN  [src:016792bb]
+Un valor NaN, tal como lo define el
+#link("https://en.wikipedia.org/wiki/IEEE_754")[estándar IEEE 754].
+
+@@ f64::construct  [src:ee5a8817]
+Convierte un valor en un flotante.
+
+- Los booleanos se convierten en `0.0` o `1.0`.
+- Los enteros se convierten en el flotante de 64 bits más cercano. Para enteros
+  con valor absoluto menor que `{calc.pow(2, 53)}`, esta conversión es exacta.
+- Las proporciones se dividen por 100%.
+- Las cadenas de texto se analizan en base 10 al flotante de 64 bits más
+  cercano. Se admite la notación exponencial.
+
+```example
+#float(false) \
+#float(true) \
+#float(4) \
+#float(40%) \
+#float("2.7") \
+#float("1e5")
+```
+
+
+@@ f64::construct::value  [src:a015739b]
+El valor que se debe convertir en flotante.
+
+@@ f64::from_bytes  [src:e4e8c5ee]
+Interpreta bytes como un flotante.
+
+```example
+#float.from-bytes(bytes((0, 0, 0, 0, 0, 0, 240, 63))) \
+#float.from-bytes(bytes((63, 240, 0, 0, 0, 0, 0, 0)), endian: "big")
+```
+
+
+@@ f64::from_bytes::bytes  [src:d1a641ff]
+Los bytes que se deben convertir en flotante.
+
+Deben tener una longitud de 4 u 8. Los bytes se interpretan entonces en el
+formato binary32 (precisión simple) o binary64 (precisión doble) de
+#link("https://en.wikipedia.org/wiki/IEEE_754")[IEEE 754], según la longitud de
+los bytes.
+
+@@ f64::from_bytes::endian  [src:f3aba7af]
+El orden de bytes (endianness) de la conversión.
+
+@@ f64::is_infinite  [src:026e6b79]
+Comprueba si un flotante es infinito.
+
+Los flotantes pueden representar el infinito positivo y el infinito negativo.
+Esta función devuelve `{true}` si el flotante es un infinito.
+
+```example
+#float.is-infinite(0) \
+#float.is-infinite(1) \
+#float.is-infinite(float.inf)
+```
+
+
+@@ f64::is_nan  [src:a26f4205]
+Comprueba si un flotante no es un número.
+
+En IEEE 754, más de un patrón de bits representa un NaN. Esta función devuelve
+`{true}` si el flotante es cualquiera de esos patrones de bits.
+
+```example
+#float.is-nan(0) \
+#float.is-nan(1) \
+#float.is-nan(float.nan)
+```
+
+
+@@ f64::signum  [src:76cc9da0]
+Calcula el signo de un número de punto flotante.
+
+- Si el número es positivo (incluido `{+0.0}`), devuelve `{1.0}`.
+- Si el número es negativo (incluido `{-0.0}`), devuelve `{-1.0}`.
+- Si el número es NaN, devuelve @float.nan.
+
+```example
+#(5.0).signum() \
+#(-5.0).signum() \
+#(0.0).signum() \
+#float.nan.signum()
+```
+
+
+@@ f64::to_bytes  [src:fac89b3f]
+Convierte un flotante en bytes.
+
+```example
+#array(1.0.to-bytes(endian: "big")) \
+#array(1.0.to-bytes())
+```
+
+
+@@ f64::to_bytes::endian  [src:f3aba7af]
+El orden de bytes (endianness) de la conversión.
+
+@@ f64::to_bytes::size  [src:8d0377fa]
+El tamaño de los bytes resultantes.
+
+Debe ser 4 u 8. La llamada devuelve la representación de este flotante en el
+formato binary32 (precisión simple) o binary64 (precisión doble) de
+#link("https://en.wikipedia.org/wiki/IEEE_754")[IEEE 754], según el tamaño
+indicado.

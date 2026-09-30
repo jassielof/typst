@@ -1,0 +1,140 @@
+@@ Selector  [src:c1f098a2]
+Un filtro para seleccionar elementos dentro del documento.
+
+Para construir un selector podés:
+- usar una @function:element-functions[función de elemento]
+- filtrar por una función de elemento con @function.where[campos específicos]
+- usar una @str[cadena de texto] o una @regex[expresión regular]
+- usar una @label[`{<label>}`]
+- usar una @location
+- llamar al constructor de @selector para convertir cualquiera de los tipos
+  anteriores en un valor selector y usar los métodos de abajo para refinarlo
+
+Los selectores se usan para @reference:styling:show-rules[aplicar reglas de
+estilo] a los elementos. También podés usar selectores para @query[consultar] el
+documento en busca de ciertos tipos de elementos.
+
+Además, podés pasar un selector a varias de las funciones incorporadas de Typst
+para configurar su comportamiento. Un ejemplo es @outline[outline], donde se puede
+usar para cambiar qué elementos se listan en el índice.
+
+Se pueden combinar varios selectores con los métodos que se muestran abajo. Sin
+embargo, por el momento no todos los tipos de selectores se admiten en todos los
+lugares.
+
+= Ejemplo <example>
+```example
+#context query(
+  heading.where(level: 1)
+    .or(heading.where(level: 2))
+)
+
+= This will be found
+== So will this
+=== But this will not.
+```
+
+
+@@ Selector::after  [src:ac5c86af]
+Devuelve un selector modificado que solo coincide con los elementos que aparecen
+después de la primera coincidencia de `start`.
+
+_Nota:_ Actualmente, este selector solo se admite con funciones de introspección,
+no en reglas show.
+
+@@ Selector::after::inclusive  [src:92cab70c]
+Si la propia coincidencia de `start` debe incluirse o no. Solo es relevante si
+ambos selectores coinciden con el mismo tipo de elemento. Por defecto es
+`{true}`.
+
+@@ Selector::after::start  [src:f0eeffb3]
+La selección original empezará en la primera coincidencia de `start`.
+
+@@ Selector::and  [src:a86afc5c]
+Selecciona todos los elementos que coinciden con este selector y con todos los
+demás.
+
+@@ Selector::and::others  [src:4e82d8ff]
+Los demás selectores con los que se debe coincidir.
+
+@@ Selector::before  [src:4cdbdc4a]
+Devuelve un selector modificado que solo coincide con los elementos que aparecen
+antes de la primera coincidencia de `end`.
+
+_Nota:_ Actualmente, este selector solo se admite con funciones de introspección,
+no en reglas show.
+
+@@ Selector::before::end  [src:7b855c8a]
+La selección original terminará en la primera coincidencia de `end`.
+
+@@ Selector::before::inclusive  [src:04f6ceee]
+Si la propia coincidencia de `end` debe incluirse o no. Solo es relevante si
+ambos selectores coinciden con el mismo tipo de elemento. Por defecto es
+`{true}`.
+
+@@ Selector::construct  [src:b6dabd4f]
+Convierte un valor en un selector. Se aceptan los siguientes valores:
+- Una función de elemento como `heading` o `figure`.
+- Una @str[cadena de texto] o una @regex[expresión regular].
+- Una `{<label>}`.
+- Una @location.
+- Un selector más complejo como `{heading.where(level: 1)}`.
+
+@@ Selector::construct::target  [src:47fb3201]
+Puede ser una función de elemento como `heading` o `figure`, una `{<label>}` o un
+selector más complejo como `{heading.where(level: 1)}`.
+
+@@ Selector::or  [src:69c35045]
+Selecciona todos los elementos que coinciden con este selector o con cualquiera
+de los demás.
+
+@@ Selector::or::others  [src:4e82d8ff]
+Los demás selectores con los que se debe coincidir.
+
+@@ Selector::within  [src:0e01ad52]
+Devuelve un selector modificado que solo coincide con los elementos contenidos
+dentro de cualquier elemento que coincida con el selector `ancestor`.
+
+#example(
+  title: "Búsqueda de elementos strong en listas",
+  ```
+  *Strong emphasis* that does not count.
+
+  - An *important* word
+  - Another *key* word
+
+  Strong elements in lists:
+  #context {
+    query(selector(strong).within(list))
+      .map(it => it.body)
+      .join[, ]
+  }
+  ```
+)
+
+También se puede usar en combinación con @here para encontrar todas las
+coincidencias de un selector dentro de una expresión de @reference:context[contexto].
+Esto puede ser muy útil para que una introspección devuelva resultados locales a
+algún componente que estés construyendo.
+
+#example(
+  title: "Conteo local de elementos en un bloque de contexto",
+  ```
+  #let count(sel, body) = context {
+    let n = query(selector(sel).within(here())).len()
+    [#body (#n matches)]
+  }
+
+  - #count(emph)[Has _two_ matching _elements_]
+  - #count(strong)[Has *one* matching element]
+  ```
+)
+
+_Nota:_ Actualmente, este selector solo se admite con funciones de introspección,
+no en reglas show.
+
+@@ Selector::within::ancestor  [src:0739340d]
+Solo se incluirán en la salida las coincidencias de `self` que sean descendientes
+de algún elemento que coincida con este selector.
+
+Un elemento no se considera su propio ancestro.

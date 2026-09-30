@@ -1,0 +1,99 @@
+@@ Content  [src:c27979d8]
+Un fragmento de contenido del documento.
+
+Este tipo está en el corazón de Typst. Todo el marcado que escribís y la mayoría de
+las @function[funciones] que llamás producen valores de contenido. Podés crear un
+valor de contenido encerrando marcado entre corchetes. Así es también como le
+pasás contenido a las funciones.
+
+= Ejemplo <example>
+```example
+Type of *Hello!* is
+#type([*Hello!*])
+```
+
+El contenido se puede sumar con el operador `+`,
+@reference:scripting:blocks[unir] y multiplicar por enteros. Dondequiera que se
+espere contenido, también podés pasar una @str[cadena de texto] o `{none}`.
+
+= Representación <representation>
+El contenido consiste en elementos con campos. Al construir un elemento con su
+_función de elemento,_ le proporcionás estos campos como argumentos y, cuando
+tenés un valor de contenido, podés acceder a sus campos con la
+@reference:scripting:fields[sintaxis de acceso a campos].
+
+Algunos campos son obligatorios: hay que proporcionarlos al construir un elemento
+y, en consecuencia, siempre están disponibles mediante el acceso a campos en el
+contenido de ese tipo. Los campos obligatorios se marcan como tales en la
+documentación.
+
+La mayoría de los campos son opcionales: igual que los obligatorios, se pueden
+pasar a la función de elemento para configurarlos en un único elemento. Sin
+embargo, también se pueden configurar con @reference:styling:set-rules[reglas set]
+para aplicarlos a todos los elementos de un ámbito. Los campos opcionales solo
+están disponibles con la sintaxis de acceso a campos cuando se pasaron
+explícitamente a la función de elemento, no cuando provienen de una regla set.
+
+Cada elemento tiene un aspecto por defecto. Sin embargo, también podés
+personalizar por completo su aspecto con una
+@reference:styling:show-rules[regla show]. A la regla show se le pasa el elemento.
+Puede acceder a los campos del elemento y producir contenido arbitrario a partir
+de ellos.
+
+En la app web, podés pasar el cursor sobre una variable de contenido para ver
+exactamente de qué elementos se compone el contenido y qué campos tienen.
+Alternativamente, podés inspeccionar la salida de la función @repr.
+
+@@ Content::at  [src:1950c9f5]
+Accede al campo especificado del contenido. Devuelve el valor por defecto si el
+campo no existe, o falla con un error si no se especificó ningún valor por
+defecto.
+
+@@ Content::at::default  [src:b5a8577e]
+Un valor por defecto para devolver si el campo no existe.
+
+@@ Content::at::field  [src:8d97aa5c]
+El campo al que se accede.
+
+@@ Content::fields  [src:d5d0e483]
+Devuelve los campos de este contenido.
+
+```example
+#rect(
+  width: 10cm,
+  height: 10cm,
+).fields()
+```
+
+@@ Content::func  [src:ef8aa2a4]
+La función de elemento del contenido. Esta función se puede usar para crear el
+elemento que contiene este contenido. Se puede usar en reglas set y show del
+elemento. Se puede comparar con funciones globales para comprobar si tenés un tipo
+específico de elemento.
+
+@@ Content::has  [src:5a4a657d]
+Si el contenido tiene el campo especificado.
+
+@@ Content::has::field  [src:d66099f7]
+El campo que se busca.
+
+@@ Content::location  [src:d11138ba]
+La ubicación del contenido. Solo está disponible en el contenido devuelto por
+@query[query] o proporcionado por una @reference:styling:show-rules[regla show];
+para otro contenido será `{none}`. La ubicación resultante se puede usar con
+@counter[contadores], @state[estado] y @query[consultas].
+
+@@ SequenceElem  [src:4868676b]
+Una secuencia de contenido.
+
+@@ SequenceElem::children  [src:8a9d447f]
+Los elementos.
+
+@@ StyledElem  [src:48670ec5]
+Contenido junto con estilos.
+
+@@ StyledElem::child  [src:63c0f1ae]
+El contenido.
+
+@@ StyledElem::styles  [src:8c98f6df]
+Los estilos.

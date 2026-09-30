@@ -1,0 +1,67 @@
+@@ Symbol  [src:18cc5fe2]
+Un símbolo Unicode.
+
+Typst define símbolos comunes para que se puedan escribir fácilmente con
+teclados estándar. Los símbolos se definen en módulos, desde los cuales se puede
+acceder a ellos con la @reference:scripting:fields[notación de acceso a campos]:
+
+- Los símbolos generales se definen en el @sym[módulo `sym`] y, en modo
+  matemático, son accesibles sin el prefijo `sym.`.
+- Los emojis se definen en el @emoji[módulo `emoji`]
+
+Además, podés definir símbolos personalizados con la función constructora de
+este tipo.
+
+```example
+#sym.arrow.r \
+#sym.gt.eq.not \
+$gt.eq.not$ \
+#emoji.face.halo
+```
+
+Muchos símbolos tienen distintas variantes, que se pueden seleccionar agregando
+los modificadores con la notación de punto. El orden de los modificadores no
+importa. Visitá las páginas de documentación de los módulos de símbolos y hacé
+clic en un símbolo para ver sus variantes disponibles.
+
+```example
+$arrow.l$ \
+$arrow.r$ \
+$arrow.t.quad$
+```
+
+
+@@ Symbol::construct  [src:ec7de9d1]
+Crea un símbolo personalizado con modificadores.
+
+```example
+#let envelope = symbol(
+  "🖂",
+  ("stamped", "🖃"),
+  ("stamped.pen", "🖆"),
+  ("lightning", "🖄"),
+  ("fly", "🖅"),
+)
+
+#envelope
+#envelope.stamped
+#envelope.stamped.pen
+#envelope.lightning
+#envelope.fly
+```
+
+
+@@ Symbol::construct::variants  [src:23d1a423]
+Las variantes del símbolo.
+
+Puede ser simplemente una cadena de texto con un único carácter para la variante
+sin modificadores o un array con dos cadenas que especifican los modificadores y
+el símbolo. Los modificadores individuales deben separarse con puntos. Al mostrar
+un símbolo, Typst selecciona la primera de las variantes que tienen todos los
+modificadores adjuntos y la menor cantidad de otros modificadores.
+
+@@ SymbolElem  [src:aae4a260]
+Un único carácter.
+
+@@ SymbolElem::text  [src:6ebc90d6]
+El valor del símbolo.

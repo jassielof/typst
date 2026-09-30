@@ -1,0 +1,56 @@
+@@ Version  [src:82f53b67]
+Una versión con una cantidad arbitraria de componentes.
+
+Los primeros tres componentes tienen nombres que se pueden usar como campos:
+`major`, `minor`, `patch`. Todos los componentes siguientes no tienen nombre.
+
+La lista de componentes se extiende semánticamente con una lista infinita de
+ceros. Esto significa que, por ejemplo, `0.8` es lo mismo que `0.8.0`. Como caso
+especial, la versión vacía (que no tiene ningún componente) es lo mismo que `0`,
+`0.0`, `0.0.0`, etcétera.
+
+La versión actual del compilador de Typst está disponible como @sys.version.
+
+Podés convertir una versión en un array de componentes dados explícitamente
+usando el constructor de @array.
+
+@@ Version::at  [src:a18b7e78]
+Obtiene un componente de una versión.
+
+El entero devuelto nunca es negativo. Devuelve `0` si la versión no está
+especificada hasta la longitud necesaria.
+
+@@ Version::at::index  [src:7e684f42]
+El índice del componente que se quiere obtener. Si es negativo, se indexa desde
+el final de los componentes dados explícitamente.
+
+@@ Version::construct  [src:06866634]
+Crea una versión nueva.
+
+Puede tener cualquier cantidad de componentes (incluso cero).
+
+#example(
+  title: "Construcción de versiones",
+  ```
+  #version() \
+  #version(1) \
+  #version(1, 2, 3, 4) \
+  #version((1, 2, 3, 4)) \
+  #version((1, 2), 3)
+  ```
+)
+
+Como caso de uso práctico, esto permite comparar la versión actual del compilador
+(disponible como @sys.version) con una específica.
+
+#example(
+  title: "Comparación con la versión actual",
+  ```
+  Current version: #sys.version \
+  #(sys.version >= version(0, 14, 0)) \
+  #(version(3, 2, 0) > version(4, 1, 0))
+  ```
+)
+
+@@ Version::construct::components  [src:fa16fb37]
+Los componentes de la versión (los argumentos de tipo array se aplanan)

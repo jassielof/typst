@@ -1,0 +1,62 @@
+@@ Duration  [src:f2b048d2]
+Representa un lapso de tiempo positivo o negativo.
+
+@@ Duration::construct  [src:3769a7c7]
+Crea una duración nueva.
+
+Podés especificar la @duration[duración] con semanas, días, horas, minutos y
+segundos. También podés obtener una duración restando dos @datetime[fechas y
+horas].
+
+```example
+#duration(
+  days: 3,
+  hours: 12,
+).hours()
+```
+
+
+@@ Duration::construct::days  [src:0736a013]
+La cantidad de días.
+
+@@ Duration::construct::hours  [src:9ee72ba6]
+La cantidad de horas.
+
+@@ Duration::construct::minutes  [src:ca2ec006]
+La cantidad de minutos.
+
+@@ Duration::construct::seconds  [src:3d219cf6]
+La cantidad de segundos.
+
+@@ Duration::construct::weeks  [src:615174d7]
+La cantidad de semanas.
+
+@@ Duration::days  [src:38fd0000]
+La duración expresada en días.
+
+Esta función devuelve la duración total representada en días como un número de
+punto flotante, en lugar del componente de días de la duración.
+
+@@ Duration::hours  [src:d6de9e2a]
+La duración expresada en horas.
+
+Esta función devuelve la duración total representada en horas como un número de
+punto flotante, en lugar del componente de horas de la duración.
+
+@@ Duration::minutes  [src:7472e35b]
+La duración expresada en minutos.
+
+Esta función devuelve la duración total representada en minutos como un número
+de punto flotante, en lugar del componente de minutos de la duración.
+
+@@ Duration::seconds  [src:4433727b]
+La duración expresada en segundos.
+
+Esta función devuelve la duración total representada en segundos como un número
+de punto flotante, en lugar del componente de segundos de la duración.
+
+@@ Duration::weeks  [src:b52d0566]
+La duración expresada en semanas.
+
+Esta función devuelve la duración total representada en semanas como un número
+de punto flotante, en lugar del componente de semanas de la duración.

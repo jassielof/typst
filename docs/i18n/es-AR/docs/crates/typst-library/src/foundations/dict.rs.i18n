@@ -1,0 +1,153 @@
+@@ Dict  [src:6f947b97]
+Un mapa de claves de tipo cadena de texto a valores.
+
+Podés construir un diccionario encerrando entre paréntesis pares `key: value`
+separados por comas. Los valores no tienen por qué ser del mismo tipo. Como los
+paréntesis vacíos ya producen un array vacío, tenés que usar la sintaxis especial
+`(:)` para crear un diccionario vacío.
+
+Un diccionario es conceptualmente similar a un @array[array], pero se indexa por
+cadenas de texto en lugar de enteros. Podés acceder a las entradas de un
+diccionario y crearlas con el método `.at()`. Si conocés la clave de forma
+estática, alternativamente podés usar la @reference:scripting:fields[notación de
+acceso a campos] (`.key`) para acceder al valor. Para comprobar si una clave está
+presente en el diccionario, usá la palabra clave `in`.
+
+Podés iterar sobre los pares de un diccionario con un
+@reference:scripting:loops[bucle for]. Esto itera en el orden en que se insertaron
+o declararon inicialmente los pares.
+
+Los diccionarios se pueden sumar con el operador `+` y
+@reference:scripting:blocks[unir]. También se pueden @arguments:spreading[expandir]
+en una llamada a función o en otro diccionario con el operador `..spread`
+#footnote[Al expandir en un diccionario, si todos los elementos entre paréntesis
+se expanden, tenés que empezar el contenedor con `(:`, como en
+`(: ..dict, ..other_dict)`. De lo contrario, se infiere que el contenedor es un
+array y se produce un error.]. En cada caso, si una clave aparece varias veces, el
+último valor sobrescribe a los demás.
+
+= Ejemplo <example>
+```example
+#let dict = (
+  name: "Typst",
+  born: 2019,
+)
+
+#dict.name \
+#(dict.launch = 20)
+#dict.len() \
+#dict.keys() \
+#dict.values() \
+#dict.at("born") \
+#dict.insert("city", "Berlin")
+#("name" in dict)
+```
+
+
+@@ Dict::at  [src:38196dca]
+Devuelve el valor asociado a la clave especificada en el diccionario.
+
+Se puede usar en el lado izquierdo de una asignación si la clave ya está presente
+en el diccionario. Devuelve el valor por defecto si la clave no forma parte del
+diccionario, o falla con un error si no se especificó ningún valor por defecto.
+
+También se puede acceder a los valores con la sintaxis de campos (por ejemplo,
+`{(key: 42).key}`) si no hace falta un valor por defecto.
+
+@@ Dict::at::default  [src:e1188609]
+Un valor por defecto para devolver si la clave no forma parte del diccionario.
+
+@@ Dict::at::key  [src:3aeca44d]
+La clave del elemento que se quiere obtener.
+
+@@ Dict::construct  [src:e9f4be93]
+Convierte un valor en un diccionario.
+
+Tené en cuenta que esta función solo está pensada para convertir en diccionario un
+valor similar a un diccionario, no para crear un diccionario a partir de pares
+individuales. Para eso, usá la sintaxis de diccionario `(key: value)`. Mirá también
+@array.to-dict para convertir arrays en diccionarios.
+
+```example
+#dictionary(sys).at("version")
+```
+
+
+@@ Dict::construct::value  [src:26cab8b6]
+El valor que se debe convertir en diccionario.
+
+@@ Dict::filter  [src:0f2e5322]
+Produce un diccionario nuevo solo con los pares del original para los cuales la
+función indicada devuelve `{true}`.
+
+#example(
+  title: "Uso básico",
+  ```
+  #{
+    (a: 0, b: 1, c: 2)
+      .filter(v => v > 0)
+  }
+  ```
+)
+
+#example(
+  title: "Filtrado según la clave en lugar del valor",
+  ```
+  #{
+    (a: 0, b: 1, c: 2)
+      .pairs()
+      .filter(((k, v)) => k != "a")
+      .to-dict()
+  }
+  ```
+)
+
+@@ Dict::filter::test  [src:c2d93b7c]
+La función que se aplica a cada valor. Debe devolver un booleano.
+
+@@ Dict::insert  [src:642e856d]
+Inserta un par nuevo en el diccionario. Si el diccionario ya contiene esta clave,
+se actualiza el valor.
+
+Para insertar varios pares a la vez, alternativamente podés sumar otro diccionario
+con el operador `+=`.
+
+@@ Dict::insert::key  [src:76242261]
+La clave del par que se debe insertar.
+
+@@ Dict::insert::value  [src:f26184d0]
+El valor del par que se debe insertar.
+
+@@ Dict::keys  [src:841d1af7]
+Devuelve las claves del diccionario como un array, en orden de inserción.
+
+@@ Dict::len  [src:74146270]
+La cantidad de pares del diccionario.
+
+@@ Dict::map  [src:db8f5f23]
+Produce un diccionario nuevo en el que las claves son las mismas, pero los valores
+se transforman con la función indicada.
+
+```example
+#(a: 0, b: 1, c: 2).map(v => v + 1)
+```
+
+
+@@ Dict::map::mapper  [src:d9d38b05]
+La función que se aplica a cada valor.
+
+@@ Dict::pairs  [src:e4c9e417]
+Devuelve las claves y los valores del diccionario como un array de pares. Cada par
+se representa como un array de longitud dos.
+
+@@ Dict::remove  [src:8486ba4f]
+Elimina un par del diccionario según su clave y devuelve el valor.
+
+@@ Dict::remove::default  [src:4a39033f]
+Un valor por defecto para devolver si la clave no existe.
+
+@@ Dict::remove::key  [src:cbc46254]
+La clave del par que se quiere eliminar.
+
+@@ Dict::values  [src:7b9f74ba]
+Devuelve los valores del diccionario como un array, en orden de inserción.

@@ -1,0 +1,77 @@
+@@ Bytes  [src:1dafd77a]
+Una secuencia de bytes.
+
+Conceptualmente es similar a un array de @int[enteros] entre `{0}` y `{255}`, pero
+se representa de forma mucho más eficiente. Podés iterar sobre ella con un
+@reference:scripting:loops[bucle for].
+
+Podés convertir
+- una @str[cadena de texto] o un @array[array] de enteros en bytes con el
+  constructor de @bytes
+- bytes en una cadena de texto con el constructor de @str, con codificación UTF-8
+- bytes en un array de enteros con el constructor de @array
+
+Al @read[leer] datos de un archivo, podés decidir si cargarlos como cadena de
+texto o como bytes sin procesar.
+
+```example
+#bytes((123, 160, 22, 0)) \
+#bytes("Hello 😃")
+
+#let data = read(
+  "rhino.png",
+  encoding: none,
+)
+
+// Magic bytes.
+#array(data.slice(0, 4)) \
+#str(data.slice(1, 4))
+```
+
+
+@@ Bytes::at  [src:8a528285]
+Devuelve el byte del índice especificado. Devuelve el valor por defecto si el
+índice está fuera de rango, o falla con un error si no se especificó ningún valor
+por defecto.
+
+@@ Bytes::at::default  [src:08dc430d]
+Un valor por defecto para devolver si el índice está fuera de rango.
+
+@@ Bytes::at::index  [src:57c856f3]
+El índice del byte que se quiere obtener.
+
+@@ Bytes::construct  [src:eda55476]
+Convierte un valor en bytes.
+
+- Las cadenas de texto se codifican en UTF-8.
+- Los arrays de enteros entre `{0}` y `{255}` se convierten directamente. La
+  representación dedicada de bytes es mucho más eficiente que la de array y, por
+  eso, se suele usar para buffers de bytes grandes (por ejemplo, datos de
+  imágenes).
+
+```example
+#bytes("Hello 😃") \
+#bytes((123, 160, 22, 0))
+```
+
+
+@@ Bytes::construct::value  [src:89d49735]
+El valor que se debe convertir en bytes.
+
+@@ Bytes::len  [src:2456c227]
+La longitud en bytes.
+
+@@ Bytes::slice  [src:5b8de4ca]
+Extrae una subsecuencia de los bytes. Falla con un error si el índice de inicio o
+de fin está fuera de rango.
+
+@@ Bytes::slice::count  [src:6faf4498]
+La cantidad de elementos que se extraen. Equivale a pasar `start + count` como
+posición `end`. Es mutuamente excluyente con `end`.
+
+@@ Bytes::slice::end  [src:8b2c4e64]
+El índice final (exclusivo). Si se omite, se extrae toda la porción hasta el
+final.
+
+@@ Bytes::slice::start  [src:b5d5591a]
+El índice inicial (inclusivo).
