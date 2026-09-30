@@ -46,6 +46,9 @@
     return eval(markup, scope: scope, mode: "markup")
   }
 
+  let tr = stdx.i18n-docs(def-site.path, def-site.key)
+  if tr != none { return eval(tr, scope: scope, mode: "markup") }
+
   let live = live-item-data-at-path(def-site.path)
   if def-site.key not in live {
     panic("def site was not found:", def-site)
