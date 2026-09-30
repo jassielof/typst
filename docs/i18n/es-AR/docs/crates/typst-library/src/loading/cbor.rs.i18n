@@ -1,0 +1,73 @@
+@@ cbor  [src:45c9232d]
+Lee datos estructurados de un archivo CBOR.
+
+El archivo debe contener una serialización CBOR válida. Los valores CBOR se
+convertirán en los valores de Typst correspondientes, según se enumera en la
+@cbor:conversion[tabla de abajo].
+
+La función devuelve un diccionario, un array u otro tipo de dato CBOR, según el
+archivo CBOR.
+
+= #short-or-long[Conversión][Detalles de la conversión] <conversion>
+#docs-table(
+  table.header[Valor CBOR][Convertido a Typst],
+
+  [entero],
+  [@int (o @float)],
+
+  [bytes],
+  [@bytes],
+
+  [flotante],
+  [@float],
+
+  [texto],
+  [@str],
+
+  [booleano],
+  [@bool],
+
+  [null],
+  [`{none}`],
+
+  [array],
+  [@array],
+
+  [mapa],
+  [@dictionary],
+)
+
+#docs-table(
+  table.header[Valor de Typst][Convertido a CBOR],
+
+  [tipos que se pueden convertir desde CBOR],
+  [valor CBOR correspondiente],
+
+  [@symbol],
+  [texto],
+
+  [@content],
+  [un mapa que describe el contenido],
+
+  [otros tipos (@length, etc.)],
+  [texto mediante @repr],
+)
+
+== Notas <notes>
+- Tené en cuenta que los enteros CBOR mayores que 2#super[63]-1 o menores que
+  -2#super[63] se convertirán en números de punto flotante, lo que puede dar como
+  resultado un valor aproximado.
+
+- Las etiquetas CBOR (tags) no se admiten y se producirá un error.
+
+- La función `repr` es @repr:debugging-only[solo para depuración] y no se garantiza
+  que su salida sea estable entre versiones de Typst.
+
+@@ cbor::encode  [src:629cec15]
+Codifica datos estructurados en bytes CBOR.
+
+@@ cbor::encode::value  [src:318652af]
+Valor que se codifica.
+
+@@ cbor::source  [src:45446602]
+Una ruta a un archivo CBOR o bytes CBOR sin procesar.

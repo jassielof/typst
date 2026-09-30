@@ -1,0 +1,154 @@
+@@ query  [src:325b65c8]
+Encuentra elementos en el documento.
+
+La función `query` te permite buscar en tu documento elementos de un tipo particular
+o con una etiqueta particular. Para usarla, primero tenés que asegurarte de que haya
+@reference:context[contexto] disponible.
+
+= Encontrar elementos <finding-elements>
+En el siguiente ejemplo, creamos manualmente una tabla de contenidos en lugar de usar
+la función @outline.
+
+Para hacerlo, primero consultamos todos los títulos del documento de nivel 1 y donde
+`outlined` sea verdadero. Consultar solo los títulos de nivel 1 asegura que, a los
+fines de este ejemplo, los subtítulos no se incluyan en la tabla de contenidos. El
+campo `outlined` se usa para excluir el propio título "Table of Contents".
+
+Fijate que abrimos un `context` para poder usar la función `query`.
+
+```example
+>>> #set page(
+>>>  width: 240pt,
+>>>  height: 180pt,
+>>>  margin: (top: 20pt, bottom: 35pt)
+>>> )
+#set page(numbering: "1")
+
+#heading(outlined: false)[
+  Table of Contents
+]
+#context {
+  let chapters = query(
+    heading.where(
+      level: 1,
+      outlined: true,
+    )
+  )
+  for chapter in chapters {
+    let loc = chapter.location()
+    let nr = counter(page).display(at: loc)
+    [#chapter.body #h(1fr) #nr \ ]
+  }
+}
+
+= Introduction
+#lorem(10)
+#pagebreak()
+
+== Sub-Heading
+#lorem(8)
+
+= Discussion
+#lorem(18)
+```
+
+Para obtener los números de página, primero obtenemos la ubicación de los elementos
+devueltos por `query` con @content.location[`location`]. Luego también obtenemos la
+@location.page-numbering[numeración de páginas] y el @counter:page-counter[contador
+de páginas] en esa ubicación y aplicamos la numeración al contador.
+
+= #short-or-long[Precaución][Una advertencia] <caution>
+Para resolver todas tus consultas, Typst evalúa y dispone partes del documento varias
+veces. Sin embargo, no hay garantía de que tus consultas se puedan resolver por
+completo. Si no tenés cuidado, una consulta puede afectarse a sí misma, lo que lleva
+a un resultado que nunca se estabiliza.
+
+En el siguiente ejemplo, consultamos todos los títulos del documento. Luego generamos
+esa misma cantidad de títulos. Al principio, hay un solo título, llamado `Real`. Por
+lo tanto, `count` es `1` y se genera un título `Fake`. Typst ve que el resultado de la
+consulta cambió y la procesa de nuevo. Esta vez, `count` es `2` y se generan dos
+títulos `Fake`. Esto sigue y sigue. Como podemos ver, la salida tiene una cantidad
+finita de títulos. Esto se debe a que Typst simplemente se rinde después de unos
+cuantos intentos.
+
+En general, deberías intentar no escribir consultas que se afecten a sí mismas. Las
+mismas advertencias también se aplican a otras funciones de introspección como los
+@counter[contadores] y el @state[estado].
+
+#example(
+  ```
+  = Real
+  #context {
+    let elems = query(heading)
+    let count = elems.len()
+    count * [= Fake]
+  }
+  ```,
+  warnings: false,
+)
+
+= Consultas desde la línea de comandos <command-line-queries>
+También podés realizar consultas desde la línea de comandos con el comando
+`typst eval`. Este comando evalúa código Typst, potencialmente en el contexto de un
+documento, y muestra el valor resultante en forma serializada. Toma como primer
+argumento el código que se evalúa y, opcionalmente, la ruta a un documento mediante
+`--in`.
+
+Considerá el siguiente archivo `example.typ`, que contiene algunos
+@metadata[metadatos] invisibles:
+
+```typ
+#metadata("This is a note") <note>
+```
+
+Podés ejecutar una consulta sobre él de la siguiente manera con la CLI de Typst.
+
+```sh
+$ typst eval 'query(<note>)' --in example.typ
+[
+  {
+    "func": "metadata",
+    "value": "This is a note",
+    "label": "<note>"
+  }
+]
+```
+
+Este comando le indica a Typst que compile `example.typ` y luego ejecute el código
+`{query(<note>)}` con acceso al documento resultante.
+
+*Nota:* El código está rodeado de comillas para evitar que el shell interprete
+caracteres especiales. La forma de entrecomillar cadenas depende de tu
+plataforma/shell.
+
+== Obtener un campo específico <retrieving-a-specific-field>
+Con frecuencia, te interesa solo un campo específico de los elementos resultantes. En
+el caso del elemento `metadata`, el campo interesante es `value`. Podés extraer solo
+este campo ajustando el código.
+
+```sh
+$ typst eval 'query(<note>).map(it => it.value)' --in example.typ
+["This is a note"]
+```
+
+Si te interesa un único elemento, también podés usar el método
+@array.first[`first()`] para extraer solo ese.
+
+```sh
+$ typst eval 'query(<note>).first().value' --in example.typ
+"This is a note"
+```
+
+== Consultar para un destino de exportación específico <querying-for-a-specific-export-target>
+Si necesitás consultar un documento al exportar para un destino específico, podés
+usar el argumento `--target`. Los valores válidos son `paged` y `html` (si la
+característica @html está habilitada).
+
+@@ query::target  [src:b42a589a]
+Puede ser
+- una función de elemento como `heading` o `figure`,
+- una `{<label>}`,
+- un selector más complejo como `{heading.where(level: 1)}`,
+- o `{selector(heading).before(here())}`.
+
+Solo se admiten funciones de elemento @location:locatable[localizables].

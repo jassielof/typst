@@ -1,0 +1,24 @@
+@@ MetadataElem  [src:fe9db5c5]
+Expone un valor al sistema de consultas sin producir contenido visible.
+
+Este elemento se puede obtener con la función @query y, desde la línea de comandos,
+con @query:command-line-queries[`typst query`]. Su propósito es exponer un valor
+arbitrario al sistema de introspección. Para identificar un valor de metadatos entre
+otros, podés adjuntarle una @label y consultar por esa etiqueta.
+
+El elemento `metadata` es especialmente útil para las consultas desde la línea de
+comandos, porque te permite exponer valores arbitrarios al mundo exterior.
+
+```example
+// Put metadata somewhere.
+#metadata("This is a note") <note>
+
+// And find it from anywhere else.
+#context {
+  query(<note>).first().value
+}
+```
+
+
+@@ MetadataElem::value  [src:0e167ea2]
+El valor que se incrusta en el documento.

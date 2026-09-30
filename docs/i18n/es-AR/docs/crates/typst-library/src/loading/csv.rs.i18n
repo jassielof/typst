@@ -1,0 +1,34 @@
+@@ csv  [src:4bd5806e]
+Lee datos estructurados de un archivo CSV.
+
+El archivo CSV se leerá y se analizará como un array bidimensional de cadenas de
+texto: cada fila del archivo CSV se representará como un array de cadenas y todas
+las filas se reunirán en un único array. Las filas de encabezado no se eliminan.
+
+= Ejemplo <example>
+```example
+#let results = csv("example.csv")
+
+#table(
+  columns: 2,
+  [*Condition*], [*Result*],
+  ..results.flatten(),
+)
+```
+
+
+@@ csv::delimiter  [src:77ca5a55]
+El delimitador que separa las columnas del archivo CSV. Debe ser un único carácter
+ASCII.
+
+@@ csv::row_type  [src:705d868c]
+Cómo se representan las filas del archivo.
+
+- Si se establece en `array`, cada fila se representa como un array simple de
+  cadenas de texto.
+- Si se establece en `dictionary`, cada fila se representa como un diccionario que
+  asigna claves de encabezado a cadenas de texto. Esta opción solo tiene sentido
+  cuando el archivo CSV tiene una fila de encabezado.
+
+@@ csv::source  [src:2889e75e]
+Una ruta a un archivo CSV o bytes CSV sin procesar.

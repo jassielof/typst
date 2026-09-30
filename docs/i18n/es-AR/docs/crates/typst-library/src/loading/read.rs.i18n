@@ -1,0 +1,26 @@
+@@ read  [src:dcba7d2b]
+Lee texto plano o datos de un archivo.
+
+Por defecto, el archivo se leerá como UTF-8 y se devolverá como una @str[cadena de
+texto].
+
+Si especificás `{encoding: none}`, devuelve @bytes[bytes] sin procesar.
+
+= Ejemplo <example>
+```example
+An example for a HTML file: \
+#let text = read("example.html")
+#raw(text, block: true, lang: "html")
+
+Raw bytes:
+#read("tiger.jpg", encoding: none)
+```
+
+
+@@ read::encoding  [src:d1ac4220]
+La codificación con la que se lee el archivo.
+
+Si se establece en `{none}`, esta función devuelve bytes sin procesar.
+
+@@ read::path  [src:eb28dbd4]
+Ruta a un archivo.

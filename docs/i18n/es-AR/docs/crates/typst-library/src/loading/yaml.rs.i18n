@@ -1,0 +1,94 @@
+@@ yaml  [src:e7ac3c42]
+Lee datos estructurados de un archivo YAML.
+
+El archivo debe contener un objeto o array YAML válido. Los valores YAML se
+convertirán en los valores de Typst correspondientes, según se enumera en la
+@yaml:conversion[tabla de abajo].
+
+La función devuelve un diccionario, un array u otro tipo de dato YAML, según el
+archivo YAML.
+
+Los archivos YAML del ejemplo contienen objetos con autores como claves, cada uno con
+una secuencia de su propio submapeo con las claves "title" y "published".
+
+= Ejemplo <example>
+```example
+#let bookshelf(contents) = {
+  for (author, works) in contents {
+    author
+    for work in works [
+      - #work.title (#work.published)
+    ]
+  }
+}
+
+#bookshelf(
+  yaml("scifi-authors.yaml")
+)
+```
+
+= #short-or-long[Conversión][Detalles de la conversión] <conversion>
+#docs-table(
+  table.header[Valor YAML][Convertido a Typst],
+
+  [valores nulos (`null`, `~` o vacío ` `)],
+  [`{none}`],
+
+  [booleano],
+  [@bool],
+
+  [número],
+  [@float o @int],
+
+  [cadena],
+  [@str],
+
+  [secuencia],
+  [@array],
+
+  [mapeo],
+  [@dictionary],
+)
+
+#docs-table(
+  table.header[Valor de Typst][Convertido a YAML],
+
+  [tipos que se pueden convertir desde YAML],
+  [valor YAML correspondiente],
+
+  [@bytes],
+  [cadena mediante @repr],
+
+  [@symbol],
+  [cadena],
+
+  [@content],
+  [un mapeo que describe el contenido],
+
+  [otros tipos (@length, etc.)],
+  [cadena mediante @repr],
+)
+
+== Notas <notes>
+- En la mayoría de los casos, los números YAML se convertirán en flotantes o enteros
+  según sean o no números enteros. Sin embargo, tené en cuenta que los enteros
+  mayores que 2#super[63]-1 o menores que -2#super[63] se convertirán en números de
+  punto flotante, lo que puede dar como resultado un valor aproximado.
+
+- Las etiquetas YAML personalizadas se ignoran, aunque el valor cargado seguirá
+  presente.
+
+- Los bytes no se codifican como secuencias YAML por razones de rendimiento y
+  legibilidad. Considerá usar @cbor.encode para datos binarios.
+
+- La función `repr` es @repr:debugging-only[solo para depuración] y no se garantiza
+  que su salida sea estable entre versiones de Typst.
+
+@@ yaml::encode  [src:45f00507]
+Codifica datos estructurados en una cadena YAML.
+
+@@ yaml::encode::value  [src:318652af]
+Valor que se codifica.
+
+@@ yaml::source  [src:6e142ec2]
+Una ruta a un archivo YAML o bytes YAML sin procesar.

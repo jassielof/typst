@@ -1,0 +1,43 @@
+@@ here  [src:c1b2aa89]
+Proporciona la ubicación actual en el documento.
+
+Podés pensar en `here` como un bloque de construcción de bajo nivel que extrae
+directamente la ubicación actual del @reference:context[contexto] activo. Algunas
+otras funciones la usan internamente: por ejemplo, `{counter.get()}` equivale a
+`{counter.at(here())}`.
+
+Dentro de reglas show sobre elementos @location:locatable[localizables], `{here()}`
+coincidirá con la ubicación del elemento mostrado.
+
+Si querés mostrar el número de la página actual, consultá la documentación del tipo
+@counter. Si bien `here` se puede usar para determinar el número de página físico,
+normalmente querés el número de página lógico, que puede, por ejemplo, haberse
+reiniciado después de un prefacio.
+
+= Ejemplos <examples>
+Determinar la posición actual en el documento en combinación con el método
+@location.position[`position`]:
+
+```example
+#context [
+  I am located at
+  #here().position()
+]
+```
+
+Ejecutar una @query[consulta] de elementos anteriores a la posición actual:
+
+```example
+= Introduction
+= Background
+
+There are
+#context query(
+  selector(heading).before(here())
+).len()
+headings before me.
+
+= Conclusion
+```
+
+Consultá el tipo @selector para más detalles sobre los selectores before/after.

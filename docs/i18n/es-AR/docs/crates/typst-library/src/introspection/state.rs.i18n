@@ -1,0 +1,296 @@
+@@ State  [src:c60afef6]
+Administra las partes con estado de tu documento.
+
+Supongamos que tenés algunos cálculos en tu documento y querés recordar el
+resultado de tu último cálculo para usarlo en el siguiente. Podrías probar algo
+similar al código de abajo y esperar que muestre 10, 13, 26 y 21. Sin embargo, esto
+*no funciona* en Typst. Si probás este código, vas a ver que Typst se queja con el
+siguiente mensaje de error: _Variables from outside the function are read-only and
+cannot be modified._
+
+```typ
+// This doesn't work!
+#let star = 0
+#let compute(expr) = {
+  star = eval(
+    expr.replace("⭐", str(star))
+  )
+  [New value is #star.]
+}
+
+#compute("10") \
+#compute("⭐ + 3") \
+#compute("⭐ * 2") \
+#compute("⭐ - 5")
+```
+
+= #short-or-long[Estado y marcado][Estado y marcado del documento] <state-and-markup>
+¿Por qué hace eso? Porque, en general, este tipo de cálculo con efectos secundarios
+es problemático en el marcado de un documento y Typst es claro al respecto. Para que
+los resultados tengan sentido, el cálculo debe avanzar en el mismo orden en que se
+van a disponer los resultados en el documento. En nuestro ejemplo simple, ese es el
+caso, pero en general podría no serlo.
+
+Veamos un tipo de estado ligeramente distinto, pero similar: la numeración de
+títulos. Queremos aumentar el contador de títulos en cada título. Bastante fácil,
+¿no? Solo hay que sumar uno. Bueno, no es tan simple. Consideremos el siguiente
+ejemplo:
+
+```example
+#set heading(numbering: "1.")
+#let template(body) = [
+  = Outline
+  ...
+  #body
+]
+
+#show: template
+
+= Introduction
+...
+```
+
+Acá, Typst primero procesa el cuerpo del documento después de la regla show, ve el
+título `Introduction`, luego le pasa el contenido resultante a la función `template`
+y recién entonces ve `Outline`. Simplemente contar hacia arriba numeraría
+`Introduction` con `1` y `Outline` con `2`.
+
+= #short-or-long[Estado en Typst][Gestionar estado en Typst] <state-in-typst>
+Entonces, ¿qué hacemos en cambio? Usamos el sistema de gestión de estado de Typst.
+Llamar a la función `state` con una clave de tipo cadena de texto que lo identifique
+y un valor inicial opcional te da un valor de estado que expone algunas funciones.
+Las dos más importantes son `get` y `update`:
+
+- La función @state.get[`get`] obtiene el valor actual del estado. Como el valor
+  puede variar a lo largo del documento, es una función _contextual_ que solo se
+  puede usar cuando hay @reference:context[contexto] disponible.
+
+- La función @state.update[`update`] modifica el estado. Podés darle cualquier valor.
+  Si se le da un valor que no es una función, establece el estado en ese valor. Si
+  se le da una función, esa función recibe el estado anterior y tiene que devolver
+  el estado nuevo.
+
+Nuestro ejemplo inicial ahora se vería así:
+
+```example
+#let star = state("star", 0)
+#let compute(expr) = {
+  star.update(old =>
+    eval(expr.replace("⭐", str(old)))
+  )
+  [New value is #context star.get().]
+}
+
+#compute("10") \
+#compute("⭐ + 3") \
+#compute("⭐ * 2") \
+#compute("⭐ - 5")
+```
+
+El estado administrado por Typst siempre se actualiza en el orden del diseño, no en
+el orden de evaluación. El método `update` devuelve contenido y su efecto ocurre en
+la posición donde el contenido devuelto se inserta en el documento.
+
+Como resultado, ahora también podemos guardar algunos de los cálculos en variables y
+aun así mostrar los resultados correctos:
+
+```example
+>>> #let star = state("star", 0)
+>>> #let compute(expr) = {
+>>>   star.update(old =>
+>>>     eval(expr.replace("⭐", str(old)))
+>>>   )
+>>>   [New value is #context star.get().]
+>>> }
+<<< ...
+
+#let more = [
+  #compute("⭐ * 2") \
+  #compute("⭐ - 5")
+]
+
+#compute("10") \
+#compute("⭐ + 3") \
+#more
+```
+
+Por supuesto, este ejemplo es un poco tonto, pero en la práctica ¡a menudo es
+exactamente lo que querés! Un buen ejemplo son los contadores de títulos, y por eso
+el @counter[sistema de conteo] de Typst es muy similar a su sistema de estado.
+
+= Viaje en el tiempo <time-travel>
+¡Al usar el sistema de gestión de estado de Typst también obtenés capacidades de
+viaje en el tiempo! Podemos averiguar cuál será el valor del estado en cualquier
+posición del documento desde cualquier otro lugar. En particular, el método `at` nos
+da el valor del estado en cualquier ubicación particular y el método `final` nos da
+el valor del estado al final del documento.
+
+```example
+>>> #let star = state("star", 0)
+>>> #let compute(expr) = {
+>>>   star.update(old =>
+>>>     eval(expr.replace("⭐", str(old)))
+>>>   )
+>>>   [New value is #context star.get().]
+>>> }
+<<< ...
+
+Value at `<here>` is
+#context star.at(<here>)
+
+#compute("10") \
+#compute("⭐ + 3") \
+*Here.* <here> \
+#compute("⭐ * 2") \
+#compute("⭐ - 5")
+```
+
+= #short-or-long[Precaución][Una advertencia] <caution>
+Para resolver los valores de todos los estados, Typst evalúa partes de tu código
+varias veces. Sin embargo, no hay garantía de que tu manipulación de estado se pueda
+resolver por completo.
+
+Por ejemplo, si generás actualizaciones de estado que dependen del valor final de un
+estado, los resultados podrían no converger nunca. El siguiente ejemplo lo ilustra.
+Inicializamos nuestro estado con `1` y luego lo actualizamos a su propio valor final
+más 1. Entonces debería ser `2`, pero entonces su valor final es `2`, así que
+debería ser `3`, y así sucesivamente. Este ejemplo muestra un valor finito porque
+Typst simplemente se rinde después de unos cuantos intentos.
+
+#example(
+  ```
+  // This is bad!
+  #let x = state("key", 1)
+  #context x.update(x.final() + 1)
+  #context x.get()
+  ```,
+  warnings: false,
+)
+
+En general, deberías intentar no generar actualizaciones de estado dentro de
+expresiones de contexto. Si es posible, intentá expresar tus actualizaciones como
+valores no contextuales o como funciones que calculan el valor nuevo a partir del
+valor anterior. A veces no hay otra opción, pero en esos casos te toca a vos
+asegurarte de que el resultado converja.
+
+@@ State::at  [src:b0a7b9a0]
+Obtiene el valor del estado en la coincidencia única del selector dado.
+
+El `selector` debe coincidir exactamente con un elemento del documento. Los tipos de
+selectores más útiles para esto son las @label[etiquetas] y las @location[ubicaciones].
+
+@@ State::at::selector  [src:de260c02]
+El lugar en el que se debe obtener el valor del estado.
+
+@@ State::construct  [src:5acd4bef]
+Crea un estado nuevo identificado por una clave.
+
+@@ State::construct::init  [src:a54a0c9b]
+El valor inicial del estado.
+
+Si construís varios estados con la misma `key` pero distintos valores `init`, cada
+uno usará su propio valor inicial pero compartirán las actualizaciones.
+Específicamente, el valor de un estado en cierta ubicación del documento se calculará
+a partir del valor inicial de ese estado y de todas las actualizaciones anteriores de
+la clave del estado.
+
+```example
+#let banana = state("key", "🍌")
+#let broccoli = state("key", "🥦")
+
+#banana.update(it => it + "😋")
+
+#context [
+  - #state("key", "🍎").get()
+  - #banana.get()
+  - #broccoli.get()
+]
+```
+
+
+@@ State::construct::key  [src:6fc1065b]
+La clave que identifica este estado.
+
+Cualquier @state.update[actualización] del estado se identificará con la clave de
+tipo cadena de texto. Si construís varios estados con la misma `key`, actualizar uno
+cualquiera afectará a todos.
+
+@@ State::final_  [src:b801b7c8]
+Obtiene el valor del estado al final del documento.
+
+@@ State::get  [src:3953c93f]
+Obtiene el valor del estado en la ubicación actual.
+
+Esto equivale a `{state.at(here())}`.
+
+@@ State::update  [src:b6fea4ff]
+Actualiza el valor del estado.
+
+Devuelve un fragmento invisible de @content[contenido] que hay que insertar en el
+documento para que tenga efecto. Este contenido invisible le indica a Typst que la
+actualización especificada debe ocurrir donde el contenido se inserte en el
+documento.
+
+El estado es parte de tu documento y corre como un hilo incrustado en el contenido
+del documento. El valor de un estado es el resultado de todas las actualizaciones de
+estado que ocurrieron en el documento hasta ese punto.
+
+Por eso `state.update` devuelve un fragmento invisible de contenido que tenés que
+devolver e incluir en el documento: una actualización de estado que no está "ubicada"
+en el documento no ocurre, y "cuándo" ocurre lo determina dónde la ubicás. Por eso
+también necesitás @reference:context[contexto] para leer el estado: necesitás usar la
+posición actual del documento para saber en qué lugar del "hilo" del estado estás.
+
+Guardar una actualización de estado en una variable (por ejemplo,
+`{let my-update = state("key").update(c => c * 2)}`) no tendrá ningún efecto por sí
+solo. Solo cuando insertás la variable `[#my-update]` en algún lugar del contenido del
+documento, la actualización tendrá efecto, en la posición donde se insertó. También
+podés usar `[#my-update]` varias veces en distintas posiciones. Entonces, la
+actualización también tendrá efecto varias veces.
+
+A diferencia de @state.get[`get`], @state.at[`at`] y @state.final[`final`], esta
+función no requiere @reference:context[contexto]. Esto se debe a que, para crear la
+actualización de estado, no necesitamos saber en qué parte del documento estamos.
+Solo necesitamos esa información para resolver el valor del estado.
+
+@@ State::update::update  [src:418aa30f]
+Un valor al que actualizar o una función con la que actualizar.
+
+- Si se le da un valor que no es una función, establece el estado en ese valor.
+- Si se le da una función, esa función recibe el valor anterior del estado y tiene
+  que devolver el valor nuevo.
+
+Al actualizar el estado a partir de su valor anterior, conviene preferir la forma con
+función en lugar de obtener el valor anterior del @reference:context[contexto]. Esto
+permite que el compilador resuelva el estado final de manera eficiente y minimice la
+cantidad de @reference:context:compiler-iterations[iteraciones de diseño] necesarias.
+
+En el siguiente ejemplo, `{fill.update(f => not f)}` pintará los
+@list.item[elementos impares de la lista con viñetas] como se espera. Sin embargo, si
+se lo reemplaza por `{context fill.update(not fill.get())}`, el diseño no convergerá
+en 5 intentos, ya que cada actualización necesitará una iteración adicional para
+propagarse.
+
+```example
+#let fill = state("fill", false)
+
+#show list.item: it => {
+  fill.update(f => not f)
+  context {
+    set text(fill: fuchsia) if fill.get()
+    it
+  }
+}
+
+#lorem(5).split().map(list.item).join()
+```
+
+
+@@ StateUpdateElem  [src:6c3df728]
+Ejecuta una actualización de un estado.
+
+@@ StateUpdateElem::key  [src:3e22e645]
+La clave que identifica el estado.
+
+@@ StateUpdateElem::update  [src:c90d6b1e]
+La actualización que se realiza en el estado.

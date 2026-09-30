@@ -1,0 +1,8 @@
+@@ TagElem  [src:1224c02c]
+Contiene una etiqueta (tag) de un elemento localizable que fue materializado.
+
+Todos los motores de diseño manejan el `TagElem`. El elemento contenido queda
+disponible para introspección en la siguiente iteración del compilador.
+
+@@ TagElem::tag  [src:f2c6bbd7]
+El elemento introspeccionable.

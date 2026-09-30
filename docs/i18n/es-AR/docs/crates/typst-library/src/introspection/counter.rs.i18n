@@ -1,0 +1,314 @@
+@@ Counter  [src:fecc350c]
+Cuenta a través de páginas, elementos y más.
+
+Con la función counter, podés acceder a los contadores de páginas, títulos, figuras
+y más, y modificarlos. Además, podés definir contadores personalizados para otras
+cosas que quieras contar.
+
+Como los contadores cambian a lo largo del documento, su valor actual es
+_contextual._ Se recomienda leer el capítulo sobre @reference:context[contexto]
+antes de continuar acá.
+
+= #short-or-long[Acceso][Acceder a un contador] <accessing>
+Para acceder al valor sin procesar de un contador, podemos usar la función
+@counter.get[`get`]. Esta función devuelve un @array[array]: los contadores pueden
+tener varios niveles (en el caso de los títulos, para secciones, subsecciones,
+etcétera) y cada elemento del array corresponde a un nivel.
+
+```example
+#set heading(numbering: "1.")
+
+= Introduction
+Raw value of heading counter is
+#context counter(heading).get()
+```
+
+= #short-or-long[Visualización][Mostrar un contador] <displaying>
+A menudo queremos mostrar el valor de un contador de una manera más legible para las
+personas. Para eso, podemos llamar a la función @counter.display[`display`] sobre el
+contador. Esta función obtiene el valor actual del contador y lo formatea con una
+@numbering[numeración] proporcionada o inferida automáticamente.
+
+```example
+#set heading(numbering: "1.")
+
+= Introduction
+Some text here.
+
+= Background
+The current value is: #context {
+  counter(heading).display()
+}
+
+Or in roman numerals: #context {
+  counter(heading).display("I")
+}
+```
+
+= #short-or-long[Modificación][Modificar un contador] <modifying>
+Para modificar un contador, podés usar los métodos `step` y `update`:
+
+- El método `step` aumenta en uno el valor del contador. Como los contadores pueden
+  tener varios niveles, opcionalmente toma un argumento `level`. Si se indica, el
+  contador avanza en la profundidad dada.
+
+- El método `update` te permite modificar el contador de forma arbitraria. En su
+  forma básica, le das un entero (o un array para varios niveles). Para tener más
+  flexibilidad, también podés darle una función que reciba el valor actual y
+  devuelva un valor nuevo.
+
+El contador de títulos avanza antes de que se muestre el título, así que `Analysis`
+recibe el número siete aunque el contador esté en seis después de la segunda
+actualización.
+
+```example
+#set heading(numbering: "1.")
+
+= Introduction
+#counter(heading).step()
+
+= Background
+#counter(heading).update(3)
+#counter(heading).update(n => n * 2)
+
+= Analysis
+Let's skip 7.1.
+#counter(heading).step(level: 2)
+
+== Analysis
+Still at #context {
+  counter(heading).display()
+}
+```
+
+= Contadores de elementos <element-counters>
+Arriba hay varios ejemplos del uso del contador de @heading. Los títulos son solo un
+tipo de elemento que se puede contar. En general, los contadores pueden contar
+cualquier tipo de @location:locatable[elemento _localizable_].
+
+Además, un contador también puede contar solo los elementos que coinciden con un
+@selector específico. Por ejemplo, `{counter(figure.where(kind: image))}` cuenta las
+figuras que contienen imágenes, pero ignora otros tipos de figuras.
+
+= Contador de páginas <page-counter>
+El contador de páginas es especial. Avanza automáticamente en cada salto de página.
+Pero, como los demás contadores, también podés hacerlo avanzar manualmente. Por
+ejemplo, podrías tener números de página romanos para tu prefacio, luego pasar a
+números de página arábigos para tu contenido principal y reiniciar el contador de
+páginas en uno.
+
+```example
+>>> #set page(
+>>>   height: 100pt,
+>>>   margin: (bottom: 24pt, rest: 16pt),
+>>> )
+#set page(numbering: "(i)")
+
+= Preface
+The preface is numbered with
+roman numerals.
+
+#set page(numbering: "1 / 1")
+#counter(page).update(1)
+
+= Main text
+Here, the counter is reset to one.
+We also display both the current
+page and total number of pages in
+Arabic numbers.
+```
+
+= Contadores personalizados <custom-counters>
+Para definir tu propio contador, llamá a la función `counter` con una cadena de
+texto como clave. Esta clave identifica el contador de forma global.
+
+```example
+#let mine = counter("mycounter")
+#context mine.display() \
+#mine.step()
+#context mine.display() \
+#mine.update(c => c * 3)
+#context mine.display()
+```
+
+= Cómo avanzar <how-to-step>
+Cuando definís y usás un contador personalizado, en general, primero tenés que
+avanzar el contador y después mostrarlo. De esta manera, el comportamiento de avance
+de un contador puede depender del elemento para el que se avanza. Si estuvieras
+escribiendo un contador para, digamos, teoremas, la definición de tu teorema
+incluiría primero el avance del contador y solo después mostraría el contador y el
+contenido del teorema.
+
+```example
+#let c = counter("theorem")
+#let theorem(it) = block[
+  #c.step()
+  *Theorem #context c.display():*
+  #it
+]
+
+#theorem[$1 = 1$]
+#theorem[$2 < 3$]
+```
+
+La lógica detrás de esto se explica mejor con el ejemplo del contador de títulos:
+una actualización del contador de títulos depende del nivel del título. Al avanzar
+justo antes del título, podemos pasar correctamente de `1` a `1.1` al encontrar un
+título de nivel 2. Si avanzáramos después del título, no sabríamos a qué valor
+avanzar.
+
+Como los contadores siempre deben avanzar antes de los elementos que cuentan,
+siempre empiezan en cero. De esta manera, están en uno en la primera visualización
+(que ocurre después del primer avance).
+
+= Viaje en el tiempo <time-travel>
+¡Los contadores pueden viajar en el tiempo! Podés averiguar el valor final del
+contador antes de que se alcance e incluso determinar cuál era el valor en cualquier
+ubicación particular del documento.
+
+```example
+#let mine = counter("mycounter")
+
+= Values
+#context [
+  Value here: #mine.get() \
+  At intro: #mine.at(<intro>) \
+  Final value: #mine.final()
+]
+
+#mine.update(n => n + 3)
+
+= Introduction <intro>
+#lorem(10)
+
+#mine.step()
+#mine.step()
+```
+
+= #short-or-long[Otro estado][Otros tipos de estado] <other-state>
+El tipo `counter` está estrechamente relacionado con el tipo @state[state]. Leé su
+documentación para más detalles sobre la gestión de estado en Typst y por qué no
+usa simplemente variables normales para los contadores.
+
+@@ Counter::at  [src:d5823c21]
+Obtiene el valor del contador en la ubicación dada. Siempre devuelve un array de
+enteros, incluso si el contador tiene un solo número.
+
+El `selector` debe coincidir exactamente con un elemento del documento. Los tipos
+de selectores más útiles para esto son las @label[etiquetas] y las
+@location[ubicaciones].
+
+@@ Counter::at::selector  [src:4a065ebb]
+El lugar en el que se debe obtener el valor del contador.
+
+@@ Counter::construct  [src:0a824ff0]
+Crea un contador nuevo identificado por una clave.
+
+@@ Counter::construct::key  [src:a8f867a6]
+La clave que identifica este contador de forma global.
+
+- Si es una cadena de texto, crea un contador personalizado que solo se ve afectado
+  por actualizaciones manuales,
+- Si es la función @page, cuenta a través de las páginas,
+- Si es un @selector[selector], cuenta a través de los elementos que coinciden con
+  el selector. Por ejemplo, podés
+  - proporcionar una función de elemento para contar elementos de ese tipo,
+  - proporcionar un selector @function.where[`where`] para contar un tipo de
+    elemento con campos específicos,
+  - proporcionar una @label[`{<label>}`] para contar los elementos con esa etiqueta.
+
+  Las claves de contador de tipo elemento y selector @function.where[`where`] solo
+  se admiten para @location:locatable[elementos localizables].
+
+@@ Counter::display  [src:14c72ff2]
+Muestra el valor del contador.
+
+Podés proporcionar tanto una numeración personalizada como una ubicación
+personalizada. Ambas son `{auto}` por defecto, lo que selecciona valores por defecto
+razonables (la numeración del elemento contado y la ubicación actual,
+respectivamente).
+
+Devuelve la salida formateada.
+
+@@ Counter::display::at  [src:3c49501a]
+El lugar en el que se debe mostrar el contador.
+
+Si se usa un selector, debe coincidir exactamente con un elemento del documento. Los
+tipos de selectores más útiles para esto son las @label[etiquetas] y las
+@location[ubicaciones].
+
+Si se omite o se establece en `{auto}`, muestra el contador en la ubicación actual.
+Esto equivale a usar @here[`{here()}`].
+
+La numeración se ejecutará con un contexto en el que `{here()}` se resuelve en la
+ubicación indicada, de modo que las numeraciones que involucran otros contadores se
+resuelvan correctamente.
+
+@@ Counter::display::both  [src:d2a50fcb]
+Si está activado, muestra juntos el conteo actual y el final del nivel superior.
+Ambos se pueden estilizar con un único patrón de numeración. La propiedad de
+numeración de páginas lo usa para mostrar el número actual y el total de páginas
+cuando se da un patrón como `{"1 / 1"}`.
+
+@@ Counter::display::numbering  [src:0d66f8b7]
+Una @numbering[función o patrón de numeración] que especifica cómo mostrar el
+contador. Si se da una función, esa función recibe cada número del contador como un
+argumento separado. Si la cantidad de números varía, por ejemplo para el argumento
+heading, podés usar un @arguments[sumidero de argumentos].
+
+Si se omite o se establece en `{auto}`, muestra el contador con el estilo de
+numeración del elemento contado o con el patrón `{"1.1"}` si no existe tal estilo.
+
+@@ Counter::final_  [src:edd0e59f]
+Obtiene el valor del contador al final del documento. Siempre devuelve un array de
+enteros, incluso si el contador tiene un solo número.
+
+@@ Counter::get  [src:3e87a75e]
+Obtiene el valor del contador en la ubicación actual. Siempre devuelve un array de
+enteros, incluso si el contador tiene un solo número.
+
+Esto equivale a `{counter.at(here())}`.
+
+@@ Counter::step  [src:2d222853]
+Aumenta en uno el valor del contador.
+
+La actualización tendrá efecto en la posición donde se inserte en el documento el
+contenido devuelto. ¡Si no ponés la salida en el documento, no pasa nada! Este sería
+el caso, por ejemplo, si escribís `{let _ = counter(page).step()}`. Las
+actualizaciones de contadores siempre se aplican en el orden del diseño y, en ese
+caso, Typst no sabría cuándo avanzar el contador.
+
+@@ Counter::step::level  [src:0b067268]
+La profundidad a la que avanza el contador. Por defecto es `{1}`.
+
+@@ Counter::update  [src:b99b2cee]
+Actualiza el valor del contador.
+
+Igual que con `step`, la actualización solo ocurre si ponés el contenido resultante
+en el documento.
+
+@@ Counter::update::update  [src:46a93f1e]
+Si se da un entero o un array de enteros, establece el contador en ese valor. Si se
+da una función, esa función recibe el valor anterior del contador (con cada número
+como un argumento separado) y tiene que devolver el valor nuevo (entero o array).
+
+@@ CounterDisplayElem  [src:09c7acd4]
+Ejecuta la visualización de un contador.
+
+@@ CounterDisplayElem::both  [src:15c7c4d6]
+Si se muestran tanto el valor actual como el final.
+
+@@ CounterDisplayElem::counter  [src:78bc621b]
+El contador.
+
+@@ CounterDisplayElem::numbering  [src:3d0a2532]
+La numeración con la que se muestra el contador.
+
+@@ CounterUpdateElem  [src:7ae31f4f]
+Ejecuta una actualización de un contador.
+
+@@ CounterUpdateElem::key  [src:ea11f8be]
+La clave que identifica el contador.
+
+@@ CounterUpdateElem::update  [src:cf3f8a17]
+La actualización que se realiza en el contador.

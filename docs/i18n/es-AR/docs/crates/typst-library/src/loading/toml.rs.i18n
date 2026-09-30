@@ -1,0 +1,97 @@
+@@ toml  [src:d44d6ea3]
+Lee datos estructurados de un archivo TOML.
+
+El archivo debe contener una tabla TOML válida. Los valores TOML se convertirán en
+los valores de Typst correspondientes, según se enumera en la
+@toml:conversion[tabla de abajo].
+
+La función devuelve un diccionario que representa la tabla TOML.
+
+El archivo TOML del ejemplo consiste en una tabla con las claves `title`, `version`
+y `authors`.
+
+= Ejemplo <example>
+```example
+#let details = toml("details.toml")
+
+Title: #details.title \
+Version: #details.version \
+Authors: #(details.authors
+  .join(", ", last: " and "))
+```
+
+= #short-or-long[Conversión][Detalles de la conversión] <conversion>
+Antes que nada, los documentos TOML son tablas. Los demás valores deben ponerse en
+una tabla para codificarse o decodificarse.
+
+#docs-table(
+  table.header[Valor TOML][Convertido a Typst],
+
+  [cadena],
+  [@str],
+
+  [entero],
+  [@int],
+
+  [flotante],
+  [@float],
+
+  [booleano],
+  [@bool],
+
+  [datetime],
+  [@datetime],
+
+  [array],
+  [@array],
+
+  [tabla],
+  [@dictionary],
+)
+
+#docs-table(
+  table.header[Valor de Typst][Convertido a TOML],
+
+  [tipos que se pueden convertir desde TOML],
+  [valor TOML correspondiente],
+
+  [`{none}`],
+  [se ignora],
+
+  [@bytes],
+  [cadena mediante @repr],
+
+  [@symbol],
+  [cadena],
+
+  [@content],
+  [una tabla que describe el contenido],
+
+  [otros tipos (@length, etc.)],
+  [cadena mediante @repr],
+)
+
+== Notas <notes>
+- Tené en cuenta que los enteros TOML mayores que 2#super[63]-1 o menores que
+  -2#super[63] no se pueden representar sin pérdida en Typst y se producirá un error,
+  según la #link("https://toml.io/en/v1.0.0#integer")[especificación].
+
+- Los bytes no se codifican como arrays TOML por razones de rendimiento y
+  legibilidad. Considerá usar @cbor.encode para datos binarios.
+
+- La función `repr` es @repr:debugging-only[solo para depuración] y no se garantiza
+  que su salida sea estable entre versiones de Typst.
+
+@@ toml::encode  [src:d90059cc]
+Codifica datos estructurados en una cadena TOML.
+
+@@ toml::encode::pretty  [src:30fde73e]
+Si se debe dar formato legible al TOML resultante.
+
+@@ toml::encode::value  [src:ae2e6447]
+Valor que se codifica.
+
+Los documentos TOML son tablas. Por lo tanto, solo son adecuados los diccionarios.
+
+@@ toml::source  [src:c9cac4b4]
+Una ruta a un archivo TOML o bytes TOML sin procesar.

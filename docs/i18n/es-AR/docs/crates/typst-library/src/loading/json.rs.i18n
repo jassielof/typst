@@ -1,0 +1,103 @@
+@@ json  [src:a6cc45f2]
+Lee datos estructurados de un archivo JSON.
+
+El archivo debe contener un valor JSON válido, como un objeto o un array. Los
+valores JSON se convertirán en los valores de Typst correspondientes, según se
+enumera en la @json:conversion[tabla de abajo].
+
+La función devuelve un diccionario, un array u otro tipo de dato JSON, según el
+archivo JSON.
+
+Los archivos JSON del ejemplo contienen objetos con las claves `temperature`,
+`unit` y `weather`.
+
+= Ejemplo <example>
+```example
+#let forecast(day) = block[
+  #box(square(
+    width: 2cm,
+    inset: 8pt,
+    fill: if day.weather == "sunny" {
+      yellow
+    } else {
+      aqua
+    },
+    align(
+      bottom + right,
+      strong(day.weather),
+    ),
+  ))
+  #h(6pt)
+  #set text(22pt, baseline: -8pt)
+  #day.temperature °#day.unit
+]
+
+#forecast(json("monday.json"))
+#forecast(json("tuesday.json"))
+```
+
+= #short-or-long[Conversión][Detalles de la conversión] <conversion>
+#docs-table(
+  table.header[Valor JSON][Convertido a Typst],
+
+  [`null`],
+  [`{none}`],
+
+  [booleano],
+  [@bool],
+
+  [número],
+  [@float o @int],
+
+  [cadena],
+  [@str],
+
+  [array],
+  [@array],
+
+  [objeto],
+  [@dictionary],
+)
+
+#docs-table(
+  table.header[Valor de Typst][Convertido a JSON],
+
+  [tipos que se pueden convertir desde JSON],
+  [valor JSON correspondiente],
+
+  [@bytes],
+  [cadena mediante @repr],
+
+  [@symbol],
+  [cadena],
+
+  [@content],
+  [un objeto que describe el contenido],
+
+  [otros tipos (@length, etc.)],
+  [cadena mediante @repr],
+)
+
+== Notas <notes>
+- En la mayoría de los casos, los números JSON se convertirán en flotantes o enteros
+  según sean o no números enteros. Sin embargo, tené en cuenta que los enteros
+  mayores que 2#super[63]-1 o menores que -2#super[63] se convertirán en números de
+  punto flotante, lo que puede dar como resultado un valor aproximado.
+
+- Los bytes no se codifican como arrays JSON por razones de rendimiento y
+  legibilidad. Considerá usar @cbor.encode para datos binarios.
+
+- La función `repr` es @repr:debugging-only[solo para depuración] y no se garantiza
+  que su salida sea estable entre versiones de Typst.
+
+@@ json::encode  [src:c0d09400]
+Codifica datos estructurados en una cadena JSON.
+
+@@ json::encode::pretty  [src:a62fc761]
+Si se debe dar formato legible al JSON, con saltos de línea e indentación.
+
+@@ json::encode::value  [src:318652af]
+Valor que se codifica.
+
+@@ json::source  [src:e1572d2f]
+Una ruta a un archivo JSON o bytes JSON sin procesar.

@@ -1,0 +1,28 @@
+@@ locate  [src:484eae58]
+Determina la ubicación de un elemento en el documento.
+
+Toma un selector que debe coincidir exactamente con un elemento y devuelve la
+@location de ese elemento. Esta ubicación se puede usar, en particular, para obtener
+el número de @location.page[`page`] físico y la @location.position[`position`]
+(página, x, y) de ese elemento.
+
+= Ejemplos <examples>
+Ubicar un elemento específico:
+
+```example
+#context [
+  Introduction is at: \
+  #locate(<intro>).position()
+]
+
+= Introduction <intro>
+```
+
+
+@@ locate::selector  [src:d1724911]
+Un selector que debe coincidir exactamente con un elemento. Se ubicará ese elemento.
+
+Es especialmente útil en combinación con
+- @here, para ubicar el contexto actual,
+- una @location obtenida de algún elemento consultado mediante el método
+  @content.location[`location()`] del contenido.

@@ -1,0 +1,53 @@
+@@ xml  [src:31d20ae8]
+Lee datos estructurados de un archivo XML.
+
+El archivo XML se analiza como un array de diccionarios y cadenas de texto. Los
+nodos XML pueden ser elementos o cadenas de texto. Los elementos se representan como
+diccionarios con las siguientes claves:
+
+- `tag`: El nombre del elemento como cadena de texto.
+- `attrs`: Un diccionario con los atributos del elemento como cadenas de texto.
+- `children`: Un array con los nodos hijos del elemento.
+
+El archivo XML del ejemplo contiene una etiqueta raíz `news` con varias etiquetas
+`article`. Cada artículo tiene una etiqueta `title`, `author` y `content`. La
+etiqueta `content` contiene uno o más párrafos, que se representan como etiquetas
+`p`.
+
+= Ejemplo <example>
+```example
+#let find-child(elem, tag) = {
+  elem.children
+    .find(e => "tag" in e and e.tag == tag)
+}
+
+#let article(elem) = {
+  let title = find-child(elem, "title")
+  let author = find-child(elem, "author")
+  let pars = find-child(elem, "content")
+
+  [= #title.children.first()]
+  text(10pt, weight: "medium")[
+    Published by
+    #author.children.first()
+  ]
+
+  for p in pars.children {
+    if type(p) == dictionary {
+      parbreak()
+      p.children.first()
+    }
+  }
+}
+
+#let data = xml("example.xml")
+#for elem in data.first().children {
+  if type(elem) == dictionary {
+    article(elem)
+  }
+}
+```
+
+
+@@ xml::source  [src:cc3d1869]
+Una ruta a un archivo XML o bytes XML sin procesar.

@@ -1,0 +1,77 @@
+@@ Location  [src:4c5efbfe]
+Identifica un elemento en el documento.
+
+Una ubicación identifica de forma única un elemento en el documento y te permite
+acceder a su posición absoluta en las páginas. Podés obtener la ubicación actual con
+la función @here y la ubicación de un elemento consultado o mostrado con el método
+@content.location[`location()`] del contenido.
+
+= #short-or-long[Localizable][Elementos localizables] <locatable>
+Los elementos a los que se les asigna una ubicación automáticamente se llaman
+_localizables_ y se pueden encontrar con @query[consultas]:
+
+- En la @reference:model[categoría Modelo], los siguientes elementos son localizables:
+  @asset, @bibliography, @cite, @document, @emph, @enum, @figure, @figure.caption,
+  @footnote, @footnote.entry, @heading, @link, @list, @outline, @outline.entry, @par,
+  @quote, @ref, @strong, @table, @terms y @title. La mayoría de los elementos de la
+  categoría _Modelo_ son localizables porque los elementos semánticos, como los títulos
+  y las figuras, se suelen usar con introspección.
+
+- En la @reference:text[categoría Texto], el elemento @raw y los elementos de
+  decoración @underline, @overline, @strike y @highlight son localizables, ya que
+  también son bastante semánticos por naturaleza.
+
+- En la @reference:introspection[categoría Introspección], el elemento @metadata es
+  localizable, ya que su propósito principal es ser consultado.
+
+- En las demás categorías, la mayoría de los elementos no son localizables. Las
+  excepciones son @math.equation, @image y @pdf.attach.
+
+Para averiguar si un elemento específico es localizable, podés intentar
+consultarlo con @query.
+
+Tené en cuenta que igualmente podés observar en las consultas elementos que no son
+localizables por otros medios, por ejemplo, cuando tienen una etiqueta adjunta.
+
+@@ Location::page  [src:5e2fcff8]
+Devuelve el número de página de esta ubicación.
+
+Tené en cuenta que esto no devuelve el valor del @counter[contador de páginas] en
+esta ubicación, sino el número de página real (empezando desde uno). Si querés saber
+el valor del contador de páginas, usá `{counter(page).at(loc)}` en su lugar.
+
+En un documento HTML, Typst no puede saber dónde terminará el contenido, por lo que
+esta función devuelve `{none}`.
+
+Este método se puede usar en combinación con @here para obtener la posición física
+de página del contexto actual:
+
+```example
+#context [
+  I am located on
+  page #here().page()
+]
+```
+
+
+@@ Location::page_numbering  [src:b7d25976]
+Devuelve el patrón de numeración de la página de esta ubicación. Se puede usar al
+mostrar el contador de páginas para obtener la numeración local. Es útil si estás
+construyendo índices o tablas de contenidos personalizados.
+
+Si la numeración de páginas está establecida en `{none}` en esa ubicación, esta
+función devuelve `{none}`.
+
+@@ Location::position  [src:57fd973c]
+Devuelve un diccionario con el número de página y la posición x, y de esta ubicación.
+El número de página empieza en uno y las coordenadas se miden desde la esquina
+superior izquierda de la página.
+
+Si solo necesitás el número de página, usá @location.page[`page()`], ya que le permite
+a Typst omitir trabajo innecesario.
+
+En un documento HTML, Typst no puede saber dónde terminará el contenido, por lo que
+esta función devuelve `{none}`. El contenido de un @html.frame es una excepción, ya
+que se dispone con el motor de diseño de Typst. Para las ubicaciones dentro de esos
+marcos, esta función devuelve un diccionario solo con las coordenadas `x` e `y`
+dentro del marco, pero sin la clave `page`.
