@@ -217,8 +217,9 @@ def check_pair(src, tr, lang, is_tutorial=False):
         return t.lower()
     wps, wpt = words(ps), words(pt)
     for en, es in lang.glossary.items():
-        stem = es.lower()[: max(4, len(es) - 2)]
-        if re.search(rf"\b{re.escape(en)}s?\b", wps) and stem not in wpt:
+        w = es.lower().split()
+        pat = r"\s+".join([re.escape(w[0][: max(3, len(w[0]) - 2)]) + r"\w*"] + [re.escape(x) + r"\w*" for x in w[1:]])
+        if re.search(rf"\b{re.escape(en)}s?\b", wps) and not re.search(pat, wpt):
             out.append(f"glossary: '{en}' should be '{es}'")
     if VOSEO_BAD.search(pt):
         out.append(f"voseo: {VOSEO_BAD.search(pt).group(0)!r}")

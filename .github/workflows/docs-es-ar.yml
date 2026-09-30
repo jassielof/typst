@@ -1,0 +1,35 @@
+# Fork-only workflow: builds the Spanish (es-AR) documentation PDF and stores it
+# as a build artifact. It is a separate file so upstream merges never conflict
+# with it; upstream's own workflows are left untouched.
+name: Docs es-AR (PDF)
+on:
+  workflow_dispatch:
+  push:
+    branches: [docs-translation]
+
+permissions:
+  contents: read
+
+jobs:
+  pdf:
+    name: Build es-AR PDF
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: dtolnay/rust-toolchain@f8be11a05b1d4f3fcebe6410cc16743212b999b0 # 1.98.0
+      - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+
+      - name: Compile documentation
+        run: cargo docit compile --format pdf --lang es-AR --release
+
+      # Structure/glossary warnings only; never fails the build.
+      - name: Check translations
+        run: python3 tools/i18n check
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: typst-docs-es-AR
+          path: docs/dist/docs-es-AR.pdf
+          if-no-files-found: error
+          retention-days: 30
