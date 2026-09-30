@@ -1,0 +1,160 @@
+@@ Stroke  [src:dac9da92]
+Define cómo dibujar una línea.
+
+Un trazo tiene una _pintura_ (un color sólido o un degradado), un _grosor,_ un _remate_ de línea (cap), una _unión_ de línea (join), un _límite de inglete_ (miter limit) y un
+patrón de _guiones_ (dash). Todos estos valores son opcionales y tienen valores por defecto razonables.
+
+= Ejemplo <example>
+```example
+#set line(length: 100%)
+#stack(
+  spacing: 1em,
+  line(stroke: 2pt + red),
+  line(stroke: (paint: blue, thickness: 4pt, cap: "round")),
+  line(stroke: (paint: blue, thickness: 1pt, dash: "dashed")),
+  line(stroke: 2pt + gradient.linear(..color.map.rainbow)),
+)
+```
+
+= Trazos simples <simple-strokes>
+Podés crear un trazo sólido simple a partir de un color, un grosor o una combinación de ambos. Específicamente, dondequiera que se espere un trazo podés pasar cualquiera de los siguientes
+valores:
+
+- Una longitud que especifica el grosor del trazo. El color se hereda, con negro por defecto.
+- Un color para usar en el trazo. El grosor se hereda, con `{1pt}` por defecto.
+- Un trazo combinado de color y grosor con el operador `+`, como en `{2pt + red}`.
+
+Para tener control total, también podés proporcionar un @dictionary[diccionario] o un objeto `{stroke}` a cualquier función que espere un trazo. Las claves del diccionario pueden incluir
+cualquiera de los parámetros de la función constructora, que se muestran abajo.
+
+= Campos <fields>
+En un objeto trazo, podés acceder a cualquiera de los campos enumerados en la función constructora. Por ejemplo, `{(2pt + blue).thickness}` es `{2pt}`. Mientras tanto, `{stroke(red).cap}` es
+`{auto}` porque no está especificado. Los campos establecidos en `{auto}` se heredan.
+
+@@ Stroke::construct  [src:bc78e4fa]
+Convierte un valor en un trazo o construye un trazo con los parámetros dados.
+
+Tené en cuenta que, en la mayoría de los casos, no necesitás convertir valores en trazos para usarlos, ya que se convertirán automáticamente. Sin embargo, este constructor puede ser útil para
+asegurarte de que un valor tenga todos los campos de un trazo.
+
+```example
+#let my-func(x) = {
+    x = stroke(x) // Convert to a stroke
+    [Stroke has thickness #x.thickness.]
+}
+#my-func(3pt) \
+#my-func(red) \
+#my-func(stroke(cap: "round", thickness: 1pt))
+```
+
+
+@@ Stroke::construct::cap  [src:763f23e5]
+Cómo se renderizan los extremos del trazo.
+
+Si se establece en `{auto}`, el valor se hereda, con `{"butt"}` por defecto.
+
+@@ Stroke::construct::dash  [src:05b684ab]
+El patrón de guiones que se usa. Puede ser:
+
+- Uno de los patrones predefinidos que se enumeran abajo.
+- `{none}`, equivalente al patrón predefinido `{"solid"}`.
+- Un @array[array] con longitudes alternadas de guiones y espacios. También podés usar la cadena `{"dot"}` para una longitud igual al grosor de la línea.
+- Un @dictionary[diccionario] con las claves `array` (igual que el array de arriba) y `phase` (de tipo @length[longitud]), que define en qué parte del patrón se empieza a dibujar.
+
+Si se establece en `{auto}`, el valor se hereda, con `{none}` por defecto.
+
+#example(
+  title: "Uso",
+  ```
+  #set line(length: 100%, stroke: 2pt)
+  #stack(
+    spacing: 1em,
+    line(stroke: (dash: "dashed")),
+    line(stroke: (dash: (10pt, 5pt, "dot", 5pt))),
+    line(stroke: (dash: (array: (10pt, 5pt, "dot", 5pt), phase: 10pt))),
+  )
+  ```
+)
+
+#example(
+  title: "Patrones predefinidos",
+  ```
+  #set page(width: auto, height: auto)
+
+  #let patterns = (
+    ("dotted", "dashed", "dash-dotted").map(d => (
+      "loosely-" + d,
+      d,
+      "densely-" + d,
+    ))
+  ).flatten()
+
+
+  #let display(dash) = {
+    set par(spacing: 0.3em)
+
+    show "loosely": set text(eastern.darken(17%))
+    show "densely": set text(purple)
+
+    let derived = dash.starts-with("loosely-") or dash.starts-with("densely-")
+    if derived { dash } else { strong(dash) }
+
+    rect(
+      line(stroke: (dash: dash), length: 100%),
+      stroke: none,
+      fill: yellow.transparentize(80%),
+    )
+  }
+
+  #table(
+    columns: 3,
+    stroke: none,
+    align: (left, center, left),
+
+    table.cell(colspan: 3, align: center, display("solid")),
+    ..patterns.map(display),
+  )
+  ```
+)
+
+@@ Stroke::construct::join  [src:131258a5]
+Cómo se renderizan los giros bruscos.
+
+Si se establece en `{auto}`, el valor se hereda, con `{"miter"}` por defecto.
+
+@@ Stroke::construct::miter_limit  [src:a30e05f4]
+Número a partir del cual las curvas bruscas que sobresalen se renderizan con un bisel en lugar de una unión en inglete. Cuanto mayor sea el número, más agudo puede ser un ángulo antes de
+que se bisele. Solo es aplicable si `join` es `{"miter"}`.
+
+Específicamente, el límite de inglete es la relación máxima entre la longitud de la protrusión de la esquina y el grosor del trazo.
+
+Si se establece en `{auto}`, el valor se hereda, con `{4.0}` por defecto.
+
+```example
+#let items = (
+  curve.move((15pt, 0pt)),
+  curve.line((0pt, 30pt)),
+  curve.line((30pt, 30pt)),
+  curve.line((10pt, 20pt)),
+)
+
+#set curve(stroke: 6pt + blue)
+#stack(
+  dir: ltr,
+  spacing: 1cm,
+  curve(stroke: (miter-limit: 1), ..items),
+  curve(stroke: (miter-limit: 4), ..items),
+  curve(stroke: (miter-limit: 5), ..items),
+)
+```
+
+
+@@ Stroke::construct::paint  [src:6791854d]
+El color o degradado que se usa para el trazo.
+
+Si se establece en `{auto}`, el valor se hereda, con `{black}` por defecto.
+
+@@ Stroke::construct::thickness  [src:abd2e55b]
+El grosor del trazo.
+
+Si se establece en `{auto}`, el valor se hereda, con `{1pt}` por defecto.

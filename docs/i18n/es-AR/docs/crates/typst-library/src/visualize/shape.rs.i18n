@@ -1,0 +1,243 @@
+@@ CircleElem  [src:2419076a]
+Un círculo con contenido opcional.
+
+= Ejemplo <example>
+```example
+// Without content.
+#circle(radius: 25pt)
+
+// With content.
+#circle[
+  #set align(center + horizon)
+  Automatically \
+  sized to fit.
+]
+```
+
+
+@@ CircleElem::body  [src:316b206b]
+El contenido que se coloca dentro del círculo. El círculo se expande para ajustarse a este contenido, manteniendo la relación de aspecto 1-1.
+
+@@ CircleElem::fill  [src:2ee9fe1c]
+Cómo rellenar el círculo. Mirá la @rect.fill[documentación del rectángulo] para más detalles.
+
+@@ CircleElem::height  [src:bf4fa8c6]
+La altura del círculo. Es mutuamente excluyente con `radius` y `width`.
+
+A diferencia de `radius`, esto puede ser relativo a la altura del contenedor padre.
+
+@@ CircleElem::inset  [src:65ae7d67]
+Cuánto relleno se agrega al contenido del círculo. Mirá la @box.inset[documentación de box] para más detalles.
+
+@@ CircleElem::outset  [src:52f8188c]
+Cuánto se expande el tamaño del círculo sin afectar el diseño. Mirá la @box.outset[documentación de box] para más detalles.
+
+@@ CircleElem::radius  [src:268f442a]
+El radio del círculo. Es mutuamente excluyente con `width` y `height`.
+
+@@ CircleElem::stroke  [src:8825ab51]
+Cómo trazar el círculo. Mirá la @rect.stroke[documentación del rectángulo] para más detalles.
+
+@@ CircleElem::width  [src:fec3e21d]
+El ancho del círculo. Es mutuamente excluyente con `radius` y `height`.
+
+A diferencia de `radius`, esto puede ser relativo al ancho del contenedor padre.
+
+@@ EllipseElem  [src:7a737a1b]
+Una elipse con contenido opcional.
+
+= Ejemplo <example>
+```example
+// Without content.
+#ellipse(width: 35%, height: 30pt)
+
+// With content.
+#ellipse[
+  #set align(center)
+  Automatically sized \
+  to fit the content.
+]
+```
+
+
+@@ EllipseElem::body  [src:3a5adf69]
+El contenido que se coloca dentro de la elipse.
+
+Cuando se omite, la elipse toma un tamaño por defecto de como máximo `{45pt}` por `{30pt}`.
+
+@@ EllipseElem::fill  [src:0b036df9]
+Cómo rellenar la elipse. Mirá la @rect.fill[documentación del rectángulo] para más detalles.
+
+@@ EllipseElem::height  [src:b4ec6fbe]
+La altura de la elipse, relativa a su contenedor padre.
+
+@@ EllipseElem::inset  [src:c9276745]
+Cuánto relleno se agrega al contenido de la elipse. Mirá la @box.inset[documentación de box] para más detalles.
+
+@@ EllipseElem::outset  [src:d4670db0]
+Cuánto se expande el tamaño de la elipse sin afectar el diseño. Mirá la @box.outset[documentación de box] para más detalles.
+
+@@ EllipseElem::stroke  [src:02948762]
+Cómo trazar la elipse. Mirá la @rect.stroke[documentación del rectángulo] para más detalles.
+
+@@ EllipseElem::width  [src:735244df]
+El ancho de la elipse, relativo a su contenedor padre.
+
+@@ RectElem  [src:8b941428]
+Un rectángulo con contenido opcional.
+
+= Ejemplo <example>
+```example
+// Without content.
+#rect(width: 35%, height: 30pt)
+
+// With content.
+#rect[
+  Automatically sized \
+  to fit the content.
+]
+```
+
+
+@@ RectElem::body  [src:158bc8c0]
+El contenido que se coloca dentro del rectángulo.
+
+Cuando se omite, el rectángulo toma un tamaño por defecto de como máximo `{45pt}` por `{30pt}`.
+
+@@ RectElem::fill  [src:9e9b48e4]
+Cómo rellenar el rectángulo.
+
+Al establecer un relleno, el trazo por defecto desaparece. Para crear un rectángulo con relleno y trazo, tenés que configurar ambos.
+
+```example
+#rect(fill: blue)
+```
+
+
+@@ RectElem::height  [src:9e894bdb]
+La altura del rectángulo, relativa a su contenedor padre.
+
+@@ RectElem::inset  [src:143fe701]
+Cuánto relleno se agrega al contenido del rectángulo. Mirá la @box.inset[documentación de box] para más detalles.
+
+@@ RectElem::outset  [src:ca8cf4a2]
+Cuánto se expande el tamaño del rectángulo sin afectar el diseño. Mirá la @box.outset[documentación de box] para más detalles.
+
+@@ RectElem::radius  [src:805e8108]
+Cuánto se redondean las esquinas del rectángulo, relativo al mínimo entre el ancho y el alto dividido por dos. Puede ser:
+
+- Una longitud relativa para un radio de esquina uniforme.
+
+- Un diccionario: con un diccionario, el radio de cada esquina se puede establecer individualmente. El diccionario puede contener las siguientes claves, en
+  orden de precedencia:
+  - `top-left`: El radio de la esquina superior izquierda.
+  - `top-right`: El radio de la esquina superior derecha.
+  - `bottom-right`: El radio de la esquina inferior derecha.
+  - `bottom-left`: El radio de la esquina inferior izquierda.
+  - `left`: Los radios de las esquinas superior izquierda e inferior izquierda.
+  - `top`: Los radios de las esquinas superior izquierda y superior derecha.
+  - `right`: Los radios de las esquinas superior derecha e inferior derecha.
+  - `bottom`: Los radios de las esquinas inferior izquierda e inferior derecha.
+  - `rest`: Los radios de todas las esquinas excepto aquellas para las que el diccionario establece explícitamente un tamaño.
+
+```example
+#set rect(stroke: 4pt)
+#rect(
+  radius: (
+    left: 5pt,
+    top-right: 20pt,
+    bottom-right: 10pt,
+  ),
+  stroke: (
+    left: red,
+    top: yellow,
+    right: green,
+    bottom: blue,
+  ),
+)
+```
+
+
+@@ RectElem::stroke  [src:03551875]
+Cómo trazar el rectángulo. Puede ser:
+
+- `{none}` para desactivar el trazo
+
+- `{auto}` para un trazo de `{1pt + black}` si y solo si no se da un relleno.
+
+- Cualquier tipo de @stroke[trazo]
+
+- Un diccionario que describe el trazo de cada lado individualmente. El diccionario puede contener las siguientes claves, en orden de precedencia:
+
+  - `top`: El trazo superior.
+  - `right`: El trazo derecho.
+  - `bottom`: El trazo inferior.
+  - `left`: El trazo izquierdo.
+  - `x`: El trazo izquierdo y derecho.
+  - `y`: El trazo superior e inferior.
+  - `rest`: El trazo de todos los lados excepto aquellos para los que el diccionario establece explícitamente un tamaño.
+
+  Todas las claves son opcionales; las claves omitidas usarán su valor establecido previamente o el trazo por defecto si nunca se establecieron.
+
+```example
+#stack(
+  dir: ltr,
+  spacing: 1fr,
+  rect(stroke: red),
+  rect(stroke: 2pt),
+  rect(stroke: 2pt + red),
+)
+```
+
+
+@@ RectElem::width  [src:8199b1c0]
+El ancho del rectángulo, relativo a su contenedor padre.
+
+@@ SquareElem  [src:0ab5521a]
+Un cuadrado con contenido opcional.
+
+= Ejemplo <example>
+```example
+// Without content.
+#square(size: 40pt)
+
+// With content.
+#square[
+  Automatically \
+  sized to fit.
+]
+```
+
+
+@@ SquareElem::body  [src:108d0b53]
+El contenido que se coloca dentro del cuadrado. El cuadrado se expande para ajustarse a este contenido, manteniendo la relación de aspecto 1-1.
+
+Cuando se omite, el cuadrado toma un tamaño por defecto de como máximo `{30pt}`.
+
+@@ SquareElem::fill  [src:49c110ee]
+Cómo rellenar el cuadrado. Mirá la @rect.fill[documentación del rectángulo] para más detalles.
+
+@@ SquareElem::height  [src:9bf82486]
+La altura del cuadrado. Es mutuamente excluyente con `size` y `width`.
+
+A diferencia de `size`, esto puede ser relativo a la altura del contenedor padre.
+
+@@ SquareElem::inset  [src:6df90ebe]
+Cuánto relleno se agrega al contenido del cuadrado. Mirá la @box.inset[documentación de box] para más detalles.
+
+@@ SquareElem::outset  [src:03959c44]
+Cuánto se expande el tamaño del cuadrado sin afectar el diseño. Mirá la @box.outset[documentación de box] para más detalles.
+
+@@ SquareElem::radius  [src:f364d1ae]
+Cuánto se redondean las esquinas del cuadrado. Mirá la @rect.radius[documentación del rectángulo] para más detalles.
+
+@@ SquareElem::size  [src:140d022d]
+La longitud del lado del cuadrado. Es mutuamente excluyente con `width` y `height`.
+
+@@ SquareElem::stroke  [src:f9469156]
+Cómo trazar el cuadrado. Mirá la @rect.stroke[documentación del rectángulo] para más detalles.
+
+@@ SquareElem::width  [src:af85330f]
+El ancho del cuadrado. Es mutuamente excluyente con `size` y `height`.
+
+A diferencia de `size`, esto puede ser relativo al ancho del contenedor padre.

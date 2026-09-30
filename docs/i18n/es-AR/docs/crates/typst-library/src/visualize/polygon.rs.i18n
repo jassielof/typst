@@ -1,0 +1,60 @@
+@@ PolygonElem  [src:53233756]
+Un polígono cerrado.
+
+El polígono se define por sus puntos de esquina y se cierra automáticamente.
+
+= Ejemplo <example>
+```example
+#polygon(
+  fill: blue.lighten(80%),
+  stroke: blue,
+  (20%, 0pt),
+  (60%, 0pt),
+  (80%, 2cm),
+  (0%,  2cm),
+)
+```
+
+
+@@ PolygonElem::fill  [src:8e3f52d6]
+Cómo rellenar el polígono.
+
+Al establecer un relleno, el trazo por defecto desaparece. Para crear un rectángulo con relleno y trazo, tenés que configurar ambos.
+
+@@ PolygonElem::fill_rule  [src:eb2fcf62]
+La regla de dibujo que se usa para rellenar el polígono.
+
+Mirá la @curve.fill-rule[documentación de curve] para ver un ejemplo.
+
+@@ PolygonElem::regular  [src:a0befc41]
+Un polígono regular, definido por su tamaño y su cantidad de vértices.
+
+```example
+#polygon.regular(
+  fill: blue.lighten(80%),
+  stroke: blue,
+  size: 30pt,
+  vertices: 3,
+)
+```
+
+
+@@ PolygonElem::regular::fill  [src:34522d81]
+Cómo rellenar el polígono. Mirá la @polygon.fill[documentación general de polygon] para más detalles.
+
+@@ PolygonElem::regular::size  [src:454f2588]
+El diámetro de la #link("https://en.wikipedia.org/wiki/Circumcircle")[circunferencia circunscrita] del polígono regular.
+
+@@ PolygonElem::regular::stroke  [src:07845511]
+Cómo trazar el polígono. Mirá la @polygon.stroke[documentación general de polygon] para más detalles.
+
+@@ PolygonElem::regular::vertices  [src:c11ae13f]
+La cantidad de vértices del polígono.
+
+@@ PolygonElem::stroke  [src:ffebfb88]
+Cómo @stroke[trazar] el polígono.
+
+Se puede establecer en `{none}` para desactivar el trazo o en `{auto}` para un trazo negro de `{1pt}` si y solo si no se da un relleno.
+
+@@ PolygonElem::vertices  [src:09abd1a0]
+Los vértices del polígono. Cada punto se especifica como un array de dos @relative[longitudes relativas].

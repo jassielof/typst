@@ -1,0 +1,274 @@
+@@ CurveClose  [src:803160a7]
+Cierra la curva agregando un segmento desde el último punto hasta el inicio de la curva (o hasta el último punto `curve.move` anterior).
+
+```example
+// We define a function to show the same shape with
+// both closing modes.
+#let shape(mode: "smooth") = curve(
+  fill: blue.lighten(80%),
+  stroke: blue,
+  curve.move((0pt, 50pt)),
+  curve.line((100pt, 50pt)),
+  curve.cubic(auto, (90pt, 0pt), (50pt, 0pt)),
+  curve.close(mode: mode),
+)
+
+#shape(mode: "smooth")
+#shape(mode: "straight")
+```
+
+
+@@ CurveClose::mode  [src:8e254889]
+Cómo cerrar la curva.
+
+@@ CurveCubic  [src:00514def]
+Agrega un segmento de curva de Bézier cúbica desde el último punto hasta `end`, usando `control-start` y `control-end` como puntos de control.
+
+```example
+// Function to illustrate where the control points are.
+#let handle(start, end) = place(
+  line(stroke: red, start: start, end: end)
+)
+
+#handle((0pt, 80pt), (10pt, 20pt))
+#handle((90pt, 60pt), (100pt, 0pt))
+
+#curve(
+  stroke: blue,
+  curve.move((0pt, 80pt)),
+  curve.cubic((10pt, 20pt), (90pt, 60pt), (100pt, 0pt)),
+)
+```
+
+
+@@ CurveCubic::control_end  [src:53d858bc]
+El punto de control que llega al punto final del segmento de curva.
+
+Si se establece en `{none}`, la curva no tiene punto de control final o, de manera equivalente, el punto de control por defecto es el punto final de la
+curva.
+
+@@ CurveCubic::control_start  [src:370b195f]
+El punto de control que sale del inicio del segmento de curva.
+
+- Si es `{auto}` y este elemento sigue a otro elemento `curve.cubic`, se reflejará el último punto de control. En términos de SVG, esto hace que
+  `curve.cubic` se comporte como el operador `S` en lugar del operador `C`.
+
+- Si es `{none}`, la curva no tiene primer punto de control o, de manera equivalente, el punto de control por defecto es el punto de inicio de la curva.
+
+```example
+#curve(
+  stroke: blue,
+  curve.move((0pt, 50pt)),
+  // - No start control point
+  // - End control point at `(20pt, 0pt)`
+  // - End point at `(50pt, 0pt)`
+  curve.cubic(none, (20pt, 0pt), (50pt, 0pt)),
+  // - No start control point
+  // - No end control point
+  // - End point at `(50pt, 0pt)`
+  curve.cubic(none, none, (100pt, 50pt)),
+)
+
+#curve(
+  stroke: blue,
+  curve.move((0pt, 50pt)),
+  curve.cubic(none, (20pt, 0pt), (50pt, 0pt)),
+  // Passing `auto` instead of `none` means the start control point
+  // mirrors the end control point of the previous curve. Mirror of
+  // `(20pt, 0pt)` w.r.t `(50pt, 0pt)` is `(80pt, 0pt)`.
+  curve.cubic(auto, none, (100pt, 50pt)),
+)
+
+#curve(
+  stroke: blue,
+  curve.move((0pt, 50pt)),
+  curve.cubic(none, (20pt, 0pt), (50pt, 0pt)),
+  // `(80pt, 0pt)` is the same as `auto` in this case.
+  curve.cubic((80pt, 0pt), none, (100pt, 50pt)),
+)
+```
+
+
+@@ CurveCubic::end  [src:44012b65]
+El punto en el que debe terminar el segmento de curva.
+
+@@ CurveCubic::relative  [src:eff3e2f8]
+Si las coordenadas `control-start`, `control-end` y `end` son relativas al punto anterior.
+
+@@ CurveElem  [src:39786f4d]
+Una curva formada por movimientos, líneas y segmentos de Bézier.
+
+En todo momento hay una pluma o cursor conceptual.
+- Los elementos de movimiento (move) mueven el cursor sin dibujar.
+- Los elementos línea/cuadrática/cúbica (Line/Quadratic/Cubic) dibujan un segmento desde el cursor hasta una nueva posición, potencialmente con un punto de
+  control para una curva de Bézier.
+- Los elementos de cierre (close) dibujan una línea recta o suave de regreso al inicio de la curva o al último segmento de movimiento anterior.
+
+A los fines del diseño, el cuadro delimitador de la curva es un rectángulo ajustado que contiene todos los segmentos, así como el punto `{(0pt, 0pt)}`.
+
+Las posiciones se pueden especificar de forma absoluta (es decir, relativas a `{(0pt, 0pt)}`) o relativas a la posición actual de la pluma/cursor, es decir,
+la posición donde terminó el segmento anterior.
+
+Los puntos de control de las curvas de Bézier se pueden omitir pasando `{none}` o reflejarse automáticamente del segmento anterior pasando `{auto}`.
+
+= Ejemplo <example>
+```example
+#curve(
+  fill: blue.lighten(80%),
+  stroke: blue,
+  curve.move((0pt, 50pt)),
+  curve.line((100pt, 50pt)),
+  curve.cubic(none, (90pt, 0pt), (50pt, 0pt)),
+  curve.close(),
+)
+```
+
+
+@@ CurveElem::components  [src:2009e83a]
+Los componentes de la curva, en forma de movimientos, segmentos de línea y de Bézier, y cierres.
+
+@@ CurveElem::fill  [src:9f2c90be]
+Cómo rellenar la curva.
+
+Al establecer un relleno, el trazo por defecto desaparece. Para crear una curva con relleno y trazo, tenés que configurar ambos.
+
+@@ CurveElem::fill_rule  [src:8ac6db46]
+La regla de dibujo que se usa para rellenar la curva.
+
+```example
+// We use `.with` to get a new
+// function that has the common
+// arguments pre-applied.
+#let star = curve.with(
+  fill: red,
+  curve.move((25pt, 0pt)),
+  curve.line((10pt, 50pt)),
+  curve.line((50pt, 20pt)),
+  curve.line((0pt, 20pt)),
+  curve.line((40pt, 50pt)),
+  curve.close(),
+)
+
+#star(fill-rule: "non-zero")
+#star(fill-rule: "even-odd")
+```
+
+
+@@ CurveElem::stroke  [src:652b7a6a]
+Cómo @stroke[trazar] la curva.
+
+Se puede establecer en `{none}` para desactivar el trazo o en `{auto}` para un trazo negro de `{1pt}` si y solo si no se da un relleno.
+
+```example
+#let down = curve.line((40pt, 40pt), relative: true)
+#let up = curve.line((40pt, -40pt), relative: true)
+
+#curve(
+  stroke: 4pt + gradient.linear(red, blue),
+  down, up, down, up, down,
+)
+```
+
+
+@@ CurveLine  [src:7541ccb5]
+Agrega una línea recta desde el punto actual hasta el siguiente.
+
+```example
+#curve(
+  stroke: blue,
+  curve.line((50pt, 0pt)),
+  curve.line((50pt, 50pt)),
+  curve.line((100pt, 50pt)),
+  curve.line((100pt, 0pt)),
+  curve.line((150pt, 0pt)),
+)
+```
+
+
+@@ CurveLine::end  [src:6af06921]
+El punto en el que debe terminar la línea.
+
+@@ CurveLine::relative  [src:ba1d3b33]
+Si las coordenadas son relativas al punto anterior.
+
+```example
+#curve(
+  stroke: blue,
+  curve.line((50pt, 0pt), relative: true),
+  curve.line((0pt, 50pt), relative: true),
+  curve.line((50pt, 0pt), relative: true),
+  curve.line((0pt, -50pt), relative: true),
+  curve.line((50pt, 0pt), relative: true),
+)
+```
+
+
+@@ CurveMove  [src:ac655433]
+Inicia un componente de curva nuevo.
+
+Si no se pasa ningún elemento `curve.move`, la curva empezará en `{(0pt, 0pt)}`.
+
+```example
+#curve(
+  fill: blue.lighten(80%),
+  fill-rule: "even-odd",
+  stroke: blue,
+  curve.line((50pt, 0pt)),
+  curve.line((50pt, 50pt)),
+  curve.line((0pt, 50pt)),
+  curve.close(),
+  curve.move((10pt, 10pt)),
+  curve.line((40pt, 10pt)),
+  curve.line((40pt, 40pt)),
+  curve.line((10pt, 40pt)),
+  curve.close(),
+)
+```
+
+
+@@ CurveMove::relative  [src:62f386f8]
+Si las coordenadas son relativas al punto anterior.
+
+@@ CurveMove::start  [src:eaf18e92]
+El punto de inicio del componente nuevo.
+
+@@ CurveQuad  [src:7a59eba6]
+Agrega un segmento de curva de Bézier cuadrática desde el último punto hasta `end`, usando `control` como punto de control.
+
+```example
+// Function to illustrate where the control point is.
+#let mark((x, y)) = place(
+  dx: x - 1pt, dy: y - 1pt,
+  circle(fill: aqua, radius: 2pt),
+)
+
+#mark((20pt, 20pt))
+
+#curve(
+  stroke: blue,
+  curve.move((0pt, 100pt)),
+  curve.quad((20pt, 20pt), (100pt, 0pt)),
+)
+```
+
+
+@@ CurveQuad::control  [src:6c18cd98]
+El punto de control de la curva de Bézier cuadrática.
+
+- Si es `{auto}` y este segmento sigue a otra curva de Bézier cuadrática, se reflejará el punto de control anterior.
+- Si es `{none}`, el punto de control por defecto es `end` y la curva será una línea recta.
+
+```example
+#curve(
+  stroke: 2pt,
+  curve.quad((20pt, 40pt), (40pt, 40pt), relative: true),
+  curve.quad(auto, (40pt, -40pt), relative: true),
+)
+```
+
+
+@@ CurveQuad::end  [src:62fc560d]
+El punto en el que debe terminar el segmento.
+
+@@ CurveQuad::relative  [src:bdcef0a0]
+Si las coordenadas `control` y `end` son relativas al punto anterior.

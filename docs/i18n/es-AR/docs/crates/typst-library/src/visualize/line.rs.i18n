@@ -1,0 +1,44 @@
+@@ LineElem  [src:a322d051]
+Una línea de un punto a otro.
+
+= Ejemplo <example>
+```example
+#set page(height: 100pt)
+
+#line(length: 100%)
+#line(end: (50%, 50%))
+#line(
+  length: 4cm,
+  stroke: 2pt + maroon,
+)
+```
+
+
+@@ LineElem::angle  [src:a13cf6b4]
+El ángulo con el que la línea se aleja del origen. Solo se respeta si `end` es `{none}`.
+
+@@ LineElem::end  [src:7c2e4400]
+El punto donde termina la línea.
+
+@@ LineElem::length  [src:59073f2f]
+La longitud de la línea. Solo se respeta si `end` es `{none}`.
+
+@@ LineElem::start  [src:1c96d667]
+El punto de inicio de la línea.
+
+Debe ser un array de exactamente dos longitudes relativas.
+
+@@ LineElem::stroke  [src:7cf8f2d4]
+Cómo @stroke[trazar] la línea.
+
+```example
+#set line(length: 100%)
+#stack(
+  spacing: 1em,
+  line(stroke: 2pt + red),
+  line(stroke: (paint: blue, thickness: 4pt, cap: "round")),
+  line(stroke: (paint: blue, thickness: 1pt, dash: "dashed")),
+  line(stroke: (paint: blue, thickness: 1pt, dash: ("dot", 2pt, 4pt, 2pt))),
+)
+```
+

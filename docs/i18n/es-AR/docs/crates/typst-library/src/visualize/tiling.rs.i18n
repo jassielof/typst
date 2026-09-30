@@ -1,0 +1,173 @@
+@@ Tiling  [src:b729c968]
+Un relleno de teselado repetido.
+
+Typst admite el tipo de teselado más común, en el que un patrón se repite en forma de grilla, cubriendo toda el área de un elemento que se rellena o traza. El patrón se define por un
+@tiling.constructor.size[`size`] de tesela y un cuerpo que define el contenido de cada celda. También podés agregar @tiling.constructor.spacing[`spacing`] horizontal o vertical entre las
+celdas del teselado. El @tiling.constructor.offset[`offset`] y el @tiling.constructor.angle[`angle`] determinan la ubicación del teselado.
+
+= Ejemplo <example>
+```example
+#let pat = tiling(size: (30pt, 30pt), {
+  place(line(start: (0%, 0%), end: (100%, 100%)))
+  place(line(start: (0%, 100%), end: (100%, 0%)))
+})
+
+#rect(fill: pat, width: 100%, height: 60pt, stroke: 1pt)
+```
+
+= Teselados en texto <tilings-on-text>
+Los teselados también se admiten en texto, pero solo cuando se establece @tiling.constructor.relative[`relative`] en `{auto}` (el valor por defecto) o en `{"parent"}`. Para crear teselados
+palabra por palabra o glifo por glifo, podés envolver manualmente las palabras o los caracteres de tu texto en @box[boxes] o mediante una @reference:styling:show-rules[regla show].
+
+```example
+#let pat = tiling(
+  size: (30pt, 30pt),
+  relative: "parent",
+  square(
+    size: 30pt,
+    fill: gradient
+      .conic(..color.map.rainbow),
+  )
+)
+
+#set text(fill: pat)
+#lorem(10)
+```
+
+
+@@ Tiling::construct  [src:10f432e9]
+Construye un teselado nuevo.
+
+```example
+#let pat = tiling(
+  size: (20pt, 20pt),
+  relative: "parent",
+  place(
+    dx: 5pt,
+    dy: 5pt,
+    rotate(45deg, square(
+      size: 5pt,
+      fill: black,
+    )),
+  ),
+)
+
+#rect(width: 100%, height: 60pt, fill: pat)
+```
+
+
+@@ Tiling::construct::angle  [src:2871a0b3]
+Rota las teselas y la grilla en sentido horario alrededor de las coordenadas del desplazamiento según el ángulo especificado. La rotación se aplica después del desplazamiento.
+
+```example
+#let pat = tiling(
+  size: (20pt, 20pt),
+  angle: 45deg,
+  line(start: (0%, 50%), end: (100%, 50%)),
+)
+
+#rect(width: 100%, height: 60pt, fill: pat)
+```
+
+
+@@ Tiling::construct::body  [src:87b0f599]
+El contenido de cada celda del teselado.
+
+@@ Tiling::construct::offset  [src:4ecb25c2]
+Desplaza toda la grilla de teselas sin afectar el tamaño ni el espaciado de las teselas.
+
+El desplazamiento se especifica como un par `(x, y)`. Los valores positivos de `x` mueven el patrón hacia la derecha y los valores positivos de `y` lo mueven hacia abajo. Los valores
+relativos se resuelven respecto del tamaño de la tesela más el espaciado.
+
+Tené en cuenta que el desplazamiento causado por el offset afecta a las teselas en sí, mientras que el desplazamiento del contenido interior (por ejemplo, mediante `{place(dx: .., dy: ..)}`) puede
+causar recortes cuando el contenido se mueve fuera del cuadro delimitador de la tesela.
+
+```example
+#set rect(width: 100%, height: 80pt, stroke: 1pt)
+
+#let pat = tiling(
+  size: (20pt, 20pt),
+  circle(radius: 10pt, fill: blue),
+)
+
+#let pat-with-offset = tiling(
+  size: (20pt, 20pt),
+  offset: (50%, 50%),
+  circle(radius: 10pt, fill: blue),
+)
+
+#grid(
+  columns: 2,
+  column-gutter: 10pt,
+  rect(fill: pat),
+  rect(fill: pat-with-offset),
+)
+```
+
+
+@@ Tiling::construct::relative  [src:bf1fe63c]
+Determina respecto del cuadro delimitador de qué elemento se dibuja el teselado.
+
+Por defecto, los teselados se dibujan relativos a la forma sobre la que se pintan (`{"self"}`), salvo que el teselado se aplique sobre texto, en cuyo caso son relativos al contenedor ancestro
+más cercano (`{"parent"}`).
+
+El padre de un elemento es el @box o @block más interno que contiene el elemento o, si no hay ninguno, la propia página.
+
+```example
+#let pat = tiling(
+  size: (20pt, 20pt),
+  spacing: (5pt, 5pt),
+  relative: "self",
+  circle(radius: 10pt, fill: teal),
+)
+
+#let pat-with-parent = tiling(
+  size: (20pt, 20pt),
+  spacing: (5pt, 5pt),
+  relative: "parent",
+  circle(radius: 10pt, fill: teal),
+)
+
+#set raw(lang: "typc")
+#table(
+  columns: (1fr, 1fr, 1fr),
+  rows: (auto, 80pt),
+  table.header(`"self"`, `"parent"`, `"parent"`),
+
+  // This one is local to the cell itself.
+  table.cell(fill: pat, none),
+
+  // These two are both page-relative, so the
+  // pattern is continuous.
+  table.cell(fill: pat-with-parent, none),
+  table.cell(fill: pat-with-parent, none),
+)
+```
+
+
+@@ Tiling::construct::size  [src:025e4c5e]
+El cuadro delimitador de cada celda del teselado, especificado como un par `(x, y)`.
+
+Si se establece en `{auto}`, el teselado toma el tamaño del contenido dispuesto.
+
+@@ Tiling::construct::spacing  [src:2046a588]
+El espaciado entre las celdas del teselado, especificado como un par `(x, y)`.
+
+Si el espaciado es menor que el tamaño del teselado, el teselado se superpondrá consigo mismo. Si es mayor, el teselado tendrá huecos.
+
+```example
+>>> #set page(width: 5 * 30pt + 4 * 10pt + 2 * 15pt)
+#let pat = tiling(
+  size: (30pt, 30pt),
+  spacing: (10pt, 20pt),
+  square(size: 30pt, fill: gradient.conic(..color.map.rainbow)),
+)
+
+#rect(
+  width: 100%,
+  height: 80pt,
+  fill: pat,
+  stroke: (thickness: 1pt, dash: "dotted"),
+)
+```
+

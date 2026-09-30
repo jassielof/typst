@@ -1,0 +1,157 @@
+@@ ImageElem  [src:3a5ba636]
+Un gráfico ráster o vectorial.
+
+Podés envolver la imagen en una @figure para darle un número y un epígrafe.
+
+Como la mayoría de los elementos, las imágenes son _a nivel de bloque_ por defecto y, por lo tanto, no se integran en los párrafos adyacentes. Para forzar
+que una imagen sea en línea, ponela en un @box.
+
+= Ejemplo <example>
+```example
+#figure(
+  image("molecular.jpg", width: 80%),
+  caption: [
+    A step in the molecular testing
+    pipeline of our lab.
+  ],
+)
+```
+
+= Recorte <clipping>
+Podés envolver una imagen en un @block o un @box #footnote[Un box solo debería usarse si la imagen se va a mostrar en línea como parte de un párrafo. De lo
+contrario, es preferible un bloque.] con un @block.inset[`inset`] negativo y `{clip: true}` para recortarla. Tené en cuenta que las partes recortadas solo
+quedan ocultas visualmente. Todos los datos de la imagen siguen incrustados en la salida (excepto al exportar a PNG). Por lo tanto, este enfoque no es adecuado
+para censurar partes de una imagen.
+
+```example
+#let lynx = image("lynx.jpg", height: 150pt, fit: "cover")
+#grid(
+  columns: 2,
+  column-gutter: 1fr,
+  // The full image on the left.
+  lynx,
+  // Two cropped parts on the right: One cropped by 80pt
+  // from the bottom and one cropped by 75pt from the top.
+  stack(
+    spacing: 5pt,
+    block(lynx, clip: true, inset: (bottom: -80pt)),
+    block(lynx, clip: true, inset: (top: -75pt)),
+  )
+)
+```
+
+
+@@ ImageElem::alt  [src:bb23b4bd]
+Una descripción alternativa de la imagen.
+
+Las tecnologías de asistencia (TA), como los lectores de pantalla, usan este texto para describirles la imagen a los usuarios con discapacidad visual.
+
+Cuando la imagen está envuelta en una @figure, usá este parámetro en lugar del @figure.alt[parámetro `alt` de la figura] para describir la imagen. La única
+excepción a esta regla es cuando la imagen y el resto del contenido de la figura forman una única unidad semántica. En ese caso, usá el parámetro `alt` de la
+figura para describir toda la composición y no uses este parámetro.
+
+Podés aprender a escribir buenas descripciones alternativas en la @guides:accessibility:textual-representations[guía de accesibilidad].
+
+@@ ImageElem::fit  [src:9e2890ff]
+Cómo debe ajustarse la imagen a un área dada (el área está definida por los campos `width` y `height`). Tené en cuenta que `fit` no cambia nada visualmente si la
+relación de aspecto del área es la misma que la de la imagen.
+
+```example
+#set page(width: 300pt, height: 50pt, margin: 10pt)
+#image("tiger.jpg", width: 100%, fit: "cover")
+#image("tiger.jpg", width: 100%, fit: "contain")
+#image("tiger.jpg", width: 100%, fit: "stretch")
+```
+
+
+@@ ImageElem::format  [src:073f4294]
+El formato de la imagen.
+
+Por defecto, el formato se detecta automáticamente. Por lo tanto, normalmente solo necesitás especificarlo al proporcionar bytes sin procesar como
+@image.source[`source`] (incluso entonces, Typst intentará averiguar el formato automáticamente, pero no siempre es posible).
+
+Los formatos admitidos son `{"png"}`, `{"jpg"}`, `{"gif"}`, `{"svg"}`, `{"pdf"}` y `{"webp"}`, así como datos de píxeles sin procesar.
+
+Tené en cuenta que se aplican varias restricciones al usar archivos PDF como imágenes:
+
+- Al exportar a PDF, cualquier archivo de imagen PDF que se use debe tener una versión igual o inferior a la @pdf.standard:pdf-versions[versión de PDF del destino de
+  exportación].
+- Actualmente no se admiten archivos PDF como imágenes al exportar con un estándar de PDF específico, como PDF/A-3 o PDF/UA-1. En esos casos, podés usar SVG para
+  incrustar imágenes vectoriales.
+- El archivo de imagen no debe estar protegido con contraseña.
+- Las etiquetas (tags) de tu imagen PDF no se conservarán. En cambio, tenés que proporcionar una @image.alt[descripción alternativa] para que la imagen sea accesible.
+
+Al proporcionar datos de píxeles sin procesar como `source`, tenés que especificar como `format` un diccionario con las siguientes claves:
+- `encoding` (@str[str]): La codificación de los datos de píxeles. Una de:
+  - `{"rgb8"}` (tres canales de 8 bits: rojo, verde, azul)
+  - `{"rgba8"}` (cuatro canales de 8 bits: rojo, verde, azul, alfa)
+  - `{"luma8"}` (un canal de 8 bits)
+  - `{"lumaa8"}` (dos canales de 8 bits: luma y alfa)
+- `width` (@int[int]): El ancho de la imagen en píxeles.
+- `height` (@int[int]): El alto de la imagen en píxeles.
+
+El ancho en píxeles multiplicado por el alto multiplicado por la cantidad de canales de la codificación especificada debe coincidir entonces con los datos de `source`.
+
+```example
+#image(
+  read(
+    "tetrahedron.svg",
+    encoding: none,
+  ),
+  format: "svg",
+  width: 2cm,
+)
+
+#image(
+  bytes(range(16).map(x => x * 16)),
+  format: (
+    encoding: "luma8",
+    width: 4,
+    height: 4,
+  ),
+  width: 2cm,
+)
+```
+
+
+@@ ImageElem::height  [src:906b8d99]
+El alto de la imagen.
+
+@@ ImageElem::icc  [src:94190850]
+Un perfil ICC para la imagen.
+
+Los perfiles ICC definen cómo interpretar los colores de una imagen. Cuando se establece en `{auto}`, Typst intentará extraer un perfil ICC de la imagen.
+
+@@ ImageElem::locale  [src:8b81ba74]
+La configuración regional de este elemento (se usa para la descripción alternativa).
+
+@@ ImageElem::page  [src:699c4d90]
+El número de página que se debe incrustar como imagen. Este atributo solo tiene efecto para archivos PDF.
+
+@@ ImageElem::scaling  [src:25fc4338]
+Una indicación a los visores sobre cómo deben escalar la imagen.
+
+Cuando se establece en `{auto}`, el valor por defecto queda a criterio del visor. En la exportación a PNG, Typst usará por defecto un escalado suave, como la mayoría de los
+visores de PDF y SVG.
+
+_Nota:_ El aspecto exacto puede diferir entre los visores de PDF.
+
+@@ ImageElem::source  [src:76428dc8]
+Una ruta a un archivo de imagen o bytes sin procesar que componen una imagen en uno de los @image.format[formatos] admitidos.
+
+Se pueden usar bytes para especificar datos de píxeles sin procesar en formato de filas, de izquierda a derecha y de arriba hacia abajo.
+
+```example
+#let original = read("diagram.svg")
+#let changed = original.replace(
+  "#2B80FF", // blue
+  green.to-hex(),
+)
+
+#image(bytes(original))
+#image(bytes(changed))
+```
+
+
+@@ ImageElem::width  [src:f703134e]
+El ancho de la imagen.
