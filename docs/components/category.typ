@@ -367,7 +367,7 @@
   set text(0.75em)
   if info.element {
     gap
-    small(with-tooltip[Element][
+    small(with-tooltip[#stdx.ui("Element")][
       Element functions can be customized with `set` and `show` rules.
     ])
   }
