@@ -96,6 +96,9 @@ pub struct CompileArgs {
     /// Open the generated output when finished.
     #[arg(long)]
     pub open: bool,
+    /// Translate the docs into this language (e.g. `es-AR`), see `docs/i18n`.
+    #[arg(long)]
+    pub lang: Option<String>,
     /// Path to the workspace from which to load files for documentation.
     ///
     /// This program generates documentation from Typst's codebase. By default,

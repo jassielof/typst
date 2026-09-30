@@ -1,5 +1,6 @@
 mod args;
 mod example;
+mod i18n;
 mod live;
 mod reflect;
 mod search;
@@ -40,6 +41,7 @@ const SITE_PATH: &str = "docs/dist/site";
 
 /// Entry point.
 fn main() -> ExitCode {
+    if let Some(code) = i18n::subcommand() { return code; }
     match &ARGS.command {
         Command::Compile(command) => compile(command),
         Command::Watch(command) => watch(command),
@@ -124,6 +126,8 @@ struct Config {
     server: Option<HttpServer>,
     /// Whether to open the output after compilation.
     open: bool,
+    /// The translation language, if any.
+    lang: Option<String>,
 }
 
 impl Config {
@@ -137,6 +141,7 @@ impl Config {
         Self {
             input: args.input.clone().unwrap_or(workspace.join(ENTRYPOINT)),
             output: args.output.clone().or_else(|| match args.format {
+                OutputFormat::Pdf if args.lang.is_some() => Some(workspace.join(format!("docs/dist/docs-{}.pdf", args.lang.as_ref().unwrap()))),
                 OutputFormat::Pdf => Some(workspace.join(PDF_PATH)),
                 OutputFormat::Website if serve => None,
                 OutputFormat::Website => Some(workspace.join(SITE_PATH)),
@@ -148,6 +153,7 @@ impl Config {
             server: (serve && args.format == OutputFormat::Website)
                 .then(|| HttpServer::new("docs", None, true).unwrap()),
             open: args.open,
+            lang: args.lang.clone(),
         }
     }
 }
