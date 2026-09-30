@@ -1,0 +1,11 @@
+@@ Array::len  [src:854c23d0]
+La cantidad de valores del array.
+
+@@ Array::first  [src:77a04e05]
+Devuelve el primer ítem del array. Se puede usar en el lado izquierdo de una asignación. Devuelve el valor por defecto si el array está vacío, o falla con un error si no se especificó ningún valor por defecto.
+
+@@ Array::first::default  [src:c9f4e3b5]
+Un valor por defecto para devolver si el array está vacío.
+
+@@ Array::last  [src:73925ef3]
+Devuelve el último ítem del array. Se puede usar en el lado izquierdo de una asignación. Devuelve el valor por defecto si el array está vacío, o falla con un error si no se especificó ningún valor por defecto.

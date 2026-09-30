@@ -15,7 +15,7 @@ use std::sync::{Mutex, OnceLock};
 
 use ecow::EcoString;
 use typst::foundations::{Bytes, Dict, IntoValue, Scope, Value, func};
-use typst::syntax::{FileId, VirtualRoot};
+use typst::syntax::{FileId, RootedPath, VirtualRoot};
 
 use crate::world::DOCS_ROOT;
 
@@ -83,7 +83,8 @@ pub fn define(scope: &mut Scope) {
 /// Returns the translation of the doc comment with the given key in the given
 /// Rust source file, or `none`.
 #[func]
-fn i18n_docs(path: EcoString, key: EcoString) -> Value {
+fn i18n_docs(path: RootedPath, key: EcoString) -> Value {
+    let path = path.vpath().get_without_slash();
     let Some(state) = state() else { return Value::None };
     let mut sidecars = state.sidecars.lock().unwrap();
     let entries = sidecars.entry(path.to_string()).or_insert_with(|| {

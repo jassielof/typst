@@ -1,0 +1,8 @@
+# UI strings of the docs. Keys are the English texts; missing keys fall back to English.
+"Required" = "Obligatorio"
+"Variant" = "Variante"
+"Details" = "Detalles"
+"Parameters" = "Parámetros"
+"Constants" = "Constantes"
+"Functions" = "Funciones"
+"Definitions" = "Definiciones"
