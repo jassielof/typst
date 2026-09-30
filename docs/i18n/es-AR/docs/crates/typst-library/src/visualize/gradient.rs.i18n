@@ -1,0 +1,443 @@
+@@ Gradient  [src:3cf145e5]
+Un degradado de color.
+
+Typst admite degradados lineales mediante la @gradient.linear[función `gradient.linear`], degradados radiales mediante la
+@gradient.radial[función `gradient.radial`] y degradados cónicos mediante la @gradient.conic[función `gradient.conic`].
+
+Un degradado se puede usar con los siguientes fines:
+- Como relleno para pintar el interior de una forma: `{rect(fill: gradient.linear(..))}`
+- Como trazo para pintar el contorno de una forma: `{rect(stroke: 1pt + gradient.linear(..))}`
+- Como relleno de texto: `{set text(fill: gradient.linear(..))}`
+- Como mapa de color del que podés @gradient.sample[muestrear]: `{gradient.linear(..).sample(50%)}`
+
+= Ejemplos <examples>
+```example
+>>> #set square(size: 50pt)
+#stack(
+  dir: ltr,
+  spacing: 1fr,
+  square(fill: gradient.linear(..color.map.rainbow)),
+  square(fill: gradient.radial(..color.map.rainbow)),
+  square(fill: gradient.conic(..color.map.rainbow)),
+)
+```
+
+Los degradados también se admiten en texto, pero solo cuando se establece la @gradient.relative[relatividad] en `{auto}` (el valor por defecto) o en
+`{"parent"}`. Para crear degradados palabra por palabra o glifo por glifo, podés envolver manualmente las palabras o los caracteres de tu texto en
+@box[boxes] o mediante una @reference:styling:show-rules[regla show].
+
+```example
+>>> #set page(width: auto, height: auto, margin: 12pt)
+>>> #set text(size: 12pt)
+#set text(fill: gradient.linear(red, blue))
+#let rainbow(content) = {
+  set text(fill: gradient.linear(..color.map.rainbow))
+  box(content)
+}
+
+This is a gradient on text, but with a #rainbow[twist]!
+```
+
+= Paradas <stops>
+Un degradado se compone de una serie de paradas (stops). Cada una de estas paradas tiene un color y un desplazamiento. El desplazamiento es una
+@ratio[proporción] entre `{0%}` y `{100%}` o un ángulo entre `{0deg}` y `{360deg}`. El desplazamiento es una posición relativa que determina qué tan
+lejos a lo largo del degradado está ubicada la parada. El color de la parada define el color que debe tener el degradado en esa posición.
+
+Cada parada se pasa como argumento posicional y puede tener una de dos formas:
+- Solo un color, como `{red}`, para que Typst ubique la parada automáticamente.
+- Un array con un color y su desplazamiento, como `{(red, 30%)}`, para ubicar la parada vos mismo.
+
+Podés elegir omitir los desplazamientos al definir un degradado. En ese caso, Typst espaciará todas las paradas de manera uniforme. De lo contrario,
+se deben proporcionar desplazamientos para _todas_ las paradas. No deben disminuir de una parada a la siguiente, la primera debe ser `{0%}` y la
+última, `{100%}`.
+
+```example
+#rect(
+  width: 100%,
+  fill: gradient.linear(
+    (green, 0%),
+    (red, 30%),
+    (blue, 100%),
+  ),
+)
+```
+
+Darle el mismo desplazamiento a dos paradas crea un borde duro en lugar de una transición suave:
+
+```example
+#rect(
+  width: 100%,
+  fill: gradient.linear(
+    (orange, 0%),
+    (orange, 50%),
+    (blue, 50%),
+    (blue, 100%),
+  ),
+)
+```
+
+Typst ofrece el método @gradient.sharp[`sharp`] en los degradados para convertir automáticamente un degradado suave en uno con bordes duros. El
+ejemplo anterior se puede escribir de manera equivalente así:
+
+```example
+#rect(
+  width: 100%,
+  fill: gradient.linear(orange, blue)
+    .sharp(2),
+)
+```
+
+Typst predefine mapas de color que podés usar como paradas en @color.map.
+
+= Relatividad <relativeness>
+La ubicación de las paradas `{0%}` y `{100%}` depende de las dimensiones de un contenedor. Este contenedor puede ser la forma sobre la que se está
+pintando o el contenedor circundante más cercano. Esto se controla con el argumento `relative` de un constructor de degradado. Por defecto, los
+degradados son relativos a la forma sobre la que se pintan, salvo que el degradado se aplique sobre texto, en cuyo caso son relativos al contenedor
+ancestro más cercano.
+
+Typst determina el contenedor ancestro de la siguiente manera:
+- Para las formas que se ubican en la raíz / nivel superior del documento, el ancestro más cercano es la propia página.
+- Para las otras formas, el ancestro es el @block o @box más interno que contiene la forma.
+
+= Espacios de color e interpolación <color-spaces-and-interpolation>
+Los degradados se pueden interpolar en cualquier espacio de color. Por defecto, los degradados se interpolan en el espacio de color @color.oklab[Oklab],
+que es un espacio de color
+#link("https://programmingdesignsystems.com/color/perceptually-uniform-color-spaces/index.html")[perceptualmente uniforme].
+Esto significa que el degradado se percibirá con una progresión suave de colores. Esto es particularmente útil para la visualización de datos.
+
+Sin embargo, podés elegir interpolar el degradado en cualquier espacio de color admitido que quieras, pero tené en cuenta que algunos espacios de
+color no son adecuados para interpolar perceptualmente entre colores. Consultá la tabla de abajo al elegir un espacio de interpolación.
+
+#docs-table(
+  table.header[Espacio de color][¿Perceptualmente uniforme?],
+
+  [@color.oklab[Oklab]],
+  [_Sí_],
+
+  [@color.oklch[Oklch]],
+  [_Sí_],
+
+  [@color.rgb[sRGB]],
+  [_No_],
+
+  [@color.linear-rgb[RGB lineal]],
+  [_Sí_],
+
+  [@color.cmyk[CMYK]],
+  [_No_],
+
+  [@color.luma[Escala de grises]],
+  [_Sí_],
+
+  [@color.hsl[HSL]],
+  [_No_],
+
+  [@color.hsv[HSV]],
+  [_No_],
+)
+
+```preview
+>>> #set text(fill: white, font: "IBM Plex Sans", 8pt)
+>>> #set block(spacing: 0pt)
+#let spaces = (
+  ("Oklab", color.oklab),
+  ("Oklch", color.oklch),
+  ("sRGB", color.rgb),
+  ("linear-RGB", color.linear-rgb),
+  ("CMYK", color.cmyk),
+  ("Grayscale", color.luma),
+  ("HSL", color.hsl),
+  ("HSV", color.hsv),
+)
+
+#for (name, space) in spaces {
+  block(
+    width: 100%,
+    inset: 4pt,
+    fill: gradient.linear(
+      red,
+      blue,
+      space: space,
+    ),
+    strong(upper(name)),
+  )
+}
+```
+
+= Dirección <direction>
+Algunos degradados son sensibles a la dirección. Por ejemplo, un degradado lineal tiene un ángulo que determina su dirección. Typst usa un ángulo en
+sentido horario, con 0° de izquierda a derecha, 90° de arriba hacia abajo, 180° de derecha a izquierda y 270° de abajo hacia arriba.
+
+```example
+>>> #set square(size: 50pt)
+#stack(
+  dir: ltr,
+  spacing: 1fr,
+  square(fill: gradient.linear(red, blue, angle: 0deg)),
+  square(fill: gradient.linear(red, blue, angle: 90deg)),
+  square(fill: gradient.linear(red, blue, angle: 180deg)),
+  square(fill: gradient.linear(red, blue, angle: 270deg)),
+)
+```
+
+= Nota sobre los tamaños de archivo <note-on-file-sizes>
+Los degradados pueden ser bastante grandes, especialmente si tienen muchas paradas. Esto se debe a que los degradados se almacenan como una lista de
+colores y desplazamientos, que puede ocupar mucho espacio. En la exportación a SVG, los degradados se almacenan como una lista de colores @color.rgb que
+replican el espacio de color original con una cantidad optimizada de paradas adicionales en el medio. En la exportación a PDF, lo mismo se aplica a los
+degradados en los espacios de color @color.oklab, @color.oklch, @color.hsv, @color.hsl y @color.linear-rgb. Esto evita tener que codificar estos
+espacios de color en tu archivo PDF, pero sí agrega paradas adicionales a tu degradado, lo que puede aumentar el tamaño del archivo.
+
+@@ Gradient::angle  [src:cc09d32e]
+Devuelve el ángulo de este degradado.
+
+Devuelve `{none}` si el degradado no es ni lineal ni cónico.
+
+@@ Gradient::center  [src:42654497]
+Devuelve el centro de este degradado.
+
+Devuelve `{none}` si el degradado no es ni radial ni cónico.
+
+@@ Gradient::conic  [src:cd6f5e20]
+Crea un degradado cónico nuevo, en el que los colores cambian radialmente alrededor de un punto central.
+
+Podés controlar el punto central del degradado con el argumento `center`. Por defecto, el punto central es el centro de la forma.
+
+```example
+>>> #set circle(radius: 30pt)
+#stack(
+  dir: ltr,
+  spacing: 1fr,
+  circle(fill: gradient.conic(
+    ..color.map.viridis,
+  )),
+  circle(fill: gradient.conic(
+    ..color.map.viridis,
+    center: (20%, 30%),
+  )),
+)
+```
+
+
+@@ Gradient::conic::angle  [src:13155a18]
+El ángulo del degradado.
+
+@@ Gradient::conic::center  [src:9d5ed508]
+El centro del círculo del degradado.
+
+Un valor de `{(50%, 50%)}` significa que el círculo está centrado dentro de su contenedor.
+
+@@ Gradient::conic::relative  [src:4eb9daf1]
+La @gradient:relativeness[ubicación relativa] del degradado.
+
+El padre de un elemento es el @box o @block más interno que contiene el elemento o, si no hay ninguno, la propia página.
+
+@@ Gradient::conic::space  [src:5208fac4]
+El espacio de color en el que se interpola el degradado.
+
+Por defecto es un espacio de color perceptualmente uniforme llamado @color.oklab[Oklab].
+
+@@ Gradient::conic::stops  [src:e1871d77]
+Las @gradient:stops[paradas] de color del degradado.
+
+Mirá también la @gradient.linear.stops[documentación del degradado lineal] para más detalles.
+
+@@ Gradient::focal_center  [src:1df2a10a]
+Devuelve el centro focal de este degradado.
+
+Devuelve `{none}` si el degradado no es radial.
+
+@@ Gradient::focal_radius  [src:ee51f980]
+Devuelve el radio focal de este degradado.
+
+Devuelve `{none}` si el degradado no es radial.
+
+@@ Gradient::kind  [src:5cbdab66]
+Devuelve el tipo de este degradado.
+
+@@ Gradient::linear  [src:184ada35]
+Crea un degradado lineal nuevo, en el que los colores hacen la transición a lo largo de una línea recta.
+
+```example
+#rect(
+  width: 100%,
+  height: 20pt,
+  fill: gradient.linear(
+    ..color.map.viridis,
+  ),
+)
+```
+
+
+@@ Gradient::linear::angle  [src:13155a18]
+El ángulo del degradado.
+
+@@ Gradient::linear::dir  [src:5602f4cd]
+La dirección del degradado.
+
+@@ Gradient::linear::relative  [src:4eb9daf1]
+La @gradient:relativeness[ubicación relativa] del degradado.
+
+El padre de un elemento es el @box o @block más interno que contiene el elemento o, si no hay ninguno, la propia página.
+
+@@ Gradient::linear::space  [src:5208fac4]
+El espacio de color en el que se interpola el degradado.
+
+Por defecto es un espacio de color perceptualmente uniforme llamado @color.oklab[Oklab].
+
+@@ Gradient::linear::stops  [src:cb5798be]
+Las @gradient:stops[paradas] de color del degradado.
+
+Cada parada se da como un argumento posicional separado. Puede ser un color, como `{red}`, o un array con un color y su desplazamiento, como
+`{(red, 30%)}`. Si se dan desplazamientos, deben proporcionarse para todas las paradas, no deben disminuir de una parada a la siguiente, deben empezar en
+`{0%}` y terminar en `{100%}`.
+
+Al usar un mapa de color predefinido del módulo `color.map`, se usa el @arguments:spreading[operador de expansión] `..` para pasar cada parada como un
+argumento separado.
+
+@@ Gradient::radial  [src:34a7155d]
+Crea un degradado radial nuevo, en el que los colores irradian desde un origen.
+
+El degradado se define con dos círculos: el círculo focal y el círculo final. El círculo focal es un círculo con centro `focal-center` y radio
+`focal-radius`, que define los puntos en los que el degradado empieza y tiene el color de la primera parada. El círculo final es un círculo con centro
+`center` y radio `radius`, que define los puntos en los que el degradado termina y tiene el color de la última parada. Luego el degradado se interpola
+entre estos dos círculos.
+
+Con estos cuatro valores, también llamados punto focal para el círculo inicial y centro y radio para el círculo final, podemos definir un degradado con
+propiedades más interesantes que un degradado radial básico.
+
+```example
+>>> #set circle(radius: 30pt)
+#stack(
+  dir: ltr,
+  spacing: 1fr,
+  circle(fill: gradient.radial(
+    ..color.map.viridis,
+  )),
+  circle(fill: gradient.radial(
+    ..color.map.viridis,
+    focal-center: (10%, 40%),
+    focal-radius: 5%,
+  )),
+)
+```
+
+
+@@ Gradient::radial::center  [src:e37cb628]
+El centro del círculo final del degradado.
+
+Un valor de `{(50%, 50%)}` significa que el círculo final está centrado dentro de su contenedor.
+
+@@ Gradient::radial::focal_center  [src:ab5c29ee]
+El centro del círculo focal del degradado.
+
+El centro focal debe estar dentro del círculo final.
+
+Un valor de `{(50%, 50%)}` significa que el círculo focal está centrado dentro de su contenedor.
+
+Por defecto, se establece igual que el centro del último círculo.
+
+@@ Gradient::radial::focal_radius  [src:17a62248]
+El radio del círculo focal del degradado.
+
+El centro focal debe estar dentro del círculo final.
+
+Por defecto, se establece en `{0%}`. El radio focal debe ser menor que el radio final.
+
+@@ Gradient::radial::radius  [src:f3ee16ff]
+El radio del círculo final del degradado.
+
+Por defecto, se establece en `{50%}`. El radio final debe ser mayor que el radio focal.
+
+@@ Gradient::radial::relative  [src:4eb9daf1]
+La @gradient:relativeness[ubicación relativa] del degradado.
+
+El padre de un elemento es el @box o @block más interno que contiene el elemento o, si no hay ninguno, la propia página.
+
+@@ Gradient::radial::space  [src:5208fac4]
+El espacio de color en el que se interpola el degradado.
+
+Por defecto es un espacio de color perceptualmente uniforme llamado @color.oklab[Oklab].
+
+@@ Gradient::radial::stops  [src:e1871d77]
+Las @gradient:stops[paradas] de color del degradado.
+
+Mirá también la @gradient.linear.stops[documentación del degradado lineal] para más detalles.
+
+@@ Gradient::radius  [src:ce7ab8fe]
+Devuelve el radio de este degradado.
+
+Devuelve `{none}` si el degradado no es radial.
+
+@@ Gradient::relative  [src:0ac32395]
+Devuelve la ubicación relativa de este degradado.
+
+@@ Gradient::repeat  [src:9f0c3b09]
+Repite este degradado una cantidad dada de veces, opcionalmente reflejándolo en cada segunda repetición.
+
+```example
+#circle(
+  radius: 40pt,
+  fill: gradient
+    .radial(aqua, white)
+    .repeat(4),
+)
+```
+
+
+@@ Gradient::repeat::mirror  [src:45c76e29]
+Si se refleja el degradado en cada segunda repetición, es decir, la primera instancia (y todas las impares) permanece sin cambios.
+
+```example
+#circle(
+  radius: 40pt,
+  fill: gradient
+    .conic(green, black)
+    .repeat(2, mirror: true)
+)
+```
+
+
+@@ Gradient::repeat::repetitions  [src:bafaec07]
+La cantidad de veces que se repite el degradado.
+
+@@ Gradient::sample  [src:9b261ba0]
+Muestrea el degradado en una posición dada.
+
+La posición es una posición a lo largo del degradado (una @ratio[proporción] entre `{0%}` y `{100%}`) o un @angle[ángulo]. Cualquier valor fuera de este
+rango se acotará.
+
+@@ Gradient::sample::t  [src:af8c25c2]
+La posición en la que se muestrea el degradado.
+
+@@ Gradient::samples  [src:6550abf1]
+Muestrea el degradado en varias posiciones a la vez y devuelve los resultados como un array.
+
+@@ Gradient::samples::ts  [src:8533d6d0]
+Las posiciones en las que se muestrea el degradado.
+
+@@ Gradient::sharp  [src:f70b62a1]
+Crea una versión nítida de este degradado.
+
+Los degradados nítidos tienen saltos discretos entre colores, en lugar de una transición suave. Son particularmente útiles para crear listas de colores
+para un degradado predefinido.
+
+```example
+#set rect(width: 100%, height: 20pt)
+#let grad = gradient.linear(..color.map.rainbow)
+#rect(fill: grad)
+#rect(fill: grad.sharp(5))
+#rect(fill: grad.sharp(5, smoothness: 20%))
+```
+
+
+@@ Gradient::sharp::smoothness  [src:44031a67]
+Cuánto se suaviza el degradado.
+
+@@ Gradient::sharp::steps  [src:d12ae385]
+La cantidad de paradas del degradado.
+
+@@ Gradient::space  [src:7bb5d659]
+Devuelve el espacio de mezcla de este degradado.
+
+@@ Gradient::stops  [src:d22d7904]
+Devuelve las paradas de este degradado.

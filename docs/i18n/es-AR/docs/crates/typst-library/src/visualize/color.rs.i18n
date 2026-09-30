@@ -1,0 +1,793 @@
+@@ Color  [src:8d4670dc]
+Un color en un espacio de color específico.
+
+Typst admite:
+- sRGB mediante la @color.rgb[función `rgb`]
+- CMYK de dispositivo mediante la @color.cmyk[función `cmyk`]
+- Gris D65 mediante la @color.luma[función `luma`]
+- Oklab mediante la @color.oklab[función `oklab`]
+- Oklch mediante la @color.oklch[función `oklch`]
+- RGB lineal mediante la @color.linear-rgb[función `color.linear-rgb`]
+- HSL mediante la @color.hsl[función `color.hsl`]
+- HSV mediante la @color.hsv[función `color.hsv`]
+- Espacios de color descritos por colorantes planos (spot) mediante el @color.spot[tipo `color.spot`]
+
+Todos los espacios de color, excepto CMYK y los colorantes planos, tienen canales alfa.
+
+En toda la documentación usamos el término _color de proceso_ para los colores que se pueden mezclar entre sí (actualmente todos los
+colores que no son colores planos). En este término, _proceso_ significa que el tono se crea durante el proceso de impresión y no de
+antemano.
+
+= Ejemplo <example>
+```example
+#rect(fill: aqua)
+```
+
+= Colores predefinidos <predefined-colors>
+Typst define los siguientes colores incorporados:
+
+#docs-table(
+  table.header[Color][Definición],
+
+  [`black`],
+  [`{luma(0)}`],
+
+  [`gray`],
+  [`{luma(170)}`],
+
+  [`silver`],
+  [`{luma(221)}`],
+
+  [`white`],
+  [`{luma(255)}`],
+
+  [`navy`],
+  [`{rgb("#001f3f")}`],
+
+  [`blue`],
+  [`{rgb("#0074d9")}`],
+
+  [`aqua`],
+  [`{rgb("#7fdbff")}`],
+
+  [`teal`],
+  [`{rgb("#39cccc")}`],
+
+  [`eastern`],
+  [`{rgb("#239dad")}`],
+
+  [`purple`],
+  [`{rgb("#b10dc9")}`],
+
+  [`fuchsia`],
+  [`{rgb("#f012be")}`],
+
+  [`maroon`],
+  [`{rgb("#85144b")}`],
+
+  [`red`],
+  [`{rgb("#ff4136")}`],
+
+  [`orange`],
+  [`{rgb("#ff851b")}`],
+
+  [`yellow`],
+  [`{rgb("#ffdc00")}`],
+
+  [`olive`],
+  [`{rgb("#3d9970")}`],
+
+  [`green`],
+  [`{rgb("#2ecc40")}`],
+
+  [`lime`],
+  [`{rgb("#01ff70")}`],
+)
+
+Los colores predefinidos y los constructores de color más importantes están disponibles globalmente y también en el ámbito del tipo
+color, así que podés escribir `color.red` o simplemente `red`.
+
+```preview
+#let colors = (
+  "black", "gray", "silver", "white",
+  "navy", "blue", "aqua", "teal",
+  "eastern", "purple", "fuchsia",
+  "maroon", "red", "orange", "yellow",
+  "olive", "green", "lime",
+)
+
+#set text(font: "PT Sans")
+#set page(width: auto)
+#grid(
+  columns: 9,
+  gutter: 10pt,
+  ..colors.map(name => {
+      let col = eval(name)
+      let luminance = luma(col).components().first()
+      set text(fill: white) if luminance < 50%
+      set square(stroke: black) if col == white
+      set align(center + horizon)
+      square(size: 50pt,  fill: col, name)
+  })
+)
+```
+
+
+@@ Color::MAP  [src:33fca077]
+Una colección de mapas de color predefinidos que se pueden usar para los @gradient:stops[degradados]. Son simplemente arrays de colores.
+
+```example
+#circle(fill: gradient.linear(..color.map.crest))
+```
+
+#docs-table(
+  table.header[Mapa][Detalles],
+
+  [`turbo`],
+  [
+    Un mapa de color tipo arcoíris perceptualmente uniforme. Leé
+    #link("https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html")[esta entrada de blog]
+    para más detalles.
+  ],
+
+  [`cividis`],
+  [
+    Un mapa de color de azul a gris a amarillo. Mirá
+    #link("https://bids.github.io/colormap/")[esta entrada de blog] para más
+    detalles.
+  ],
+
+  [`rainbow`],
+  [
+    Recorre todo el espectro de colores. Este mapa de color se usa mejor estableciendo el espacio de color de interpolación en
+    @color.hsl[HSL]. El degradado arcoíris *no es adecuado* para la visualización de datos porque no es perceptualmente uniforme, por lo
+    que las diferencias entre valores se vuelven poco claras para tus lectores. Solo debe usarse con fines decorativos.
+  ],
+
+  [`spectral`],
+  [Mapa de color de rojo a amarillo a azul.],
+
+  [`viridis`],
+  [Un mapa de color de violeta a verde azulado a amarillo.],
+
+  [`inferno`],
+  [Un mapa de color de negro a rojo a amarillo.],
+
+  [`magma`],
+  [Un mapa de color de negro a violeta a amarillo.],
+
+  [`plasma`],
+  [Un mapa de color de violeta a rosa a amarillo.],
+
+  [`rocket`],
+  [Un mapa de color de negro a rojo a blanco.],
+
+  [`mako`],
+  [Un mapa de color de negro a verde azulado a blanco.],
+
+  [`coolwarm`],
+  [Un mapa de color de azul a blanco a rojo con transiciones suaves.],
+
+  [`vlag`],
+  [Un mapa de color de azul claro a blanco a rojo.],
+
+  [`icefire`],
+  [Un mapa de color de verde azulado claro a negro a naranja.],
+
+  [`flare`],
+  [Un mapa de color de naranja a violeta que es perceptualmente uniforme.],
+
+  [`crest`],
+  [Un mapa de color de verde claro a azul.],
+)
+
+Algunos preajustes populares no se incluyen porque no están disponibles bajo una licencia libre. Otros, como
+#link("https://jakevdp.github.io/blog/2014/10/16/how-bad-is-your-colormap/")[Jet],
+no se incluyen porque no son amigables para personas con daltonismo. ¡Sentite libre de usar o crear un paquete con otros preajustes que
+te resulten útiles!
+
+```preview
+#set page(width: auto, height: auto)
+#set text(font: "PT Sans", size: 8pt)
+
+#let maps = (
+  "turbo", "cividis", "rainbow", "spectral",
+  "viridis", "inferno", "magma", "plasma",
+  "rocket", "mako", "coolwarm", "vlag",
+  "icefire", "flare", "crest",
+)
+
+#stack(dir: ltr, spacing: 3pt, ..maps.map((name) => {
+  let map = eval("color.map." + name)
+  stack(
+    dir: ttb,
+    block(
+      width: 15pt,
+      height: 100pt,
+      fill: gradient.linear(..map, angle: 90deg),
+    ),
+    block(
+      width: 15pt,
+      height: 32pt,
+      move(dy: 8pt, rotate(90deg, name)),
+    ),
+  )
+}))
+```
+
+
+@@ Color::cmyk  [src:7d84cf1b]
+Crea un color CMYK.
+
+Es útil si querés apuntar a una impresora específica. La conversión a RGB para la vista previa en pantalla puede diferir de cómo tu
+impresora reproduce el color.
+
+Un color CMYK se representa internamente con un array de cuatro componentes:
+- cian (@ratio)
+- magenta (@ratio)
+- amarillo (@ratio)
+- clave / negro (key) (@ratio)
+
+Estos componentes también están disponibles con el método @color.components[`components`].
+
+Tené en cuenta que los colores CMYK actualmente no se admiten cuando la salida PDF/A está habilitada.
+
+```example
+#square(
+  fill: cmyk(27%, 0%, 3%, 5%)
+)
+```
+
+
+@@ Color::cmyk::color  [src:dbb462b0]
+Alternativamente: el color que se convierte a CMYK.
+
+Si se da, no se deben dar los componentes individuales.
+
+@@ Color::cmyk::cyan  [src:304a57ff]
+El componente cian.
+
+@@ Color::cmyk::key  [src:477e2071]
+El componente clave (negro).
+
+@@ Color::cmyk::magenta  [src:dc7affde]
+El componente magenta.
+
+@@ Color::cmyk::yellow  [src:e9953b8a]
+El componente amarillo.
+
+@@ Color::components  [src:b15b8f3a]
+Extrae los componentes de este color.
+
+El tamaño y los valores de este array dependen del espacio de color. Podés obtener el espacio de color con @color.space[`space`]. A
+continuación hay una tabla de los espacios de color y sus componentes:
+
+#docs-table(
+  table.header[Espacio de color][C1][C2][C3][C4],
+
+  [@color.luma[`luma`]],
+  [Luminosidad],
+  [],
+  [],
+  [],
+
+  [@color.oklab[`oklab`]],
+  [Luminosidad],
+  [`a`],
+  [`b`],
+  [Alfa],
+
+  [@color.oklch[`oklch`]],
+  [Luminosidad],
+  [Croma],
+  [Tono],
+  [Alfa],
+
+  [@color.linear-rgb[`linear-rgb`]],
+  [Rojo],
+  [Verde],
+  [Azul],
+  [Alfa],
+
+  [@color.rgb[`rgb`]],
+  [Rojo],
+  [Verde],
+  [Azul],
+  [Alfa],
+
+  [@color.cmyk[`cmyk`]],
+  [Cian],
+  [Magenta],
+  [Amarillo],
+  [Clave],
+
+  [@color.hsl[`hsl`]],
+  [Tono],
+  [Saturación],
+  [Luminosidad],
+  [Alfa],
+
+  [@color.hsv[`hsv`]],
+  [Tono],
+  [Saturación],
+  [Valor],
+  [Alfa],
+
+  [@color.spot[`spot`]],
+  [Tinte],
+  none,
+  none,
+  none,
+)
+
+Para el significado y el tipo de cada valor individual, mirá la documentación del espacio de color correspondiente. El componente alfa
+es opcional y solo se incluye si el argumento `alpha` es `true`. La longitud del array devuelto depende de la cantidad de componentes y de
+si se incluye el componente alfa.
+
+```example
+// note that the alpha component is included by default
+#rgb(40%, 60%, 80%).components()
+```
+
+
+@@ Color::components::alpha  [src:350ab634]
+Si se incluye el componente alfa.
+
+@@ Color::darken  [src:9506d733]
+Oscurece un color según un factor dado.
+
+@@ Color::darken::factor  [src:5933d1a1]
+El factor por el que se oscurece el color.
+
+@@ Color::desaturate  [src:658da373]
+Disminuye la saturación de un color según un factor dado.
+
+Solo se pueden desaturar los colores de proceso. Si querés desaturar un color plano, convertilo primero en un color de proceso.
+
+@@ Color::desaturate::factor  [src:79cc33d5]
+El factor por el que se desatura el color.
+
+@@ Color::hsl  [src:9193159f]
+Crea un color HSL.
+
+Este espacio de color es útil para especificar colores por tono, saturación y luminosidad. También es útil para la manipulación de
+colores, como saturar manteniendo el tono percibido.
+
+Un color HSL se representa internamente con un array de cuatro componentes:
+- tono (@angle)
+- saturación (@ratio)
+- luminosidad (@ratio)
+- alfa (@ratio)
+
+Estos componentes también están disponibles con el método @color.components[`components`].
+
+```example
+#square(
+  fill: color.hsl(30deg, 50%, 60%)
+)
+```
+
+
+@@ Color::hsl::alpha  [src:8c29893b]
+El componente alfa.
+
+@@ Color::hsl::color  [src:3078bc5e]
+Alternativamente: el color que se convierte a HSL.
+
+Si se da, no se deben dar los componentes individuales.
+
+@@ Color::hsl::hue  [src:317d7653]
+El ángulo de tono.
+
+@@ Color::hsl::lightness  [src:2f5384cd]
+El componente de luminosidad.
+
+@@ Color::hsl::saturation  [src:0b6d36f8]
+El componente de saturación.
+
+@@ Color::hsv  [src:7e2b88a8]
+Crea un color HSV.
+
+Este espacio de color es útil para especificar colores por tono, saturación y valor. También es útil para la manipulación de colores,
+como saturar manteniendo el tono percibido.
+
+Un color HSV se representa internamente con un array de cuatro componentes:
+- tono (@angle)
+- saturación (@ratio)
+- valor (@ratio)
+- alfa (@ratio)
+
+Estos componentes también están disponibles con el método @color.components[`components`].
+
+```example
+#square(
+  fill: color.hsv(30deg, 50%, 60%)
+)
+```
+
+
+@@ Color::hsv::alpha  [src:8c29893b]
+El componente alfa.
+
+@@ Color::hsv::color  [src:3078bc5e]
+Alternativamente: el color que se convierte a HSL.
+
+Si se da, no se deben dar los componentes individuales.
+
+@@ Color::hsv::hue  [src:317d7653]
+El ángulo de tono.
+
+@@ Color::hsv::saturation  [src:0b6d36f8]
+El componente de saturación.
+
+@@ Color::hsv::value  [src:7ad89f5b]
+El componente de valor.
+
+@@ Color::lighten  [src:f4aecf1a]
+Aclara un color según un factor dado.
+
+@@ Color::lighten::factor  [src:f40a5b89]
+El factor por el que se aclara el color.
+
+@@ Color::linear_rgb  [src:042b286e]
+Crea un color RGB(A) con luma lineal.
+
+Este espacio de color es similar a sRGB, pero con la diferencia de que los componentes de color no tienen corrección gamma. Esto facilita
+realizar operaciones de color como la mezcla y la interpolación. Aunque, para eso deberías preferir la @color.oklab[función `oklab`].
+
+Un color RGB(A) lineal se representa internamente con un array de cuatro componentes:
+- rojo (@ratio)
+- verde (@ratio)
+- azul (@ratio)
+- alfa (@ratio)
+
+Estos componentes también están disponibles con el método @color.components[`components`].
+
+```example
+#square(fill: color.linear-rgb(
+  30%, 50%, 10%,
+))
+```
+
+
+@@ Color::linear_rgb::alpha  [src:8c29893b]
+El componente alfa.
+
+@@ Color::linear_rgb::blue  [src:7eafc21d]
+El componente azul.
+
+@@ Color::linear_rgb::color  [src:4bab6216]
+Alternativamente: el color que se convierte a RGB(A) lineal.
+
+Si se da, no se deben dar los componentes individuales.
+
+@@ Color::linear_rgb::green  [src:5bd341f9]
+El componente verde.
+
+@@ Color::linear_rgb::red  [src:54166d31]
+El componente rojo.
+
+@@ Color::luma  [src:30d18bff]
+Crea un color en escala de grises.
+
+Un color en escala de grises se representa con los componentes `lightness` (@ratio) y `alpha` (@ratio).
+
+Estos componentes también están disponibles con el método @color.components[`components`].
+
+```example
+#for x in range(250, step: 50) {
+  box(square(fill: luma(x)))
+}
+```
+
+
+@@ Color::luma::alpha  [src:8c29893b]
+El componente alfa.
+
+@@ Color::luma::color  [src:1307b10a]
+Alternativamente: el color que se convierte a escala de grises.
+
+Si se da, no se deben dar los componentes individuales.
+
+@@ Color::luma::lightness  [src:2f5384cd]
+El componente de luminosidad.
+
+@@ Color::mix  [src:8e380692]
+Crea un color mezclando dos o más colores.
+
+En los espacios de color con un componente de tono (HSL, HSV, Oklch), solo se pueden mezclar dos colores a la vez. ¡Mezclar más de dos
+colores en un espacio así producirá un error!
+
+```example
+#set block(height: 20pt, width: 100%)
+#block(fill: red.mix(blue))
+#block(fill: red.mix(blue, space: rgb))
+#block(fill: color.mix(red, blue, white))
+#block(fill: color.mix((red, 70%), (blue, 30%)))
+```
+
+
+@@ Color::mix::colors  [src:6793439f]
+Los colores, opcionalmente con pesos, especificados como un par (array de longitud dos) de color y peso (flotante o proporción).
+
+Los pesos no necesitan sumar `{100%}`, son relativos a la suma de todos los pesos.
+
+@@ Color::mix::space  [src:3170044d]
+El espacio de color en el que se mezcla. Por defecto, esto ocurre en un espacio de color perceptual (@color.oklab[`oklab`]) o, si todos los
+colores usan el mismo colorante plano, usando ese colorante.
+
+Todos los colores se convertirán a este espacio de color.
+
+@@ Color::negate  [src:1a2fbec2]
+Produce el color complementario usando un espacio de color dado. Podés pensarlo como el lado opuesto en una rueda de colores.
+
+```example
+#square(fill: yellow)
+#square(fill: yellow.negate())
+#square(fill: yellow.negate(space: rgb))
+```
+
+
+@@ Color::negate::space  [src:8577b713]
+El espacio de color que se usa para la transformación. Por defecto se usa un espacio de color perceptual.
+
+@@ Color::oklab  [src:8ea140f7]
+Crea un color #link("https://bottosson.github.io/posts/oklab/")[Oklab].
+
+Este espacio de color es muy adecuado para los siguientes casos de uso:
+- Manipulación de colores, como saturar manteniendo el tono percibido
+- Crear imágenes en escala de grises con luminosidad percibida uniforme
+- Crear transiciones de color y degradados suaves y uniformes
+
+Un color Oklab lineal se representa internamente con un array de cuatro componentes:
+- luminosidad (@ratio)
+- a (@float o @ratio. Las proporciones son relativas a `{0.4}`; es decir, `{50%}` es igual a `{0.2}`)
+- b (@float o @ratio. Las proporciones son relativas a `{0.4}`; es decir, `{50%}` es igual a `{0.2}`)
+- alfa (@ratio)
+
+Estos componentes también están disponibles con el método @color.components[`components`].
+
+```example
+#square(
+  fill: oklab(27%, 20%, -3%, 50%)
+)
+```
+
+
+@@ Color::oklab::a  [src:e9984d1d]
+El componente a ("verde/rojo").
+
+@@ Color::oklab::alpha  [src:8c29893b]
+El componente alfa.
+
+@@ Color::oklab::b  [src:52f8c96e]
+El componente b ("azul/amarillo").
+
+@@ Color::oklab::color  [src:80cefff0]
+Alternativamente: el color que se convierte a Oklab.
+
+Si se da, no se deben dar los componentes individuales.
+
+@@ Color::oklab::lightness  [src:2f5384cd]
+El componente de luminosidad.
+
+@@ Color::oklch  [src:18a8312b]
+Crea un color #link("https://bottosson.github.io/posts/oklab/")[Oklch].
+
+Este espacio de color es muy adecuado para los siguientes casos de uso:
+- Manipulación de colores que involucra luminosidad, croma y tono
+- Crear imágenes en escala de grises con luminosidad percibida uniforme
+- Crear transiciones de color y degradados suaves y uniformes
+
+Un color Oklch lineal se representa internamente con un array de cuatro componentes:
+- luminosidad (@ratio)
+- croma (@float o @ratio. Las proporciones son relativas a `{0.4}`; es decir, `{50%}` es igual a `{0.2}`)
+- tono (@angle)
+- alfa (@ratio)
+
+Estos componentes también están disponibles con el método @color.components[`components`].
+
+```example
+#square(
+  fill: oklch(40%, 0.2, 160deg, 50%)
+)
+```
+
+
+@@ Color::oklch::alpha  [src:8c29893b]
+El componente alfa.
+
+@@ Color::oklch::chroma  [src:356e9173]
+El componente de croma.
+
+@@ Color::oklch::color  [src:5fcfd5d4]
+Alternativamente: el color que se convierte a Oklch.
+
+Si se da, no se deben dar los componentes individuales.
+
+@@ Color::oklch::hue  [src:55bbc552]
+El componente de tono.
+
+@@ Color::oklch::lightness  [src:2f5384cd]
+El componente de luminosidad.
+
+@@ Color::opacify  [src:92e00491]
+Vuelve un color más opaco según una escala dada.
+
+Este método es relativo al valor alfa existente. Si la escala es positiva, calcula `alpha + scale - alpha * scale`. Las escalas negativas se
+comportan como `color.transparentize(-scale)`.
+
+```example
+#let half-red = red.transparentize(50%)
+#block(fill: half-red.opacify(100%))[opaque]
+#block(fill: half-red.opacify(50%))[three quarters red]
+#block(fill: half-red.opacify(-50%))[one quarter red]
+```
+
+
+@@ Color::opacify::scale  [src:d0d1555a]
+La escala por la que se cambia el valor alfa.
+
+@@ Color::rgb  [src:6662764b]
+Crea un color RGB(A).
+
+El color se especifica en el espacio de color sRGB.
+
+Un color RGB(A) se representa internamente con un array de cuatro componentes:
+- rojo (@ratio)
+- verde (@ratio)
+- azul (@ratio)
+- alfa (@ratio)
+
+Estos componentes también están disponibles con el método @color.components[`components`].
+
+```example
+#square(fill: rgb("#b1f2eb"))
+#square(fill: rgb(87, 127, 230))
+#square(fill: rgb(25%, 13%, 65%))
+```
+
+
+@@ Color::rgb::alpha  [src:8c29893b]
+El componente alfa.
+
+@@ Color::rgb::blue  [src:7eafc21d]
+El componente azul.
+
+@@ Color::rgb::color  [src:6018af54]
+Alternativamente: el color que se convierte a RGB(a).
+
+Si se da, no se deben dar los componentes individuales.
+
+@@ Color::rgb::green  [src:5bd341f9]
+El componente verde.
+
+@@ Color::rgb::hex  [src:6d465a71]
+Alternativamente: el color en notación hexadecimal.
+
+Acepta tres, cuatro, seis u ocho dígitos hexadecimales y, opcionalmente, un numeral inicial.
+
+Si se da, no se deben dar los componentes individuales.
+
+```example
+#text(16pt, rgb("#239dad"))[
+  *Typst*
+]
+```
+
+
+@@ Color::rgb::red  [src:54166d31]
+El componente rojo.
+
+@@ Color::rotate  [src:95ab9839]
+Rota el tono del color según un ángulo dado.
+
+Esta función solo funciona en modelos de color con un componente de tono bien definido, es decir, Oklch, HSL y HSV.
+
+@@ Color::rotate::angle  [src:06ab91a9]
+El ángulo por el que se rota el tono.
+
+@@ Color::rotate::space  [src:59fba895]
+El espacio de color que se usa para rotar. Por defecto, esto ocurre en un espacio de color perceptual (@color.oklch[`oklch`]).
+
+@@ Color::saturate  [src:408ed0bc]
+Aumenta la saturación de un color según un factor dado.
+
+Solo se pueden saturar los colores de proceso. Si querés saturar un color plano, convertilo primero en un color de proceso.
+
+@@ Color::saturate::factor  [src:be85f829]
+El factor por el que se satura el color.
+
+@@ Color::space  [src:515967b2]
+Devuelve la función constructora del espacio de este color.
+
+Devuelve una de las siguientes:
+- @color.luma[`luma`]
+- @color.oklab[`oklab`]
+- @color.oklch[`oklch`]
+- @color.linear-rgb[`linear-rgb`]
+- @color.rgb[`rgb`]
+- @color.cmyk[`cmyk`]
+- @color.hsl[`hsl`]
+- @color.hsv[`hsv`]
+
+```example
+#let color = cmyk(1%, 2%, 3%, 4%)
+#(color.space() == cmyk)
+```
+
+
+@@ Color::to_hex  [src:69b3b3de]
+Devuelve la representación hexadecimal RGB(A) del color (como `#ffaa32` o `#020304fe`). El componente alfa (los dos últimos dígitos en
+`#020304fe`) se omite si es igual a `ff` (255 / 100%).
+
+@@ Color::transparentize  [src:2beaad16]
+Vuelve un color más transparente según un factor dado.
+
+Este método es relativo al valor alfa existente. Si la escala es positiva, calcula `alpha - alpha * scale`. Las escalas negativas se comportan
+como `color.opacify(-scale)`.
+
+```example
+#block(fill: red)[opaque]
+#block(fill: red.transparentize(50%))[half red]
+#block(fill: red.transparentize(75%))[quarter red]
+```
+
+
+@@ Color::transparentize::scale  [src:750a5163]
+El factor por el que se cambia el valor alfa.
+
+@@ SpotColorant  [src:334ef7aa]
+Un colorante plano (spot) a partir del cual se pueden crear colores planos.
+
+Usá colores planos para solicitar un pigmento preciso en un entorno de impresión profesional. Una vez que creaste un colorante plano, podés
+crear colores con su @color.spot.tint[método `tint`].
+
+@@ SpotColorant::construct  [src:59eba312]
+Crea un colorante plano nuevo.
+
+@@ SpotColorant::construct::fallback  [src:b8702cc9]
+Cómo renderizar este color si el colorante especificado no está disponible.
+
+Muchos medios, como la vista previa en pantalla y las impresoras domésticas, no tendrán disponible este colorante plano específico. Para mostrar
+una aproximación de la impresión prevista, se usa en su lugar otro color disponible.
+
+@@ SpotColorant::construct::name  [src:2d21e129]
+Nombre del colorante plano que se usa.
+
+En producción, este nombre se verificará manualmente y se asociará a un colorante, por lo que este valor debe ser inequívoco. Lo mejor es hacer
+referencia a un color de un registro como PANTONE, HKS, RAL, Toyo & DIC, etcétera.
+
+Los valores acá pueden tratarse distinguiendo mayúsculas de minúsculas durante la producción: `{"PANTONE 2221 C"}` y `{"PANTONE 2221 c"}` pueden
+tratarse como colores distintos. Asegurate de usar una convención de nombres consistente, ya sea haciendo referencia a un registro o coordinando
+con tus expertos de impresión de producción.
+
+Si este valor es `{"all"}` y tu impresión involucrará varias
+#link("https://en.wikipedia.org/wiki/Offset_printing#Plates")[planchas de color],
+el uso de este colorante dará como resultado que el tinte especificado se aplique por igual a todas las planchas. Si elegís `{none}`, no se aplicará
+ningún colorante al usar este color. Este valor especial suele usarse para indicar cortes o barnices. ¡Asegurate de conversarlo con tu impresor de
+producción!
+
+No recomendamos usar los nombres `{"Cyan"}`, `{"Magenta"}`, `{"Yellow"}`, `{"Key"}`, `{"Black"}` ni sus traducciones a tu idioma local. Según tu
+impresora, pueden o no interpretarse como colores de proceso CMYK.
+
+@@ SpotColorant::tint  [src:0532a2ce]
+Crea un color plano en un tinte específico de este colorante.
+
+El tinte representa qué porcentaje del colorante se aplica. Un tinte de `{100%}` significa que el colorante se aplica a plena intensidad, mientras
+que `{0%}` significa que no se aplica colorante.
+
+```example
+#let pantone = color.spot(
+  "PANTONE 2221 C",
+  rgb("#239dad")
+)
+
+#square(fill: pantone.tint(100%))
+#square(fill: pantone.tint(70%))
+#square(fill: pantone.tint(40%))
+```
+
+
+@@ SpotColorant::tint::value  [src:48bd8fed]
+El porcentaje de tinte, entre `{0%}` y `{100%}`.
