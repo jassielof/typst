@@ -1,0 +1,42 @@
+@@ StackElem  [src:23e2530a]
+Dispone contenido y espaciado horizontal o verticalmente.
+
+La pila (stack) ubica una lista de elementos a lo largo de un eje, con espaciado opcional
+entre cada elemento.
+
+= Ejemplo <example>
+```example
+#stack(
+  dir: ttb,
+  rect(width: 40pt),
+  rect(width: 120pt),
+  rect(width: 90pt),
+)
+```
+
+= Accesibilidad <accessibility>
+Las pilas no tienen ninguna semántica especial. Las tecnologías de asistencia (TA) leen
+el contenido de la pila en el orden en que se lo pasó a esta función.
+
+@@ StackElem::children  [src:a86f0309]
+Los hijos que se apilan a lo largo del eje.
+
+@@ StackElem::dir  [src:19099a1d]
+La dirección a lo largo de la cual se apilan los elementos. Los valores posibles son:
+
+- `{ltr}`: De izquierda a derecha.
+- `{rtl}`: De derecha a izquierda.
+- `{ttb}`: De arriba hacia abajo.
+- `{btt}`: De abajo hacia arriba.
+
+Podés usar los métodos `start` y `end` para obtener los puntos inicial y final,
+respectivamente, de una dirección, como `alignment`. También podés usar el método `axis`
+para determinar si una dirección es `{"horizontal"}` o `{"vertical"}`. El método `inv`
+devuelve la dirección inversa de una dirección.
+
+Por ejemplo, `{ttb.start()}` es `top`, `{ttb.end()}` es `bottom`, `{ttb.axis()}` es
+`{"vertical"}` y `{ttb.inv()}` es igual a `btt`.
+
+@@ StackElem::spacing  [src:4ad44340]
+Espaciado que se inserta entre los elementos donde no se proporcionó un espaciado
+explícito.

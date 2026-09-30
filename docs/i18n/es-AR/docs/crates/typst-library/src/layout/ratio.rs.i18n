@@ -1,0 +1,54 @@
+@@ Ratio  [src:e3696136]
+Una proporción de un todo.
+
+Una proporción se escribe como un número seguido de un signo de porcentaje. Las
+proporciones aparecen con más frecuencia como parte de una @relative[longitud
+relativa], para especificar el tamaño de algún elemento de diseño relativo a la página
+o a algún contenedor.
+
+```example
+#rect(width: 25%)
+```
+
+Sin embargo, también pueden describir cualquier otra propiedad que sea relativa a una
+base, por ejemplo, una cantidad de @scale.x[escalado horizontal] o la @math.lr.size[altura
+de los paréntesis] relativa a la altura del contenido que encierran.
+
+= Scripting <scripting>
+En tu propio código, podés usar las proporciones como quieras. Podés multiplicarlas por
+varios otros tipos, como se muestra a continuación:
+
+#docs-table(
+  table.header[Multiplicar por][Ejemplo][Resultado],
+
+  [@ratio],
+  [`{27% * 10%}`],
+  [`{2.7%}`],
+
+  [@length],
+  [`{27% * 100pt}`],
+  [`{27pt}`],
+
+  [@relative],
+  [`{27% * (10% + 100pt)}`],
+  [`{2.7% + 27pt}`],
+
+  [@angle],
+  [`{27% * 100deg}`],
+  [`{27deg}`],
+
+  [@int],
+  [`{27% * 2}`],
+  [`{54%}`],
+
+  [@float],
+  [`{27% * 0.37037}`],
+  [`{10%}`],
+
+  [@fraction],
+  [`{27% * 3fr}`],
+  [`{0.81fr}`],
+)
+
+Cuando las proporciones se @repr[muestran] en el documento, se redondean a dos cifras
+significativas para mayor legibilidad.

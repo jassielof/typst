@@ -1,0 +1,493 @@
+@@ PageElem  [src:ac167efb]
+Dispone su hijo en una o varias páginas.
+
+Aunque esta función se usa principalmente en reglas set para afectar las propiedades
+de la página, también se puede usar para renderizar explícitamente su argumento en un
+conjunto de páginas propio.
+
+Las páginas se pueden configurar con `{auto}` como ancho o alto. En ese caso, las
+páginas crecerán para ajustarse a su contenido en el eje respectivo.
+
+La @guides:page-setup[guía de configuración de página] explica, con muchos ejemplos,
+cómo usar esta función y otras relacionadas para configurar un documento.
+
+= Ejemplo <example>
+```example
+>>> #set page(margin: auto)
+#set page("us-letter")
+
+There you go, US friends!
+```
+
+= Accesibilidad <accessibility>
+El contenido del encabezado, el pie, el primer plano y el fondo de la página es
+invisible para las tecnologías de asistencia (TA), como los lectores de pantalla. Las
+TA solo leen el cuerpo de la página. No incluyas en estas áreas información vital que
+no esté incluida en otro lugar del documento.
+
+= Estilos <styling>
+Tené en cuenta que el elemento @page no puede ser objetivo de reglas show; escribir
+`{show page: ..}` no tiene efecto. Para repetir contenido en todas las páginas,
+podés configurar en cambio las propiedades @page.header[`header`], @page.footer[`footer`],
+@page.background[`background`] y @page.foreground[`foreground`] con una regla set.
+
+@@ PageElem::background  [src:71e095b4]
+Contenido en el fondo de la página.
+
+Este contenido se colocará detrás del cuerpo de la página. Se puede usar para colocar
+una imagen de fondo o una marca de agua.
+
+Por comodidad, las @relative[longitudes relativas] se resuelven respecto del tamaño de
+la página incluido el @page.bleed[`bleed` de la página] cuando se usan en el contenido
+de fondo. Por ejemplo, en una página de `{100mm}` de ancho con un sangrado de `{5mm}`,
+un ancho de `{100%}` se calcula como `{5mm + 100mm + 5mm}`.
+
+```example
+#set page(background: rotate(24deg,
+  text(18pt, fill: rgb("FFCBC4"))[
+    *CONFIDENTIAL*
+  ]
+))
+
+= Typst's secret plans
+In the year 2023, we plan to take
+over the world (of typesetting).
+```
+
+
+@@ PageElem::binding  [src:13e0e23e]
+De qué lado se encuadernarán las páginas.
+
+- `{auto}`: Equivale a `left` si la @text.dir[dirección del texto] es de izquierda a
+  derecha y a `right` si es de derecha a izquierda.
+- `left`: Encuadernación del lado izquierdo.
+- `right`: Encuadernación del lado derecho.
+
+Esto afecta el significado de las opciones `inside` y `outside` de los márgenes.
+
+@@ PageElem::bleed  [src:377702c6]
+El margen de sangrado de la página.
+
+El sangrado es el área de contenido que se extiende más allá del tamaño final recortado
+de la página. Asegura que no aparezcan bordes sin imprimir en el producto final, incluso
+si hay pequeños desajustes en el recorte.
+
+Valores aceptados:
+
+- Una única longitud: el mismo sangrado en todos los lados.
+- Un diccionario: con un diccionario, los márgenes de sangrado se pueden establecer
+  individualmente. El diccionario puede incluir las siguientes claves, enumeradas en
+  orden de precedencia:
+  - `top`: El margen de sangrado superior.
+  - `right`: El margen de sangrado derecho.
+  - `bottom`: El margen de sangrado inferior.
+  - `left`: El margen de sangrado izquierdo.
+  - `inside`: El margen de sangrado del lado interior de la página (donde está la
+    @page.binding[encuadernación]).
+  - `outside`: El margen de sangrado del lado exterior de la página (opuesto a la
+    @page.binding[encuadernación]).
+  - `x`: Los márgenes de sangrado horizontales.
+  - `y`: Los márgenes de sangrado verticales.
+  - `rest`: Los márgenes de sangrado de todos los lados excepto aquellos para los que
+    el diccionario establece explícitamente un tamaño.
+
+Todas las claves son opcionales; las claves omitidas usarán su valor establecido
+previamente o `{0pt}` si nunca se establecieron. Además, los valores de `left` y `right`
+son mutuamente excluyentes con los de `inside` y `outside`. Los valores deben ser
+longitudes relativas.
+
+En la exportación a PDF, si el sangrado no es cero, se define un `TrimBox` para la
+página.
+
+```example
+#set page(
+  width: 8cm,
+  height: 5cm,
+  margin: 1cm,
+  // The bleed is not visible in the preview;
+  // it exceeds beyond the page.
+  bleed: 0.5cm,
+  // Fills the entire bleed area, so there will
+  // be no white strips after printing and trimming.
+  background: rect(width: 100%, height: 100%, fill: aqua),
+)
+
+#rect(width: 100%, height: 100%, fill: white)
+```
+
+
+@@ PageElem::body  [src:7b484214]
+El contenido de la(s) página(s).
+
+Se crearán varias páginas si el contenido no entra en una sola. Después de componer el
+cuerpo, se creará una página nueva con las propiedades de página anteriores a la
+invocación de la función.
+
+@@ PageElem::columns  [src:5aa371fa]
+Cuántas columnas tiene la página.
+
+Si necesitás insertar columnas en una página u otro contenedor, también podés usar la
+@columns[función `columns`].
+
+#example(
+  single: true,
+  ```
+  #set page(columns: 2, height: 4.8cm)
+  Climate change is one of the most
+  pressing issues of our time, with
+  the potential to devastate
+  communities, ecosystems, and
+  economies around the world. It's
+  clear that we need to take urgent
+  action to reduce our carbon
+  emissions and mitigate the impacts
+  of a rapidly changing climate.
+  ```
+)
+
+@@ PageElem::fill  [src:a2edbb40]
+El relleno de fondo de la página.
+
+Establecerlo en algo no transparente le indica a la impresora que coloree la página
+completa. Si estás considerando tiradas de producción más grandes, puede ser más
+amigable con el ambiente y más económico conseguir páginas teñidas de antemano y no
+establecer esta propiedad.
+
+Cuando se establece en `{none}`, el fondo se vuelve transparente. Tené en cuenta que
+las páginas PDF igualmente aparecerán con un fondo (generalmente blanco) en los
+visores, pero en realidad son transparentes. (Si las imprimís, no se usa ningún color
+para el fondo.)
+
+El valor por defecto `{auto}` resulta en `{none}` para la salida PDF y en `{white}`
+para PNG y SVG.
+
+```example
+#set page(fill: rgb("444352"))
+#set text(fill: rgb("fdfdfd"))
+*Dark mode enabled.*
+```
+
+
+@@ PageElem::flipped  [src:9a5450ce]
+Si la página se gira a orientación horizontal.
+
+```example
+#set page(
+  "us-business-card",
+  flipped: true,
+  fill: rgb("f2e5dd"),
+)
+
+#set align(bottom + end)
+#text(14pt)[*Sam H. Richards*] \
+_Procurement Manager_
+
+#set text(10pt)
+23 W 23rd Street \
+New York, NY 10010 \
++1 (212) 555-0155
+```
+
+
+@@ PageElem::footer  [src:7930db0c]
+El pie de página. Llena el margen inferior de cada página.
+
+- Contenido: Muestra el contenido como pie de página.
+- `{auto}`: Muestra el número de página si se estableció una @page.numbering[`numbering`]
+  y @page.number-align[`number-align`] es `bottom`.
+- `{none}`: Suprime el pie de página.
+
+Para un simple número de página, normalmente alcanza con la propiedad `numbering`. Si
+querés crear un pie de página personalizado pero seguir mostrando el número de página,
+podés acceder directamente al @counter[contador de páginas].
+
+```example
+#set par(justify: true)
+#set page(
+  height: 100pt,
+  margin: 20pt,
+  footer: context [
+    #set align(right)
+    #set text(8pt)
+    #counter(page).display(
+      "1 of I",
+      both: true,
+    )
+  ]
+)
+
+#lorem(48)
+```
+
+
+@@ PageElem::footer_descent  [src:98af7e3a]
+Cuánto se baja el pie de página hacia el margen inferior. Las proporciones son
+relativas a la altura del margen inferior.
+
+```preview
+#set page(
+  height: 126pt,
+  width: 240pt,
+  margin: (top: 0pt, x: 20pt, bottom: 50pt),
+  numbering: (..nums) => box(
+    outset: (x: 50%),
+    fill: orange.lighten(50%),
+  )[6 / 8],
+  footer-descent: 47%,
+  foreground: place(bottom, {
+    let arrow(height) = math.stretch(
+      text(1.4em, sym.arrow.t.b),
+      size: height,
+    )
+    set text(
+      1.2em,
+      purple.darken(10%),
+      bottom-edge: "bounds",
+      top-edge: "bounds",
+    )
+    set par(leading: 0.5em)
+    import grid: cell
+    context grid(
+      align: center + horizon,
+      columns: (37%, 10%, 6%, 47%),
+      cell(rowspan: 2, align: right)[bottom\ margin],
+      cell(rowspan: 2, align: left, arrow(page.margin.bottom)),
+      arrow(page.margin.bottom * page.footer-descent.ratio),
+      cell(align: left)[footer descent],
+    )
+  }),
+)
+#block(width: 100%, height: 100%, fill: green.lighten(75%), {
+  set par(justify: true)
+  set text(luma(25%))
+  place(bottom, lorem(42))
+})
+```
+
+
+@@ PageElem::foreground  [src:ef82bf6f]
+Contenido en el primer plano de la página.
+
+Este contenido se superpondrá al cuerpo de la página.
+
+Las longitudes relativas se resuelven respecto del tamaño de la página incluido el
+@page.bleed[`bleed`], con el mismo comportamiento que @page.background[`background`].
+
+```example
+#set page(foreground: text(24pt)[🤓])
+
+Reviewer 2 has marked our paper
+"Weak Reject" because they did
+not understand our approach...
+```
+
+
+@@ PageElem::header  [src:aea82c53]
+El encabezado de la página. Llena el margen superior de cada página.
+
+- Contenido: Muestra el contenido como encabezado.
+- `{auto}`: Muestra el número de página si se estableció una @page.numbering[`numbering`]
+  y @page.number-align[`number-align`] es `top`.
+- `{none}`: Suprime el encabezado.
+
+```example
+#set par(justify: true)
+#set page(
+  margin: (top: 32pt, bottom: 20pt),
+  header: [
+    #set text(8pt)
+    #smallcaps[Typst Academy]
+    #h(1fr) _Exercise Sheet 3_
+  ],
+)
+
+#lorem(19)
+```
+
+
+@@ PageElem::header_ascent  [src:774c8d5f]
+Cuánto se sube el encabezado hacia el margen superior. Las proporciones son relativas a
+la altura del margen superior.
+
+@@ PageElem::height  [src:d95f610a]
+La altura del área final de la página, después de aplicar los recortes.
+
+Si se establece en `{auto}`, los saltos de página solo se pueden provocar manualmente
+insertando un @pagebreak[salto de página] o agregando otra regla set de página no
+vacía. La mayoría de los ejemplos de esta documentación usan `{auto}` como altura de
+página para que crezca y se reduzca dinámicamente según su contenido.
+
+@@ PageElem::margin  [src:bb516c83]
+Los márgenes de la página.
+
+- `{auto}`: Los márgenes se establecen automáticamente en 2,5/21 veces la menor
+  dimensión de la página. Esto da márgenes de 2,5 cm en una página A4.
+- Una única longitud: el mismo margen en todos los lados.
+- Un diccionario: con un diccionario, los márgenes se pueden establecer
+  individualmente. El diccionario puede contener las siguientes claves, en orden de
+  precedencia:
+  - `top`: El margen superior.
+  - `right`: El margen derecho.
+  - `bottom`: El margen inferior.
+  - `left`: El margen izquierdo.
+  - `inside`: El margen del lado interior de la página (donde está la
+    @page.binding[encuadernación]).
+  - `outside`: El margen del lado exterior de la página (opuesto a la
+    @page.binding[encuadernación]).
+  - `x`: Los márgenes horizontales.
+  - `y`: Los márgenes verticales.
+  - `rest`: Los márgenes de todos los lados excepto aquellos para los que el
+    diccionario establece explícitamente un tamaño.
+
+Todas las claves son opcionales; las claves omitidas usarán su valor establecido
+previamente o el margen por defecto si nunca se establecieron. Además, los valores de
+`left` y `right` son mutuamente excluyentes con los de `inside` y `outside`. Los
+valores deben ser longitudes relativas o `{auto}`.
+
+```example
+#set page(
+ width: 3cm,
+ height: 4cm,
+ margin: (x: 8pt, y: 4pt),
+)
+
+#rect(
+  width: 100%,
+  height: 100%,
+  fill: aqua,
+)
+```
+
+
+@@ PageElem::number_align  [src:18fe4096]
+La alineación de la numeración de páginas.
+
+Si el componente vertical es `top`, la numeración se coloca en el encabezado y, si es
+`bottom`, se coloca en el pie de página. La alineación horizon está prohibida. Si se da
+un `header` o `footer` explícito que coincida, la numeración se ignora.
+
+```example
+#set page(
+  margin: (top: 16pt, bottom: 24pt),
+  numbering: "1",
+  number-align: right,
+)
+
+#lorem(30)
+```
+
+
+@@ PageElem::numbering  [src:e24bd616]
+Cómo numerar las páginas. Podés consultar la guía de configuración de página sobre
+@guides:page-setup:page-numbers[cómo personalizar los números de página].
+
+Acepta una @numbering[función o patrón de numeración] que toma uno o dos números:
++ El primer número es el número de la página actual.
++ El segundo número es la cantidad total de páginas. En un patrón de numeración, el
+  segundo número se puede omitir. Si se pasa una función, recibirá un argumento en el
+  contexto de enlaces o referencias y dos argumentos al producir los números de página
+  visibles.
+
+Estos son números lógicos controlados por el contador de páginas y, por lo tanto,
+pueden no coincidir con los números físicos. Específicamente, son el valor
+@counter.get[actual] y el valor @counter.final[final] de `{counter(page)}`. Mirá la
+documentación de @counter:page-counter[`counter`] para más detalles.
+
+Si se da un @page.footer[`footer`] explícito (o un @page.header[`header`] en el caso de
+numeración @page.number-align[alineada arriba]), la numeración se ignora.
+
+```example
+#set page(
+  height: 100pt,
+  margin: (top: 16pt, bottom: 24pt),
+  numbering: "1 / 1",
+)
+
+#lorem(48)
+```
+
+
+@@ PageElem::paper  [src:387fb172]
+Un tamaño de papel estándar para establecer el ancho y el alto.
+
+Es solo un atajo para establecer `width` y `height` y, como tal, no se puede obtener en
+una expresión de contexto.
+
+@@ PageElem::supplement  [src:a0e4881a]
+Un suplemento para las páginas.
+
+En las referencias a páginas, se agrega antes del número de página.
+
+```example
+#set page(numbering: "1.", supplement: [p.])
+
+= Introduction <intro>
+We are on #ref(<intro>, form: "page")!
+```
+
+
+@@ PageElem::width  [src:26d89b55]
+El ancho de la página final, después de aplicar los recortes.
+
+En las configuraciones de impresión profesional, puede ser menor que el tamaño de la
+hoja que se le da a la impresora.
+
+Mirá el parámetro @page.bleed[`bleed`] para más detalles sobre cómo establecer un área
+de recorte o de sangrado.
+
+```example
+#set page(
+  width: 3cm,
+  margin: (x: 0cm),
+)
+
+#for i in range(3) {
+  box(square(width: 1cm))
+}
+```
+
+
+@@ PagebreakElem  [src:c161693e]
+Un salto de página manual.
+
+No debe usarse dentro de ningún contenedor.
+
+= Ejemplo <example>
+```example
+The next page contains
+more details on compound theory.
+#pagebreak()
+
+== Compound Theory
+In 1984, the first ...
+```
+
+Incluso sin saltos de página manuales, el contenido se paginará automáticamente según
+el tamaño de página configurado. Podés establecer @page.height[la altura de la página]
+en `{auto}` para que la página crezca dinámicamente hasta que ocurra un salto de página
+manual.
+
+La paginación intenta evitar líneas de texto sueltas al principio o al final de una
+página (se llaman _viudas_ y _huérfanas_). Podés ajustar el parámetro @text.costs para
+desactivar este comportamiento.
+
+@@ PagebreakElem::boundary  [src:6981bda0]
+Si este salto de página designa el límite final de una serie de páginas. Es una versión
+aún más débil del salto de página `weak`, porque no solo no fuerza una página vacía,
+sino que tampoco impone sus estilos iniciales sobre una página vacía preparada.
+
+@@ PagebreakElem::to  [src:47e212ce]
+Si se indica, asegura que la página siguiente sea par o impar, con una página vacía
+entremedio si es necesario.
+
+```example
+#set page(height: 30pt)
+
+First.
+#pagebreak(to: "odd")
+Third.
+```
+
+
+@@ PagebreakElem::weak  [src:e4f10c0f]
+Si es `{true}`, el salto de página se omite si la página actual ya está vacía.

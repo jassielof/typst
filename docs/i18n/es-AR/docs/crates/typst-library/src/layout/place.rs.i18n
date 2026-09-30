@@ -1,0 +1,185 @@
+@@ FlushElem  [src:80720438]
+Le pide al algoritmo de diseño que ubique los elementos flotantes pendientes antes de
+continuar con el contenido.
+
+Esto es útil para evitar que las figuras flotantes se desborden a la sección siguiente.
+
+```example
+>>> #set page(height: 160pt, width: 150pt)
+#lorem(15)
+
+#figure(
+  rect(width: 100%, height: 50pt),
+  placement: auto,
+  caption: [A rectangle],
+)
+
+#place.flush()
+
+This text appears after the figure.
+```
+
+
+@@ PlaceElem  [src:487f5a1e]
+Ubica contenido en relación con su contenedor padre.
+
+El contenido ubicado puede estar superpuesto (por defecto) o flotante. El contenido
+superpuesto se alinea con el contenedor padre según la @place.alignment[`alignment`]
+indicada y se muestra sobre cualquier otro contenido agregado hasta el momento en el
+contenedor. El contenido flotante se ubica en la parte superior o inferior del
+contenedor y desplaza el resto del contenido hacia abajo o hacia arriba,
+respectivamente. En ambos casos, la posición del contenido se puede ajustar con los
+desplazamientos @place.dx[`dx`] y @place.dy[`dy`] sin afectar el diseño.
+
+El padre puede ser cualquier contenedor, como un @block, un @box, un @rect, etcétera.
+Una llamada a `place` de nivel superior ubicará el contenido directamente en el área de
+texto de la página actual. Esto se puede usar para posicionamiento absoluto en la
+página: con una @place.alignment[`alignment`] `top + left`, los desplazamientos `dx` y
+`dy` establecerán la posición de la esquina superior izquierda del elemento en relación
+con la esquina superior izquierda del área de texto. Para posicionamiento absoluto en
+toda la página, incluidos los márgenes, podés usar `place` en @page.foreground o
+@page.background.
+
+= Ejemplos <examples>
+```example
+#set page(height: 120pt)
+Hello, world!
+
+#rect(
+  width: 100%,
+  height: 2cm,
+  place(horizon + right, square()),
+)
+
+#place(
+  top + left,
+  dx: -5pt,
+  square(size: 5pt, fill: red),
+)
+```
+
+= #short-or-long[Efecto en otros elementos][
+  Efecto en la posición de otros elementos
+] <effect-on-other-elements>
+Los elementos superpuestos no ocupan espacio en el flujo del contenido, pero una llamada
+a `place` inserta un elemento invisible a nivel de bloque en el flujo. Esto puede
+afectar el diseño al cortar el párrafo actual. Para evitarlo, podés envolver la llamada
+a `place` en un @box cuando la llamada se hace en medio de un párrafo. La alineación y
+los desplazamientos serán entonces relativos a este box de tamaño cero. Para asegurarte
+de que no interfiera con el espaciado, el box debería unirse a una palabra mediante un
+word joiner.
+
+Por ejemplo, lo siguiente define una función para adjuntar una anotación a la palabra
+siguiente:
+
+```example
+>>> #set page(height: 70pt)
+#let annotate(..args) = {
+  box(place(..args))
+  sym.wj
+  h(0pt, weak: true)
+}
+
+A placed #annotate(square(), dy: 2pt)
+square in my text.
+```
+
+El espaciado débil de ancho cero sirve para descartar los espacios entre la llamada a la
+función y la palabra siguiente.
+
+= Accesibilidad <accessibility>
+Las tecnologías de asistencia (TA) siempre leerán el elemento ubicado en el punto donde
+aparece lógicamente en el documento, sin importar adónde lo haya movido físicamente
+esta función. Poné su marcado donde tenga más sentido en el orden de lectura.
+
+@@ PlaceElem::alignment  [src:7ff4858d]
+En relación con qué posición del contenedor padre se ubica el contenido.
+
+- Si `float` es `{false}`, puede ser cualquier alineación distinta de `{auto}`.
+- Si `float` es `{true}`, debe ser `{auto}`, `{top}` o `{bottom}`.
+
+Cuando `float` es `{false}` y no se especifica una alineación vertical, el contenido se
+ubica en la posición actual del eje vertical.
+
+@@ PlaceElem::body  [src:8073f0a9]
+El contenido que se ubica.
+
+@@ PlaceElem::clearance  [src:f6ff97be]
+El espaciado entre el elemento ubicado y otros elementos en un diseño flotante.
+
+No tiene efecto si `float` es `{false}`.
+
+@@ PlaceElem::dx  [src:60282de1]
+El desplazamiento horizontal del contenido ubicado.
+
+```example
+#set page(height: 100pt)
+#for x in range(-8, 8) {
+  place(center + horizon,
+    dx: x * 8pt, dy: x * 4pt,
+    text(
+      size: calc.root(x + 10, 3) * 6pt,
+      fill: color.mix((green, 8 - x), (blue, 8 + x)),
+    )[T]
+  )
+}
+```
+
+Esto no afecta el diseño del contenido en flujo. En otras palabras, el contenido
+ubicado se trata como si estuviera envuelto en un elemento @move.
+
+@@ PlaceElem::dy  [src:f05a9882]
+El desplazamiento vertical del contenido ubicado.
+
+Esto no afecta el diseño del contenido en flujo. En otras palabras, el contenido
+ubicado se trata como si estuviera envuelto en un elemento @move.
+
+@@ PlaceElem::float  [src:4cec3bc6]
+Si el elemento ubicado tiene un diseño flotante.
+
+Los elementos flotantes se posicionan en la parte superior o inferior del contenedor
+padre y desplazan el contenido en flujo. Siempre se ubican en el orden del flujo entre
+sí, y antes de cualquier contenido que siga a un elemento @place.flush posterior.
+
+```example
+#set page(height: 150pt)
+#let note(where, body) = place(
+  center + where,
+  float: true,
+  clearance: 6pt,
+  rect(body),
+)
+
+#lorem(10)
+#note(bottom)[Bottom 1]
+#note(bottom)[Bottom 2]
+#lorem(40)
+#note(top)[Top]
+#lorem(10)
+```
+
+
+@@ PlaceElem::scope  [src:fbbe5466]
+En relación con qué ámbito contenedor se ubica algo.
+
+El ámbito padre se usa principalmente con figuras y, por este motivo, la función figure
+tiene un @figure.scope[parámetro `scope`] espejo. De todos modos, también puede ser útil
+en general para salir de las columnas. Un ejemplo típico sería
+@guides:page-setup:columns[crear una sección de título de una sola columna] en un
+documento de dos columnas.
+
+Tené en cuenta que la ubicación con ámbito en el padre actualmente solo se admite si
+`float` es `{true}`. Esto podría cambiar en el futuro.
+
+```example
+#set page(height: 150pt, columns: 2)
+#place(
+  top + center,
+  scope: "parent",
+  float: true,
+  rect(width: 80%, fill: aqua),
+)
+
+#lorem(25)
+```
+

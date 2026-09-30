@@ -1,0 +1,67 @@
+@@ Rel  [src:64c191a5]
+Una longitud en relación con alguna longitud conocida.
+
+Este tipo es una combinación de una @length[longitud] con una @ratio[proporción]. Resulta
+de la suma y resta de una longitud y una proporción. Dondequiera que se espere una
+longitud relativa, también podés usar una longitud o una proporción a secas.
+
+= Relativa a la página <relative-to-the-page>
+Un caso de uso común es establecer el ancho o el alto de un elemento de diseño (por
+ejemplo, @block[block], @rect[rect], etcétera) como cierto porcentaje del ancho de la
+página. Acá, el ancho del rectángulo se establece en `{25%}`, así que ocupa un cuarto
+del ancho _interior_ de la página (el ancho menos los márgenes).
+
+```example
+#rect(width: 25%)
+```
+
+Las longitudes o proporciones a secas siempre son válidas donde se esperan longitudes
+relativas, pero las dos también se pueden mezclar libremente:
+
+```example
+#rect(width: 25% + 1cm)
+```
+
+Para el contenido del @page.background[`background`] y el @page.foreground[`foreground`]
+de la página, las longitudes relativas se resuelven respecto del tamaño de la página
+incluido el @page.bleed[`bleed`]. Esta elección se hace por comodidad, ya que crear un
+fondo que tenga bien en cuenta el sangrado requiere, inherentemente, extenderlo hacia el
+área de sangrado.
+
+Si estás intentando dar tamaño a un elemento para que ocupe el ancho _completo_ de la
+página, tenés algunas opciones (esto depende mucho de tu caso de uso exacto):
+
++ Establecer los márgenes de página en `{0pt}` (`[#set page(margin: 0pt)]`)
++ Multiplicar la proporción por el ancho completo conocido de la página (`{21cm * 69%}`)
++ Usar relleno que anule los márgenes (`[#pad(x: -2.5cm, ...)]`)
++ Usar el campo @page.background[`background`] o @page.foreground[`foreground`] de la
+  página, ya que no tienen en cuenta los márgenes (tené en cuenta que renderizará el
+  contenido fuera del flujo del documento; mirá @place para controlar la posición del
+  contenido)
+
+= Relativa a un contenedor <relative-to-a-container>
+Cuando un elemento de diseño (por ejemplo, un @rect[rect]) está anidado en otro
+contenedor de diseño (por ejemplo, un @block[block]) en lugar de ser un descendiente
+directo de la página, los anchos relativos pasan a ser relativos al contenedor:
+
+```example
+#block(
+  width: 100pt,
+  fill: aqua,
+  rect(width: 50%),
+)
+```
+
+= Scripting <scripting>
+Podés multiplicar longitudes relativas por @ratio[proporciones], @int[enteros] y
+@float[flotantes].
+
+Una longitud relativa tiene los siguientes campos:
+- `length`: Su componente de @length[longitud].
+- `ratio`: Su componente de @ratio[proporción].
+
+```example
+#(100% - 50pt).length \
+#(100% - 50pt).ratio
+```
+

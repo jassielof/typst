@@ -1,0 +1,102 @@
+@@ HElem  [src:3f749ebd]
+Inserta espaciado horizontal en un párrafo.
+
+El espaciado puede ser absoluto, relativo o fraccionario. En el último caso, el espacio
+restante de la línea se distribuye entre todos los espaciados fraccionarios según sus
+fracciones relativas.
+
+= Ejemplo <example>
+```example
+First #h(1cm) Second \
+First #h(30%) Second
+```
+
+= Espaciado fraccionario <fractional-spacing>
+Con el espaciado fraccionario, podés alinear cosas dentro de una línea sin forzar un
+salto de párrafo (como haría @align). Cada elemento con tamaño fraccionario recibe
+espacio según la proporción entre su fracción y la suma de todas las fracciones.
+
+```example
+First #h(1fr) Second \
+First #h(1fr) Second #h(1fr) Third \
+First #h(2fr) Second #h(1fr) Third
+```
+
+= #short-or-long[Espaciado matemático][Espaciado matemático] <math-spacing>
+En las @math[fórmulas matemáticas], además podés usar estas constantes para agregar
+espaciado entre elementos: `thin` (1/6 em), `med` (2/9 em), `thick` (5/18 em), `quad`
+(1 em), `wide` (2 em).
+
+@@ HElem::amount  [src:01769a76]
+Cuánto espaciado se inserta.
+
+@@ HElem::weak  [src:8af08297]
+Si es `{true}`, el espaciado colapsa al principio o al final de un párrafo. Además, de
+varios espaciados débiles adyacentes, colapsan todos menos el más grande.
+
+El espaciado débil en el marcado también hace que se eliminen todos los espacios de
+marcado adyacentes, sin importar la cantidad de espaciado insertado. Para forzar un
+espacio junto a un espaciado débil, podés escribir explícitamente `[#" "]` (para un
+espacio normal) o `[~]` (para un espacio de no separación). Lo último puede ser útil
+para crear una construcción que siempre se una a la palabra anterior con un espacio de
+no separación, independientemente de si existía o no un espacio de marcado delante.
+
+```example
+#h(1cm, weak: true)
+We identified a group of _weak_
+specimens that fail to manifest
+in most cases. However, when
+#h(8pt, weak: true) supported
+#h(8pt, weak: true) on both sides,
+they do show up.
+
+Further #h(0pt, weak: true) more,
+even the smallest of them swallow
+adjacent markup spaces.
+```
+
+
+@@ VElem  [src:6ed4c050]
+Inserta espaciado vertical en un flujo de bloques.
+
+El espaciado puede ser absoluto, relativo o fraccionario. En el último caso, el espacio
+restante de la página se distribuye entre todos los espaciados fraccionarios según sus
+fracciones relativas.
+
+= Ejemplo <example>
+```example
+#grid(
+  rows: 3cm,
+  columns: 6,
+  gutter: 1fr,
+  [A #parbreak() B],
+  [A #v(0pt) B],
+  [A #v(10pt) B],
+  [A #v(0pt, weak: true) B],
+  [A #v(40%, weak: true) B],
+  [A #v(1fr) B],
+)
+```
+
+
+@@ VElem::amount  [src:01769a76]
+Cuánto espaciado se inserta.
+
+@@ VElem::attach  [src:1b30ec94]
+Si el espaciado colapsa cuando no está inmediatamente precedido por un párrafo.
+
+@@ VElem::weak  [src:209db071]
+Si es `{true}`, el espaciado colapsa al principio o al final de un flujo. Además, de
+varios espaciados débiles adyacentes, colapsan todos menos el más grande. Los espaciados
+débiles siempre colapsan el espaciado de párrafo adyacente, incluso si el espaciado de
+párrafo es mayor.
+
+```example
+The following theorem is
+foundational to the field:
+#v(4pt, weak: true)
+$ x^2 + y^2 = r^2 $
+#v(4pt, weak: true)
+The proof is simple:
+```
+

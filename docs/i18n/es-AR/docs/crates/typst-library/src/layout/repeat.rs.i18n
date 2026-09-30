@@ -1,0 +1,38 @@
+@@ RepeatElem  [src:bbac7b25]
+Repite contenido hasta llenar el espacio disponible.
+
+Esto puede ser útil al implementar un índice, una referencia o una tabla de contenidos
+personalizados.
+
+Se puede insertar espacio entre las instancias del parámetro body, así que asegurate de
+ajustar el parámetro @repeat.justify[`justify`] en consecuencia.
+
+Da un error si no hay límites en el espacio disponible, ya que crearía contenido
+infinito.
+
+= Ejemplo <example>
+```example
+Sign on the dotted line:
+#box(width: 1fr, repeat[.])
+
+#set text(10pt)
+#v(8pt, weak: true)
+#align(right)[
+  Berlin, the 22nd of December, 2022
+]
+```
+
+= Accesibilidad <accessibility>
+El contenido repetido se marca automáticamente como @pdf.artifact[artefacto] y se oculta
+a las tecnologías de asistencia (TA). No uses esta función para crear contenido que
+contribuya al significado de tu documento.
+
+@@ RepeatElem::body  [src:a05f105e]
+El contenido que se repite.
+
+@@ RepeatElem::gap  [src:5ea4ffd0]
+El espacio entre cada instancia del cuerpo.
+
+@@ RepeatElem::justify  [src:107330c8]
+Si se aumenta el espacio entre las instancias para llenar por completo el espacio
+disponible.

@@ -1,0 +1,199 @@
+@@ MoveElem  [src:b32def45]
+Mueve contenido sin afectar el diseño.
+
+La función `move` te permite mover contenido mientras el diseño todavía lo "ve" en las
+posiciones originales. Los contenedores seguirán teniendo el tamaño que tendrían si el
+contenido no se hubiera movido.
+
+= Ejemplo <example>
+```example
+#rect(inset: 0pt, fill: gray, move(
+  dx: 4pt, dy: 6pt,
+  rect(
+    inset: 8pt,
+    fill: white,
+    stroke: black,
+    [Abra cadabra]
+  )
+))
+```
+
+= Accesibilidad <accessibility>
+Mover es transparente para las tecnologías de asistencia (TA). Tu contenido se leerá en el
+orden en que aparece en el código fuente, sin importar ningún movimiento visual. Si
+necesitás ocultar contenido por completo a las TA en la exportación a PDF, considerá usar
+@pdf.artifact.
+
+@@ MoveElem::body  [src:cfe725af]
+El contenido que se mueve.
+
+@@ MoveElem::dx  [src:8e0c8adb]
+El desplazamiento horizontal del contenido.
+
+@@ MoveElem::dy  [src:aa340d61]
+El desplazamiento vertical del contenido.
+
+@@ RotateElem  [src:48db15ec]
+Rota contenido sin afectar el diseño.
+
+Rota un elemento un ángulo dado. El diseño actuará como si el elemento no estuviera
+rotado, salvo que especifiques `{reflow: true}`.
+
+= Ejemplo <example>
+```example
+#stack(
+  dir: ltr,
+  spacing: 1fr,
+  ..range(16)
+    .map(i => rotate(24deg * i)[X]),
+)
+```
+
+
+@@ RotateElem::angle  [src:bd0d27e9]
+La cantidad de rotación.
+
+```example
+#rotate(-1.571rad)[Space!]
+```
+
+
+@@ RotateElem::body  [src:99f751e7]
+El contenido que se rota.
+
+@@ RotateElem::origin  [src:d28e57b0]
+El origen de la rotación.
+
+Si, por ejemplo, quisieras que la esquina inferior izquierda del elemento rotado siguiera
+alineada con la línea base, lo establecerías en `bottom + left`.
+
+```example
+#set text(spacing: 8pt)
+#let square = square.with(width: 8pt)
+
+#box(square())
+#box(rotate(30deg, origin: center, square()))
+#box(rotate(30deg, origin: top + left, square()))
+#box(rotate(30deg, origin: bottom + right, square()))
+```
+
+
+@@ RotateElem::reflow  [src:852353cc]
+Si la rotación afecta el diseño.
+
+Si se establece en `{false}`, el contenido rotado conservará el cuadro delimitador del
+contenido original. Si se establece en `{true}`, el cuadro delimitador tendrá en cuenta la
+rotación del contenido y ajustará el diseño en consecuencia.
+
+```example
+Hello #rotate(90deg, reflow: true)[World]!
+```
+
+
+@@ ScaleElem  [src:4d119058]
+Escala contenido sin afectar el diseño.
+
+Te permite reflejar contenido especificando una escala negativa en un solo eje.
+
+= Ejemplo <example>
+```example
+#set align(center)
+#scale(x: -100%)[This is mirrored.]
+#scale(x: -100%, reflow: true)[This is mirrored.]
+```
+
+
+@@ ScaleElem::body  [src:d4c96e7a]
+El contenido que se escala.
+
+@@ ScaleElem::factor  [src:d5f80a51]
+El factor de escala para ambos ejes, como argumento posicional. Es solo una notación
+abreviada opcional para establecer `x` e `y` en el mismo valor.
+
+@@ ScaleElem::origin  [src:91032efe]
+El origen de la transformación.
+
+```example
+A#box(scale(75%)[A])A \
+B#box(scale(75%, origin: bottom + left)[B])B
+```
+
+
+@@ ScaleElem::reflow  [src:9f745773]
+Si el escalado afecta el diseño.
+
+Si se establece en `{false}`, el contenido escalado podrá superponerse con otro
+contenido. Si se establece en `{true}`, se calculará el nuevo tamaño del contenido
+escalado y se ajustará el diseño en consecuencia.
+
+```example
+Hello #scale(x: 20%, y: 40%, reflow: true)[World]!
+```
+
+
+@@ ScaleElem::x  [src:d101fb17]
+El factor de escala horizontal.
+
+El cuerpo se reflejará horizontalmente si el parámetro es negativo.
+
+@@ ScaleElem::y  [src:53ce430e]
+El factor de escala vertical.
+
+El cuerpo se reflejará verticalmente si el parámetro es negativo.
+
+@@ SkewElem  [src:26a6c298]
+Inclina contenido.
+
+Inclina un elemento en dirección horizontal y/o vertical. El diseño actuará como si el
+elemento no estuviera inclinado, salvo que especifiques `{reflow: true}`.
+
+= Ejemplo <example>
+```example
+#skew(ax: -12deg)[
+  This is some fake italic text.
+]
+```
+
+
+@@ SkewElem::ax  [src:7e08e7cd]
+El ángulo de inclinación horizontal.
+
+```example
+#skew(ax: 30deg)[Skewed]
+```
+
+
+@@ SkewElem::ay  [src:98516778]
+El ángulo de inclinación vertical.
+
+```example
+#skew(ay: 30deg)[Skewed]
+```
+
+
+@@ SkewElem::body  [src:9e84b7a9]
+El contenido que se inclina.
+
+@@ SkewElem::origin  [src:9e0b96d9]
+El origen de la transformación de inclinación.
+
+El origen permanecerá fijo durante la operación.
+
+```example
+X #box(skew(ax: -30deg, origin: center + horizon)[X]) X \
+X #box(skew(ax: -30deg, origin: bottom + left)[X]) X \
+X #box(skew(ax: -30deg, origin: top + right)[X]) X
+```
+
+
+@@ SkewElem::reflow  [src:13c97852]
+Si la transformación de inclinación afecta el diseño.
+
+Si se establece en `{false}`, el contenido inclinado conservará el cuadro delimitador del
+contenido original. Si se establece en `{true}`, el cuadro delimitador tendrá en cuenta
+la transformación del contenido y ajustará el diseño en consecuencia.
+
+```example
+Hello #skew(ay: 30deg, reflow: true, "World")!
+```
+
