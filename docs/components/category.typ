@@ -130,7 +130,7 @@
   if param.positional {
     if param.named {
       // Note: This never seems to trigger in practice.
-      modifiers.push(with-tooltip[Shorthand][
+      modifiers.push(with-tooltip[#stdx.ui("Shorthand")][
         This named parameter can also be specified as a positional argument.
       ])
     } else {
