@@ -1,0 +1,149 @@
+@@ RootedPath  [src:2de48a55]
+Una ruta del sistema de archivos.
+
+Cuando dividís tu proyecto o paquete en varios archivos, o hacés referencia a
+recursos como imágenes o bibliografías, necesitás interactuar con _rutas._
+
+= Cadenas de ruta <path-strings>
+Comúnmente, las rutas se expresan simplemente como @str[cadenas de texto]. Las
+funciones incorporadas que esperan rutas suelen aceptar también cadenas de texto.
+Por ejemplo, podés escribir:
+
+```typ
+#figure(
+  // Path to an image
+  image("tiger.jpg"),
+  caption: [A tiger],
+)
+
+// Path to a Typst file
+#include "chapter.typ"
+```
+
+Hay dos tipos de estas cadenas de ruta: relativas y absolutas.
+
+- Una *ruta relativa* se resuelve en relación con el directorio padre del archivo
+  Typst donde se llama a la función. Si bien este es el comportamiento por defecto,
+  también se puede especificar explícitamente que una ruta es relativa empezándola
+  con `./`.
+
+  ```typ
+  #image("images/logo.png")
+  #image("./images/logo.png") // This is equivalent
+  ```
+
+- Una *ruta absoluta* siempre se resuelve en relación con la @path:project-root[_raíz_]
+  del proyecto. Una ruta así se indica con una `/` inicial:
+
+  ```typ
+  #image("/assets/logo.png")
+  ```
+
+Las rutas se componen de segmentos separados por barras, donde los segmentos
+interiores indican directorios y el último, un archivo o un directorio. Hay dos
+componentes de ruta que reciben un tratamiento especial:
+
+- El segmento `.` hace referencia al directorio _actual_. Por eso `{"./image.png"}`
+  y `{"image.png"}` son equivalentes.
+
+- El segmento `..` hace referencia al directorio _padre_. Si tenés tres archivos
+  `main.typ`, `utils.typ` y `text/chapter1.typ`, podés hacer referencia a tu archivo
+  de utilidades desde el capítulo 1 con la ruta `{"../utils.typ"}`.
+
+= #short-or-long[Tipo path][El tipo path] <path-type>
+Para la mayoría de los usos típicos de las rutas, alcanza con las cadenas de texto.
+Sin embargo, a veces necesitás un poco más de control. Por ejemplo, quizás quieras
+resolver una ruta en relación con el archivo en el que estás escribiendo, pero luego
+pasársela a un paquete y dejar que el paquete lea desde esa ruta. Ahí es donde entra
+el tipo path.
+
+Con él, podés resolver por completo una cadena de ruta en relación con el archivo
+donde la construís. Todas las operaciones posteriores que se realicen con la ruta
+(como leer un archivo o cargar una imagen) se comportarán igual sin importar en qué
+parte del código ocurran.
+
+Este es un ejemplo de cómo podríamos tener un `main.typ` con un archivo `data.json`
+justo al lado y aun así dejar que un paquete que construimos lea ese archivo.
+
+```typ
+// This is main.typ, with data.json next to it.
+#import "@local/my-pkg:0.1.0": process
+#let data-path = path("data.json")
+#process(data-path)
+```
+
+= Raíces <roots>
+== #short-or-long[Raíz del proyecto][La raíz del proyecto] <project-root>
+Por razones de seguridad y reproducibilidad, Typst encapsula el acceso a archivos.
+Un proyecto de Typst solo puede acceder a rutas dentro de su _raíz del proyecto._
+Si intentás crear o acceder a una ruta fuera de esta raíz, vas a obtener un error:
+
+```typ
+// ❌ Error: path `"../secret.txt"` would escape the project root
+#path("../secret.txt")
+```
+
+Por defecto, la raíz del proyecto es el directorio padre del archivo principal de
+Typst. Si querés usar otra carpeta como raíz de tu proyecto, podés usar el flag
+`--root` de la CLI:
+
+```bash
+typst compile --root .. file.typ
+```
+
+Asegurate de que el archivo principal esté contenido en el subárbol de la carpeta,
+para que Typst pueda acceder a él.
+
+En la app web, el proyecto en sí es el directorio raíz. Siempre podés leer todos los
+archivos que contiene, sin importar cuál se esté previsualizando (mediante el
+interruptor con forma de ojo junto a cada archivo Typst en el panel de archivos).
+
+== Raíces de paquetes <package-roots>
+Igual que el proyecto, cada paquete que importás tiene su propia raíz. Dentro de un
+paquete, las rutas absolutas apuntan a la raíz del paquete y no a la raíz del
+proyecto. Por sí solo, el código de un paquete no puede construir una ruta que
+esté en el proyecto o en otro paquete.
+
+Si necesitás proporcionarle a un paquete recursos del proyecto (como una imagen de
+logo), podés hacerlo creando explícitamente en tu código una ruta al recurso con el
+@path.constructor[constructor de path]. Después podés pasarle al paquete la ruta
+resultante. En la sección @path:path-type["El tipo path"] de arriba se muestra un
+ejemplo de esto.
+
+Como alternativa, podés realizar la operación de ruta en tu código y pasarle el
+resultado al paquete. Esto podría ser, por ejemplo, el resultado de una llamada a
+@read o una imagen completa (por ejemplo, como parámetro con nombre
+`{logo: image("mylogo.svg")}`). Tené en cuenta que, si le pasás una imagen a un
+paquete de esta manera, igualmente podés personalizar el aspecto de la imagen con
+una regla set dentro del paquete.
+
+= Otras operaciones <further-operations>
+Por ahora, el propósito del tipo path se limita a manejar y transferir correctamente
+rutas entre los archivos de tu proyecto y los paquetes. En el futuro, podría habilitar
+capacidades adicionales, como comprobar la existencia de un archivo o enumerar los
+archivos de un directorio.
+
+@@ RootedPath::construct  [src:47cd4966]
+Crea una ruta a partir de una cadena de texto.
+
+```typ
+// A relative path without a leading slash.
+// May optionally start with `./`.
+#path("relative/path/to/file.typ")
+#path("./relative/path/to/file.typ")
+
+// An absolute path with a leading slash.
+#path("/absolute/path/to/file.typ")
+```
+
+
+@@ RootedPath::construct::path  [src:fb0e7512]
+Convierte una cadena de texto o una ruta en una ruta.
+
+Si es una @path:path-strings[cadena de ruta]:
+- Si la ruta es absoluta, se resuelve en relación con la raíz del proyecto o paquete
+  en el que se llama a esta función.
+- Si la ruta es relativa, se resuelve en relación con el archivo donde se llama a
+  esta función.
+
+Si ya es un `path`, se devuelve sin cambios.

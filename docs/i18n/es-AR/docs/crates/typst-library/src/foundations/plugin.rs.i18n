@@ -1,0 +1,176 @@
+@@ plugin  [src:373fd2d2]
+Carga un módulo de WebAssembly.
+
+El @module[módulo] resultante contendrá una @function[función] de Typst por cada
+función exportada del módulo de WebAssembly cargado.
+
+Los plugins de WebAssembly de Typst tienen que seguir un @plugin:protocol[protocolo]
+específico. Para ejecutarse como plugin, un programa debe compilarse como biblioteca
+compartida de WebAssembly de 32 bits. Las funciones de un plugin pueden aceptar
+varios @bytes[buffers de bytes] como argumentos y devolver un único buffer de bytes.
+Normalmente deberían envolverse en funciones idiomáticas de Typst que realicen las
+conversiones necesarias entre los tipos nativos de Typst y los bytes, aprovechando
+@str.constructor[`str`], @bytes.constructor[`bytes`] y las
+@reference:data-loading[funciones de carga de datos].
+
+Por razones de seguridad, los plugins se ejecutan aislados de tu sistema. Esto
+significa que no se admite imprimir, leer archivos ni cosas similares.
+
+= Ejemplo <example>
+```example
+#let myplugin = plugin("hello.wasm")
+#let concat(a, b) = str(
+  myplugin.concatenate(
+    bytes(a),
+    bytes(b),
+  )
+)
+
+#concat("hello", "world")
+```
+
+Como la función plugin devuelve un módulo, se puede usar con la sintaxis de
+importación:
+
+```typ
+#import plugin("hello.wasm"): concatenate
+```
+
+= Pureza <purity>
+Las funciones de un plugin *deben ser puras:* una llamada a una función de un plugin
+no debe tener ningún efecto secundario observable en futuras llamadas al plugin y,
+dados los mismos argumentos, siempre debe devolver el mismo valor.
+
+La razón es que las funciones de Typst deben ser puras (algo bastante fundamental en
+el diseño del lenguaje) y, como las funciones de Typst pueden llamar a funciones de
+plugins, este requisito se hereda. En particular, si una función de un plugin se
+llama dos veces con los mismos argumentos, Typst podría almacenar en caché los
+resultados y llamar a tu función una sola vez. Además, Typst puede ejecutar varias
+instancias de tu plugin en varios hilos, sin estado compartido entre ellas.
+
+Typst no obliga a que las funciones de los plugins sean puras (por razones de
+eficiencia), pero llamar a una función impura llevará a resultados impredecibles e
+irreproducibles y debe evitarse.
+
+Dicho esto, las operaciones mutables _pueden ser_ útiles para plugins que requieren
+una inicialización costosa en tiempo de ejecución. Debido al requisito de pureza,
+esa inicialización no se puede realizar mediante una llamada normal a una función.
+En cambio, Typst expone una @plugin.transition[API de transición de plugins], que
+ejecuta una llamada a una función y luego crea un módulo derivado con funciones
+nuevas que observarán los efectos secundarios producidos por la llamada de
+transición. El plugin original no se ve afectado.
+
+= Plugins y paquetes <plugins-and-packages>
+Cualquier código de Typst puede usar un plugin simplemente incluyendo un archivo de
+WebAssembly y cargándolo. Sin embargo, como la interfaz de plugins basada en bytes
+es de muy bajo nivel, los plugins suelen exponerse a través de un paquete que
+contiene el plugin y funciones envoltorio idiomáticas.
+
+= WASI <wasi>
+Muchos compiladores usan por defecto, o como única opción, la
+#link("https://wasi.dev/")[ABI de WASI] (por ejemplo, emscripten), que permite
+imprimir, leer archivos, etcétera. Esta ABI no funciona directamente con Typst.
+Vas a tener que compilar a otro destino o
+#link("https://github.com/typst-community/wasm-minimal-protocol/tree/main/crates/wasi-stub")[reemplazar todas las funciones por stubs].
+
+= Protocolo <protocol>
+Para usarse como plugin, un módulo de WebAssembly debe cumplir el siguiente
+protocolo:
+
+== Exportaciones <exports>
+Un módulo de plugin puede exportar funciones para que se puedan llamar desde Typst.
+Para cumplir el protocolo, una función exportada debe:
+
+- Tomar `n` argumentos enteros de 32 bits `a_1`, `a_2`, ..., `a_n` (interpretados
+  como longitudes, por lo que `usize/size_t` puede ser preferible) y devolver un
+  entero de 32 bits.
+
+- La función debe primero asignar un buffer `buf` de longitud
+  `a_1 + a_2 + ... + a_n` y luego llamar a
+  `wasm_minimal_protocol_write_args_to_buffer(buf.ptr)`.
+
+- Los primeros `a_1` bytes del buffer constituyen ahora el primer argumento, los
+  siguientes `a_2` bytes el segundo argumento, y así sucesivamente.
+
+- La función ya puede hacer su trabajo con los argumentos y producir un buffer de
+  salida. Antes de retornar, debe llamar a `wasm_minimal_protocol_send_result_to_host`
+  para enviar su resultado de vuelta al host.
+
+- Para señalar éxito, la función debe devolver `0`.
+
+- Para señalar un error, la función debe devolver `1`. El buffer escrito se
+  interpreta entonces como un mensaje de error codificado en UTF-8.
+
+== Importaciones <imports>
+Los módulos de plugin necesitan importar dos funciones que provee el entorno de
+ejecución. (Los tipos y las funciones se describen con la sintaxis de WAT.)
+
+- `(import "typst_env" "wasm_minimal_protocol_write_args_to_buffer" (func (param i32)))`
+
+  Escribe los argumentos de la función actual en un buffer asignado por el plugin.
+  Cuando se llama a una función de un plugin, esta
+  @plugin:exports[recibe las longitudes] de sus buffers de entrada como argumentos.
+  Debe entonces asignar un buffer cuya capacidad sea al menos la suma de esas
+  longitudes. Luego debe llamar a esta función con un `ptr` al buffer para
+  llenarlo con los argumentos, uno después del otro.
+
+- `(import "typst_env" "wasm_minimal_protocol_send_result_to_host" (func (param i32 i32)))`
+
+  Envía la salida de la función actual al host (Typst). El primer parámetro debe ser
+  un puntero a un buffer (`ptr`), mientras que el segundo es la longitud de ese
+  buffer (`len`). La memoria a la que apunta `ptr` se puede liberar inmediatamente
+  después de que esta función retorne. Si el mensaje debe interpretarse como un
+  mensaje de error, debe codificarse en UTF-8.
+
+= Recursos <resources>
+Para más recursos, mirá el
+#link("https://github.com/typst-community/wasm-minimal-protocol")[repositorio wasm-minimal-protocol].
+Contiene:
+
+- Una lista de implementaciones de plugins de ejemplo y un ejecutor de pruebas para
+  esos ejemplos
+- Envoltorios que te ayudan a escribir tu plugin en Rust
+- Un generador de stubs para WASI
+
+@@ plugin::source  [src:87fac660]
+Una ruta a un archivo de WebAssembly o bytes de WebAssembly sin procesar.
+
+@@ plugin::transition  [src:bb2b6613]
+Llama a una función de un plugin que tiene efectos secundarios y devuelve un módulo
+nuevo con funciones de plugin que garantizadamente observaron los resultados de la
+llamada mutable.
+
+Tené en cuenta que llamar a una función impura mediante una llamada normal a una
+función (sin usar la API de transición) está prohibido y lleva a un comportamiento
+impredecible. Leé la @plugin:purity[sección sobre pureza] para más detalles.
+
+En el siguiente ejemplo, cargamos el plugin `hello-mut.wasm`, que exporta dos
+funciones: la función `get()` obtiene un array global como cadena de texto. La
+función `add(value)` agrega un valor al array global.
+
+Llamamos a `add` mediante la API de transición. La llamada `mutated.get()` en el
+módulo derivado observará la adición. Mientras tanto, el módulo original permanece
+intacto, como demuestra la llamada `base.get()`.
+
+_Nota:_ Debido a limitaciones de la implementación interna de WebAssembly, la API de
+transición solo puede garantizar que se reflejen los cambios en la memoria del
+plugin, no en los globales de WebAssembly. Si tu plugin depende de que los cambios
+en los globales sean visibles después de la transición, quizás quieras evitar por
+ahora el uso de la API de transición. Esperamos levantar esta limitación en el
+futuro.
+
+```typ
+#let base = plugin("hello-mut.wasm")
+#assert.eq(base.get(), "[]")
+
+#let mutated = plugin.transition(base.add, "hello")
+#assert.eq(base.get(), "[]")
+#assert.eq(mutated.get(), "[hello]")
+```
+
+
+@@ plugin::transition::arguments  [src:76ef5016]
+Los buffers de bytes con los que se llama a la función.
+
+@@ plugin::transition::func  [src:b68a36a5]
+La función del plugin a la que se llama.

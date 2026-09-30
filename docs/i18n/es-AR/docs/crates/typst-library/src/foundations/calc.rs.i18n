@@ -1,0 +1,671 @@
+@@ abs  [src:ed6ec6a1]
+Calcula el valor absoluto de un valor numérico.
+
+```example
+#calc.abs(-5) \
+#calc.abs(5pt - 2cm) \
+#calc.abs(2fr) \
+#calc.abs(decimal("-342.440"))
+```
+
+@@ abs::value  [src:069f11e0]
+El valor cuyo valor absoluto se calcula.
+
+@@ acos  [src:16f78317]
+Calcula el arcocoseno de un número.
+
+```example
+#calc.acos(0) \
+#calc.acos(1)
+```
+
+@@ acos::value  [src:8703b91b]
+El número cuyo arcocoseno se calcula. Debe estar entre $-1$ y $1$.
+
+@@ acosh  [src:3ce88907]
+Calcula el coseno hiperbólico inverso de un número.
+
+El coseno hiperbólico inverso de $x$ se define de la siguiente manera:
+$ ln(x + sqrt(x^2 - 1)) $
+
+```example
+#calc.acosh(1) \
+#calc.acosh(2.5)
+```
+
+@@ acosh::value  [src:17fd60fb]
+El número cuyo coseno hiperbólico inverso se calcula. Debe ser mayor o igual que
+$1$.
+
+@@ asin  [src:2f9cefa1]
+Calcula el arcoseno de un número.
+
+```example
+#calc.asin(0) \
+#calc.asin(1)
+```
+
+@@ asin::value  [src:1a5b42a9]
+El número cuyo arcoseno se calcula. Debe estar entre $-1$ y $1$.
+
+@@ asinh  [src:073a2fd1]
+Calcula el seno hiperbólico inverso de un número.
+
+El seno hiperbólico inverso de $x$ se define de la siguiente manera:
+$ ln(x + sqrt(x^2 + 1)) $
+
+```example
+#calc.asinh(0) \
+#calc.asinh(1)
+```
+
+@@ asinh::value  [src:731f7a96]
+El número cuyo seno hiperbólico inverso se calcula.
+
+@@ atan  [src:30f5c237]
+Calcula el arcotangente de un número.
+
+```example
+#calc.atan(0) \
+#calc.atan(1)
+```
+
+@@ atan2  [src:d8a02133]
+Calcula el arcotangente de cuatro cuadrantes de una coordenada.
+
+El arcotangente de cuatro cuadrantes de $(x, y)$ se define como el argumento del
+número complejo $x + i y$.
+
+Devuelve un @angle entre `{-180deg}` y `{180deg}`.
+
+Tené en cuenta que esta función acepta $(x, y)$, no $(y, x)$.
+
+```example
+#calc.atan2(1, 1) \
+#calc.atan2(-2, -3)
+```
+
+@@ atan2::x  [src:9d816a5d]
+La coordenada $x$.
+
+@@ atan2::y  [src:a434b02b]
+La coordenada $y$.
+
+@@ atan::value  [src:ce3228ea]
+El número cuyo arcotangente se calcula.
+
+@@ atanh  [src:e7cb0d75]
+Calcula la tangente hiperbólica inversa de un número.
+
+La tangente hiperbólica inversa de $x$ se define de la siguiente manera:
+$ 1/2 ln((1 + x) / (1 - x)) $
+
+```example
+#calc.atanh(0) \
+#calc.atanh(0.5)
+```
+
+@@ atanh::value  [src:5376aed5]
+El número cuya tangente hiperbólica inversa se calcula. Debe estar entre $-1$ y $1$
+(exclusivos).
+
+@@ binom  [src:2647edc0]
+Calcula un coeficiente binomial.
+
+Devuelve la $k$-combinación de $n$, o la cantidad de maneras de elegir $k$
+elementos de un conjunto de $n$ sin tener en cuenta el orden, definida de la
+siguiente manera:
+$
+  cases(
+    (n!) / (k! (n - k)!) quad &"si" 0 <= k <= n,
+    0 quad &"en otro caso",
+  )
+$
+
+```example
+#calc.binom(10, 5)
+```
+
+@@ binom::k  [src:dfc8bda2]
+El valor de $k$: la cantidad de elementos que se eligen. Debe ser no negativo.
+
+@@ binom::n  [src:3c73a0e9]
+El valor de $n$: la cantidad de elementos entre los que se elige. Debe ser no
+negativo.
+
+@@ ceil  [src:36eb93c9]
+Redondea un número hacia arriba al entero más cercano.
+
+Si el número ya es un entero, se devuelve sin cambios.
+
+Tené en cuenta que esta función siempre devuelve un @int[entero] y producirá un
+error si el @float o @decimal resultante es mayor que el máximo entero con signo de
+64 bits o menor que el mínimo de ese tipo.
+
+```example
+#calc.ceil(500.1)
+#assert(calc.ceil(3) == 3)
+#assert(calc.ceil(3.14) == 4)
+#assert(calc.ceil(decimal("-3.14")) == -3)
+```
+
+@@ ceil::value  [src:3517b869]
+El número que se redondea hacia arriba.
+
+@@ clamp  [src:d3e0f247]
+Limita un número entre un valor mínimo y uno máximo.
+
+```example
+#calc.clamp(5, 0, 4)
+#assert(calc.clamp(5, 0, 10) == 5)
+#assert(calc.clamp(5, 6, 10) == 6)
+#assert(calc.clamp(decimal("5.45"), 2, decimal("45.9")) == decimal("5.45"))
+#assert(calc.clamp(decimal("5.45"), decimal("6.75"), 12) == decimal("6.75"))
+```
+
+@@ clamp::max  [src:b5e75b51]
+El valor máximo inclusivo.
+
+@@ clamp::min  [src:83c44248]
+El valor mínimo inclusivo.
+
+@@ clamp::value  [src:b1d9d95a]
+El número que se limita.
+
+@@ cos  [src:f1a18d4f]
+Calcula el coseno de un ángulo.
+
+Cuando se la llama con un entero o un flotante, se interpretan como radianes.
+
+```example
+#calc.cos(1.5) \
+#calc.cos(90deg)
+```
+
+@@ cos::angle  [src:4fe15dd6]
+El ángulo cuyo coseno se calcula.
+
+@@ cosh  [src:f7dff508]
+Calcula el coseno hiperbólico de un ángulo hiperbólico.
+
+El coseno hiperbólico de $x$ se define de la siguiente manera:
+$ (e^x + e^(-x)) / 2 $
+
+```example
+#calc.cosh(0) \
+#calc.cosh(1.5)
+```
+
+@@ cosh::value  [src:967a2d02]
+El ángulo hiperbólico cuyo coseno hiperbólico se calcula.
+
+@@ div_euclid  [src:660ec626]
+Realiza la división euclidiana de dos números.
+
+El resultado de este cálculo es el de una división redondeada al entero `{n}` tal
+que el dividendo es mayor o igual que `{n}` veces el divisor.
+
+Puede producir un error si el número resultante es mayor que el valor máximo o
+menor que el valor mínimo de su tipo.
+
+```example
+#calc.div-euclid(7, 3) \
+#calc.div-euclid(7, -3) \
+#calc.div-euclid(-7, 3) \
+#calc.div-euclid(-7, -3) \
+#calc.div-euclid(1.75, 0.5) \
+#calc.div-euclid(decimal("1.75"), decimal("0.5"))
+```
+
+@@ div_euclid::dividend  [src:0f1a4ab3]
+El dividendo de la división.
+
+@@ div_euclid::divisor  [src:721883f5]
+El divisor de la división.
+
+@@ erf  [src:14f14124]
+Aplica la función de error a un número.
+
+El valor de la función de error en $x$ se define de la siguiente manera:
+$ 2 / sqrt(pi) integral_0^x e^(-t^2) dif t $
+
+```example
+#calc.erf(0.2)
+```
+
+@@ erf::value  [src:bfc1dc0d]
+El número en el que se calcula la función de error.
+
+@@ even  [src:80437856]
+Determina si un entero es par.
+
+```example
+#calc.even(4) \
+#calc.even(5) \
+#range(10).filter(calc.even)
+```
+
+@@ even::value  [src:61fdfb8d]
+El número cuya paridad se comprueba.
+
+@@ exp  [src:bac89781]
+Eleva $e$ a un exponente.
+
+```example
+#calc.exp(1)
+```
+
+@@ exp::exponent  [src:e79fa501]
+El exponente de la potencia.
+
+@@ fact  [src:88b61b92]
+Calcula el factorial de un número.
+
+```example
+#calc.fact(5)
+```
+
+@@ fact::number  [src:ab7957bc]
+El número cuyo factorial se calcula. Debe ser no negativo.
+
+@@ floor  [src:cc555ad1]
+Redondea un número hacia abajo al entero más cercano.
+
+Si el número ya es un entero, se devuelve sin cambios.
+
+Tené en cuenta que esta función siempre devuelve un @int[entero] y producirá un
+error si el @float o @decimal resultante es mayor que el máximo entero con signo de
+64 bits o menor que el mínimo de ese tipo.
+
+```example
+#calc.floor(500.1)
+#assert(calc.floor(3) == 3)
+#assert(calc.floor(3.14) == 3)
+#assert(calc.floor(decimal("-3.14")) == -4)
+```
+
+@@ floor::value  [src:e875b9ed]
+El número que se redondea hacia abajo.
+
+@@ fract  [src:d0980a5f]
+Devuelve la parte fraccionaria de un número.
+
+Si el número es un entero, devuelve `0`.
+
+```example
+#calc.fract(-3.1)
+#assert(calc.fract(3) == 0)
+#assert(calc.fract(decimal("234.23949211")) == decimal("0.23949211"))
+```
+
+@@ fract::value  [src:da91f6f2]
+El número que se trunca.
+
+@@ gcd  [src:af7ea54e]
+Calcula el máximo común divisor de dos enteros.
+
+Producirá un error si el resultado de la división entera fuera mayor que el máximo
+entero con signo de 64 bits.
+
+```example
+#calc.gcd(7, 42)
+```
+
+@@ gcd::a  [src:56cef49a]
+El primer entero.
+
+@@ gcd::b  [src:2af7226c]
+El segundo entero.
+
+@@ lcm  [src:e26d55ad]
+Calcula el mínimo común múltiplo de dos enteros.
+
+```example
+#calc.lcm(96, 13)
+```
+
+@@ lcm::a  [src:56cef49a]
+El primer entero.
+
+@@ lcm::b  [src:2af7226c]
+El segundo entero.
+
+@@ ln  [src:b2057310]
+Calcula el logaritmo natural de un número.
+
+```example
+#calc.ln(calc.e)
+```
+
+@@ ln::value  [src:cf8cba8b]
+El número cuyo logaritmo se calcula. Debe ser estrictamente positivo.
+
+@@ log  [src:873975d2]
+Calcula el logaritmo de un número.
+
+Si no se especifica la base, el logaritmo se calcula en base diez.
+
+```example
+#calc.log(100)
+```
+
+@@ log::base  [src:7f3f9f1f]
+La base del logaritmo. No puede ser cero.
+
+@@ log::value  [src:cf8cba8b]
+El número cuyo logaritmo se calcula. Debe ser estrictamente positivo.
+
+@@ max  [src:579b7741]
+Determina el máximo de una secuencia de valores.
+
+```example
+#calc.max(1, -3, -5, 20, 3, 6) \
+#calc.max("typst", "is", "cool")
+```
+
+@@ max::values  [src:cb1ca7c2]
+La secuencia de valores de la que se extrae el máximo. No debe estar vacía.
+
+@@ min  [src:85372834]
+Determina el mínimo de una secuencia de valores.
+
+```example
+#calc.min(1, -3, -5, 20, 3, 6) \
+#calc.min("typst", "is", "cool")
+```
+
+@@ min::values  [src:39f66f62]
+La secuencia de valores de la que se extrae el mínimo. No debe estar vacía.
+
+@@ norm  [src:9f2e7762]
+Calcula la norma $p$ de una secuencia de valores.
+
+La norma $p$ de $x_1, ..., x_n$ se define de la siguiente manera:
+$
+  cases(
+    (sum_(i=1)^n abs(x_i)^p)^frac(style: "horizontal", 1, p)
+      quad &"si" 0 < p < +oo,
+    max_(i=1)^n abs(x_i) quad &"si" p = +oo,
+  )
+$
+
+```example
+#calc.norm(1, 2, -3, 0.5) \
+#calc.norm(p: 3, 1, 2)
+```
+
+@@ norm::p  [src:64f2b3c1]
+El valor de $p$. Debe ser mayor que cero.
+
+El valor por defecto `{2.0}` corresponde a la norma euclidiana:
+$ sqrt(sum_(i=1)^n x_i^2) $
+
+@@ norm::values  [src:e38fe8e4]
+La secuencia de valores cuya norma $p$ se calcula. Devuelve `{0.0}` si está vacía.
+
+@@ odd  [src:df6c7e18]
+Determina si un entero es impar.
+
+```example
+#calc.odd(4) \
+#calc.odd(5) \
+#range(10).filter(calc.odd)
+```
+
+@@ odd::value  [src:0a391fab]
+El número cuya imparidad se comprueba.
+
+@@ perm  [src:c7d28e25]
+Calcula una permutación.
+
+Devuelve la $k$-permutación de $n$, o la cantidad de maneras de elegir $k$
+elementos de un conjunto de $n$ teniendo en cuenta el orden, definida de la
+siguiente manera:
+$
+  cases(
+    0 quad &"si" k > n,
+    (n!) / ((n - k)!) quad &"si" k <= n,
+  )
+$
+
+```example
+#calc.perm(5, 3)
+```
+
+@@ perm::base  [src:f47a52af]
+El valor de $n$: la cantidad de elementos entre los que se elige. Debe ser no
+negativo.
+
+@@ perm::numbers  [src:dfc8bda2]
+El valor de $k$: la cantidad de elementos que se eligen. Debe ser no negativo.
+
+@@ pow  [src:71af1419]
+Eleva un valor a un exponente.
+
+```example
+#calc.pow(2, 3) \
+#calc.pow(decimal("2.5"), 2)
+```
+
+@@ pow::base  [src:f3c077cc]
+La base de la potencia.
+
+Si es un @decimal, el exponente solo puede ser un @int[entero].
+
+@@ pow::exponent  [src:e79fa501]
+El exponente de la potencia.
+
+@@ quo  [src:8454a319]
+Calcula el cociente (división con redondeo hacia abajo) de dos números.
+
+Tené en cuenta que esta función siempre devuelve un @int[entero] y producirá un
+error si el número resultante es mayor que el máximo entero con signo de 64 bits o
+menor que el mínimo de ese tipo.
+
+```example
+$ "quo"(a, b) &= floor(a/b) \
+  "quo"(14, 5) &= #calc.quo(14, 5) \
+  "quo"(3.46, 0.5) &= #calc.quo(3.46, 0.5) $
+```
+
+@@ quo::dividend  [src:20257d35]
+El dividendo del cociente.
+
+@@ quo::divisor  [src:bc40ccd7]
+El divisor del cociente.
+
+@@ rem  [src:4c405546]
+Calcula el resto de dos números (módulo con signo).
+
+El valor de `calc.rem(x, y)` siempre tiene el mismo signo que `x` y es menor en
+magnitud que `y`.
+
+Puede producir un error si se le da una entrada @decimal y el dividendo es
+demasiado pequeño en magnitud en comparación con el divisor.
+
+```example
+#calc.rem(7, 3) \
+#calc.rem(7, -3) \
+#calc.rem(-7, 3) \
+#calc.rem(-7, -3) \
+#calc.rem(1.75, 0.5)
+```
+
+@@ rem::dividend  [src:9c3aaca1]
+El dividendo del resto.
+
+@@ rem::divisor  [src:d7538554]
+El divisor del resto.
+
+@@ rem_euclid  [src:063aa4c7]
+Calcula el menor resto no negativo de una división (módulo no negativo).
+
+Advertencia: debido a un error de redondeo de punto flotante, el resto puede ser
+igual al valor absoluto del divisor si el dividendo es mucho menor en magnitud que
+el divisor y el dividendo es negativo. Esto solo se aplica a entradas de punto
+flotante.
+
+Además, puede producir un error si se le da una entrada @decimal y el dividendo es
+demasiado pequeño en magnitud en comparación con el divisor.
+
+```example
+#calc.rem-euclid(7, 3) \
+#calc.rem-euclid(7, -3) \
+#calc.rem-euclid(-7, 3) \
+#calc.rem-euclid(-7, -3) \
+#calc.rem-euclid(1.75, 0.5) \
+#calc.rem-euclid(decimal("1.75"), decimal("0.5"))
+```
+
+@@ rem_euclid::dividend  [src:9c3aaca1]
+El dividendo del resto.
+
+@@ rem_euclid::divisor  [src:d7538554]
+El divisor del resto.
+
+@@ root  [src:c3ed1d74]
+Calcula la raíz real $n$#super[ésima] de un número.
+
+Si el número es negativo, $n$ debe ser impar.
+
+```example
+#calc.root(16.0, 4) \
+#calc.root(27.0, 3)
+```
+
+
+@@ root::index  [src:e6c9d076]
+El valor de $n$.
+
+@@ root::radicand  [src:8b3b8067]
+La expresión de la que se toma la raíz.
+
+@@ round  [src:072a8af8]
+Redondea un número al entero más cercano.
+
+Los valores intermedios (con parte fraccionaria de un medio) se redondean alejándose
+de cero.
+
+Opcionalmente, se puede especificar una cantidad de decimales. Si es negativa, su
+valor absoluto indicará la cantidad de dígitos enteros significativos que se
+eliminan antes del punto decimal.
+
+Tené en cuenta que esta función devuelve el mismo tipo que el operando. Es decir,
+aplicar `round` a un @float devuelve un `float` y aplicarlo a un @decimal devuelve
+otro `decimal`. Podés convertir explícitamente la salida de esta función en un
+entero con @int, pero tené en cuenta que esa conversión producirá un error si el
+`float` o `decimal` es mayor que el máximo entero con signo de 64 bits o menor que
+el entero mínimo.
+
+Además, esta función puede producir un error si se intenta redondear más allá del
+entero o `decimal` máximo o mínimo. Si el número es un `float`, ese intento hará
+que se devuelva @calc.inf o `{-calc.inf}` para el máximo y el mínimo,
+respectivamente.
+
+```example
+#calc.round(3.1415, digits: 2)
+#assert(calc.round(3) == 3)
+#assert(calc.round(3.14) == 3)
+#assert(calc.round(3.5) == 4.0)
+#assert(calc.round(3333.45, digits: -2) == 3300.0)
+#assert(calc.round(-48953.45, digits: -3) == -49000.0)
+#assert(calc.round(3333, digits: -2) == 3300)
+#assert(calc.round(-48953, digits: -3) == -49000)
+#assert(calc.round(decimal("-6.5")) == decimal("-7"))
+#assert(calc.round(decimal("7.123456789"), digits: 6) == decimal("7.123457"))
+#assert(calc.round(decimal("3333.45"), digits: -2) == decimal("3300"))
+#assert(calc.round(decimal("-48953.45"), digits: -3) == decimal("-49000"))
+```
+
+@@ round::digits  [src:ee012bf7]
+Si es positivo, la cantidad de decimales.
+
+Si es negativo, la cantidad de dígitos enteros significativos que se deben eliminar
+antes del punto decimal.
+
+@@ round::value  [src:cd05089a]
+El número que se redondea.
+
+@@ sin  [src:fdf134b1]
+Calcula el seno de un ángulo.
+
+Cuando se la llama con un entero o un flotante, se interpretan como radianes.
+
+```example
+#calc.sin(1.5) \
+#calc.sin(90deg)
+```
+
+@@ sin::angle  [src:2c6284b7]
+El ángulo cuyo seno se calcula.
+
+@@ sinh  [src:21dc9e8c]
+Calcula el seno hiperbólico de un ángulo hiperbólico.
+
+El seno hiperbólico de $x$ se define de la siguiente manera:
+$ (e^x - e^(-x)) / 2 $
+
+```example
+#calc.sinh(0) \
+#calc.sinh(1.5)
+```
+
+@@ sinh::value  [src:b1573121]
+El ángulo hiperbólico cuyo seno hiperbólico se calcula.
+
+@@ sqrt  [src:d135933a]
+Calcula la raíz cuadrada de un número.
+
+```example
+#calc.sqrt(16) \
+#calc.sqrt(2.5)
+```
+
+@@ sqrt::value  [src:5ced086e]
+El número cuya raíz cuadrada se calcula. Debe ser no negativo.
+
+@@ tan  [src:aefc885f]
+Calcula la tangente de un ángulo.
+
+Cuando se la llama con un entero o un flotante, se interpretan como radianes.
+
+```example
+#calc.tan(1.5) \
+#calc.tan(90deg)
+```
+
+@@ tan::angle  [src:a0f8ecd4]
+El ángulo cuya tangente se calcula.
+
+@@ tanh  [src:53181599]
+Calcula la tangente hiperbólica de un ángulo hiperbólico.
+
+La tangente hiperbólica de $x$ se define de la siguiente manera:
+$ (e^x - e^(-x)) / (e^x + e^(-x)) $
+
+```example
+#calc.tanh(0) \
+#calc.tanh(1.5)
+```
+
+@@ tanh::value  [src:7ec8e644]
+El ángulo hiperbólico cuya tangente hiperbólica se calcula.
+
+@@ trunc  [src:dfffb57f]
+Devuelve la parte entera de un número.
+
+Si el número ya es un entero, se devuelve sin cambios.
+
+Tené en cuenta que esta función siempre devuelve un @int[entero] y producirá un
+error si el @float o @decimal resultante es mayor que el máximo entero con signo de
+64 bits o menor que el mínimo de ese tipo.
+
+```example
+#calc.trunc(15.9)
+#assert(calc.trunc(3) == 3)
+#assert(calc.trunc(-3.7) == -3)
+#assert(calc.trunc(decimal("8493.12949582390")) == 8493)
+```
+
+@@ trunc::value  [src:da91f6f2]
+El número que se trunca.
