@@ -13,6 +13,7 @@
 
 // The part of the global styling that applies to the paged version.
 #let paged-styling(body) = {
+  set text(..stdx.text-lang)
   set page(margin: (x: 3cm, y: 2.5cm))
   set text(font: (fonts.body, ..fonts.fallback), size: sizes.body)
   set list(marker: [--])
