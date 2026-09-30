@@ -1,0 +1,26 @@
+@@ AlignPointElem  [src:def96ca9]
+Un punto de alineación matemático: `&`, `&&`.
+
+@@ ClassElem  [src:ca9513f9]
+Uso forzado de una cierta clase matemática.
+
+Esto es útil para tratar ciertos símbolos como si fueran de otra clase, por ejemplo, para que un símbolo se comporte como una relación. La clase de un símbolo define cómo se dispone, incluido el
+espaciado a su alrededor y cómo se adjuntan por defecto sus subíndices/superíndices. Tené en cuenta que esto último siempre se puede reemplazar con @math.limits[`{limits}`] y
+@math.scripts[`{scripts}`].
+
+= Ejemplo <example>
+```example
+#let loves = math.class(
+  "relation",
+  sym.suit.heart,
+)
+
+$x loves y and y loves 5$
+```
+
+
+@@ ClassElem::body  [src:14fa81e9]
+El contenido al que se aplica la clase.
+
+@@ ClassElem::class  [src:dffe756a]
+La clase que se aplica al contenido.

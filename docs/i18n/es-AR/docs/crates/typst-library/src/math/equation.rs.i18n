@@ -1,0 +1,113 @@
+@@ EquationElem  [src:ddd70b34]
+Una ecuación matemática.
+
+Se puede mostrar en línea con el texto o como un bloque separado. Una ecuación pasa a ser a nivel de bloque por la presencia de un espacio en blanco después del signo de pesos
+inicial y un espacio en blanco antes del signo de pesos final.
+
+= Ejemplo <example>
+```example
+#set text(font: "New Computer Modern")
+
+Let $a$, $b$, and $c$ be the side
+lengths of a right-angled triangle.
+Then, we know that:
+$ a^2 + b^2 = c^2 $
+
+Prove by induction:
+$ sum_(k=1)^n k = (n(n+1)) / 2 $
+```
+
+Por defecto, las ecuaciones a nivel de bloque no se cortan entre páginas. Esto se puede cambiar con `{show math.equation: set block(breakable: true)}`.
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: escribí marcado matemático entre signos de pesos para crear una ecuación. Empezar y terminar la ecuación con un espacio en blanco
+la eleva a un bloque separado centrado horizontalmente. Para más detalles sobre la sintaxis matemática, mirá la @math[página principal de matemática].
+
+@@ EquationElem::alt  [src:310fae05]
+Una descripción alternativa de la ecuación matemática.
+
+Debería describir la ecuación completa en lenguaje natural y se pondrá a disposición de las tecnologías de asistencia. Podés aprender más en la
+@guides:accessibility:textual-representations[sección de representaciones textuales de la guía de accesibilidad].
+
+```example
+#math.equation(
+  alt: "integral from 1 to infinity of a x squared plus b with respect to x",
+  block: true,
+  $ integral_1^oo a x^2 + b dif x $,
+)
+```
+
+
+@@ EquationElem::block  [src:6db1ebbd]
+Si la ecuación se muestra como un bloque separado.
+
+@@ EquationElem::body  [src:563578de]
+El contenido de la ecuación.
+
+@@ EquationElem::bold  [src:6f162570]
+Si se usan glifos en negrita.
+
+@@ EquationElem::cramped  [src:fa843a6c]
+Afecta la altura de los exponentes.
+
+@@ EquationElem::italic  [src:d482f5a6]
+Si se usan glifos en cursiva.
+
+@@ EquationElem::locale  [src:8b81ba74]
+La configuración regional de este elemento (se usa para la descripción alternativa).
+
+@@ EquationElem::number_align  [src:4d9cae6a]
+La alineación de la numeración de la ecuación.
+
+Por defecto, la alineación es `{end + horizon}`. Para el componente horizontal, podés usar `{right}`, `{left}` o `{start}` y `{end}` de la dirección del texto; para el
+componente vertical, podés usar `{top}`, `{horizon}` o `{bottom}`.
+
+```example
+#set math.equation(numbering: "(1)", number-align: bottom)
+
+We can calculate:
+$ E &= sqrt(m_0^2 + p^2) \
+    &approx 125 "GeV" $
+```
+
+
+@@ EquationElem::numbering  [src:8fb78b53]
+Cómo numerar las ecuaciones a nivel de bloque. Acepta un @numbering[patrón o función de numeración] que toma un único número.
+
+```example
+#set math.equation(numbering: "(1)")
+
+We define:
+$ phi.alt := (1 + sqrt(5)) / 2 $ <ratio>
+
+With @ratio, we get:
+$ F_n = floor(1 / sqrt(5) phi.alt^n) $
+```
+
+
+@@ EquationElem::script_scale  [src:6128cd49]
+Los valores de `scriptPercentScaleDown` y `scriptScriptPercentScaleDown`, respectivamente, en la tabla MathConstants de la fuente actual.
+
+@@ EquationElem::size  [src:14be36c6]
+El tamaño de los glifos.
+
+@@ EquationElem::supplement  [src:6386aa6f]
+Un suplemento para la ecuación.
+
+En las referencias a ecuaciones, se agrega antes del número referenciado.
+
+Si se especifica una función, se le pasa la ecuación referenciada y debe devolver contenido.
+
+```example
+#set math.equation(numbering: "(1)", supplement: [Eq.])
+
+We define:
+$ phi.alt := (1 + sqrt(5)) / 2 $ <ratio>
+
+With @ratio, we get:
+$ F_n = floor(1 / sqrt(5) phi.alt^n) $
+```
+
+
+@@ EquationElem::variant  [src:b946c12a]
+La variante de estilo que se selecciona.

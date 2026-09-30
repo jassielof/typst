@@ -1,0 +1,92 @@
+@@ CancelElem  [src:3de6c49d]
+Muestra una línea diagonal sobre una parte de una ecuación.
+
+Se usa comúnmente para mostrar la eliminación de un término.
+
+= Ejemplo <example>
+```example
+>>> #set page(width: 140pt)
+Here, we can simplify:
+$ (a dot b dot cancel(x)) /
+    cancel(x) $
+```
+
+
+@@ CancelElem::angle  [src:81ae72e5]
+Cuánto se rota la línea de cancelación.
+
+- Si se da un ángulo, la línea se rota ese ángulo en sentido horario respecto del eje y.
+- Si es `{auto}`, la línea toma el ángulo por defecto; es decir, a lo largo de la diagonal ascendente del cuadro de contenido.
+- Si se da una función `angle => angle`, la línea se rota, respecto del eje y, el ángulo que devuelve esa función. La función recibe como entrada el ángulo por defecto.
+
+```example
+>>> #set page(width: 140pt)
+$ cancel(Pi)
+  cancel(Pi, angle: #0deg)
+  cancel(Pi, angle: #45deg)
+  cancel(Pi, angle: #90deg)
+  cancel(1/(1+x), angle: #(a => a + 45deg))
+  cancel(1/(1+x), angle: #(a => a + 90deg)) $
+```
+
+
+@@ CancelElem::background  [src:cae232a0]
+Si la línea se ubica detrás del contenido.
+
+```example
+>>> #set page(width: 140pt)
+#set math.cancel(stroke: red + 2pt)
+$ cancel("behind", background: #true) \
+  cancel("in front", background: #false) $
+```
+
+
+@@ CancelElem::body  [src:fd178dfe]
+El contenido sobre el que se ubica la línea.
+
+@@ CancelElem::cross  [src:6ceb3b6c]
+Si se dibujan dos líneas de cancelación opuestas que forman una cruz sobre el elemento. Reemplaza a `inverted`.
+
+```example
+>>> #set page(width: 140pt)
+$ cancel(Pi, cross: #true) $
+```
+
+
+@@ CancelElem::inverted  [src:cec1dc1c]
+Si la línea de cancelación se invierte (se voltea a lo largo del eje y). Con el ángulo por defecto, invertida significa que la línea de cancelación apunta hacia arriba a la izquierda
+en lugar de hacia arriba a la derecha.
+
+```example
+>>> #set page(width: 140pt)
+$ (a cancel((b + c), inverted: #true)) /
+    cancel(b + c, inverted: #true) $
+```
+
+
+@@ CancelElem::length  [src:d778bfd1]
+La longitud de la línea, relativa a la longitud de la diagonal que abarca todo el elemento que se "cancela". Un valor de `{100%}` haría que la línea abarque exactamente la
+diagonal del elemento.
+
+```example
+>>> #set page(width: 140pt)
+$ a + cancel(x, length: #200%)
+    - cancel(x, length: #200%) $
+```
+
+
+@@ CancelElem::stroke  [src:0e0851c4]
+Cómo @stroke[trazar] la línea de cancelación.
+
+```example
+>>> #set page(width: 140pt)
+$ cancel(
+  sum x,
+  stroke: #(
+    paint: red,
+    thickness: 1.5pt,
+    dash: "dashed",
+  ),
+) $
+```
+

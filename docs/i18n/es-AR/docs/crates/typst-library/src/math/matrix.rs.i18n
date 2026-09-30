@@ -1,0 +1,203 @@
+@@ CasesElem  [src:4ca87e4f]
+Una distinción de casos.
+
+El contenido de las distintas ramas se puede alinear con el símbolo `&`.
+
+= Ejemplo <example>
+```example
+$ f(x, y) := cases(
+  1 "if" (x dot y)/2 <= 0,
+  2 "if" x "is even",
+  3 "if" x in NN,
+  4 "else",
+) $
+```
+
+
+@@ CasesElem::children  [src:f120e93b]
+Las ramas de la distinción de casos.
+
+@@ CasesElem::delim  [src:d79e7cff]
+El delimitador que se usa.
+
+Puede ser un único carácter que especifica el delimitador izquierdo, en cuyo caso se infiere el delimitador derecho. De lo contrario, puede ser un array que contenga un delimitador
+izquierdo y uno derecho.
+
+```example
+#set math.cases(delim: "[")
+$ x = cases(1, 2) $
+```
+
+
+@@ CasesElem::gap  [src:4d0eae13]
+El espacio entre las ramas.
+
+```example
+#set math.cases(gap: 1em)
+$ x = cases(1, 2) $
+```
+
+
+@@ CasesElem::reverse  [src:7d3cc86c]
+Si se invierte la dirección de los casos.
+
+```example
+#set math.cases(reverse: true)
+$ cases(1, 2) = x $
+```
+
+
+@@ MatElem  [src:870d6400]
+Una matriz.
+
+Los elementos de una fila deben separarse con comas, mientras que las filas en sí deben separarse con puntos y coma. La sintaxis con punto y coma combina en un array los argumentos anteriores
+separados por comas. También podés usar esta sintaxis especial de las llamadas a funciones matemáticas para definir funciones personalizadas que toman datos 2D.
+
+El contenido de las celdas se puede alinear con el parámetro @math.mat.align[`align`], o bien el contenido de las celdas que están en la misma fila se puede alinear con el símbolo `&`.
+
+= Ejemplo <example>
+```example
+$ mat(
+  1, 2, ..., 10;
+  2, 2, ..., 10;
+  dots.v, dots.v, dots.down, dots.v;
+  10, 10, ..., 10;
+) $
+```
+
+
+@@ MatElem::align  [src:e39561b3]
+La alineación horizontal que debe tener cada celda.
+
+```example
+#set math.mat(align: right)
+$ mat(-1, 1, 1; 1, -1, 1; 1, 1, -1) $
+```
+
+
+@@ MatElem::augment  [src:0777c7cc]
+Dibuja líneas de aumento en una matriz.
+
+- `{none}`: No se dibuja ninguna línea.
+- Un único número: Se dibuja una línea de aumento vertical después del número de columna especificado. Los números negativos cuentan desde el final.
+- Un diccionario: con un diccionario, se pueden dibujar varias líneas de aumento tanto horizontales como verticales. Además, se puede establecer el estilo de las líneas. El diccionario
+  puede contener las siguientes claves:
+  - `hline`: Los desplazamientos en los que se deben dibujar las líneas horizontales. Por ejemplo, un desplazamiento de `2` dibujaría una línea horizontal después de la segunda fila de la
+    matriz. Acepta un entero para una sola línea o un array de enteros para varias líneas. Igual que para un único número, los números negativos cuentan desde el final.
+  - `vline`: Los desplazamientos en los que se deben dibujar las líneas verticales. Por ejemplo, un desplazamiento de `2` dibujaría una línea vertical después de la segunda columna de la
+    matriz. Acepta un entero para una sola línea o un array de enteros para varias líneas. Igual que para un único número, los números negativos cuentan desde el final.
+  - `stroke`: Cómo @stroke[trazar] la línea. Si se establece en `{auto}`, toma un grosor de 0,05 em y remates de línea cuadrados.
+
+#example(
+  title: "Uso básico",
+  ```
+  $ mat(1, 0, 1; 0, 1, 2; augment: #2) $
+  // Equivalent to:
+  $ mat(1, 0, 1; 0, 1, 2; augment: #(-1)) $
+  ```
+)
+
+#example(
+  title: "Personalizar la línea de aumento",
+  ```
+  $ mat(0, 0, 0; 1, 1, 1; augment: #(hline: 1, stroke: 2pt + green)) $
+  ```
+)
+
+@@ MatElem::column_gap  [src:3b677680]
+El espacio entre columnas.
+
+```example
+#set math.mat(column-gap: 1em)
+$ mat(1, 2; 3, 4) $
+```
+
+
+@@ MatElem::delim  [src:07e38fa2]
+El delimitador que se usa.
+
+Puede ser un único carácter que especifica el delimitador izquierdo, en cuyo caso se infiere el delimitador derecho. De lo contrario, puede ser un array que contenga un delimitador
+izquierdo y uno derecho.
+
+```example
+#set math.mat(delim: "[")
+$ mat(1, 2; 3, 4) $
+```
+
+
+@@ MatElem::gap  [src:b9b115f5]
+El espacio entre filas y columnas.
+
+Es un atajo para establecer `row-gap` y `column-gap` en el mismo valor.
+
+```example
+#set math.mat(gap: 1em)
+$ mat(1, 2; 3, 4) $
+```
+
+
+@@ MatElem::row_gap  [src:ede2726e]
+El espacio entre filas.
+
+```example
+#set math.mat(row-gap: 1em)
+$ mat(1, 2; 3, 4) $
+```
+
+
+@@ MatElem::rows  [src:8433ad7d]
+Un array de arrays con las filas de la matriz.
+
+```example
+#let data = ((1, 2, 3), (4, 5, 6))
+#let matrix = math.mat(..data)
+$ v := matrix $
+```
+
+
+@@ VecElem  [src:82237dba]
+Un vector columna.
+
+El contenido de los elementos del vector se puede alinear con el parámetro @math.vec.align[`align`] o con el símbolo `&`.
+
+Esta función sirve para componer las componentes de un vector. Para componer un símbolo que representa un vector, se suelen usar @math.accent[`arrow`] y @math.bold[`bold`].
+
+= Ejemplo <example>
+```example
+$ vec(a, b, c) dot vec(1, 2, 3)
+    = a + 2b + 3c $
+```
+
+
+@@ VecElem::align  [src:8a61f92b]
+La alineación horizontal que debe tener cada elemento.
+
+```example
+#set math.vec(align: right)
+$ vec(-1, 1, -1) $
+```
+
+
+@@ VecElem::children  [src:f568e3cb]
+Los elementos del vector.
+
+@@ VecElem::delim  [src:8722ead1]
+El delimitador que se usa.
+
+Puede ser un único carácter que especifica el delimitador izquierdo, en cuyo caso se infiere el delimitador derecho. De lo contrario, puede ser un array que contenga un delimitador
+izquierdo y uno derecho.
+
+```example
+#set math.vec(delim: "[")
+$ vec(1, 2) $
+```
+
+
+@@ VecElem::gap  [src:9be5ad2f]
+El espacio entre elementos.
+
+```example
+#set math.vec(gap: 1em)
+$ vec(1, 2) $
+```
+

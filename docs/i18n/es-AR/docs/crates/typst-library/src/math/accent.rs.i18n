@@ -1,0 +1,144 @@
+@@ AccentElem  [src:da16dbb9]
+Agrega un acento a una base.
+
+En modo matemático, los acentos comunes también están disponibles como @symbol[símbolos] con nombre que se pueden llamar directamente (como @function[funciones]) para
+adjuntarlos a algún contenido.
+
+= Ejemplo <example>
+```example
+$grave(a) = accent(a, `)$ \
+$arrow(a) = accent(a, arrow)$ \
+$tilde(a) = accent(a, \u{0303})$
+```
+
+
+@@ AccentElem::accent  [src:e8d7cdae]
+El acento que se aplica a la base.
+
+Los acentos admitidos incluyen:
+
+#docs-table(
+  table.header[Acento][Nombre][Punto de código],
+
+  [Grave],
+  [`grave`],
+  [``` ` ```],
+
+  [Agudo],
+  [`acute`],
+  [`´`],
+
+  [Circunflejo],
+  [`hat`],
+  [`^`],
+
+  [Tilde],
+  [`tilde`],
+  [`~`],
+
+  [Macron],
+  [`macron`],
+  [`¯`],
+
+  [Guion],
+  [`dash`],
+  [`‾`],
+
+  [Breve],
+  [`breve`],
+  [`˘`],
+
+  [Punto],
+  [`dot`],
+  [`.`],
+
+  [Punto doble, diéresis],
+  [`dot.double`, `diaer`],
+  [`¨`],
+
+  [Punto triple],
+  [`dot.triple`],
+  raw(lang: "typ", "\\u{20db}"),
+
+  [Punto cuádruple],
+  [`dot.quad`],
+  raw(lang: "typ", "\\u{20dc}"),
+
+  [Círculo],
+  [`circle`],
+  [`∘`],
+
+  [Agudo doble],
+  [`acute.double`],
+  [`˝`],
+
+  [Caron],
+  [`caron`],
+  [`ˇ`],
+
+  [Flecha a la derecha],
+  [`arrow`, `->`],
+  [`→`],
+
+  [Flecha a la izquierda],
+  [`arrow.l`, `<-`],
+  [`←`],
+
+  [Flecha izquierda/derecha],
+  [`arrow.l.r`],
+  [`↔`],
+
+  [Arpón a la derecha],
+  [`harpoon`],
+  [`⇀`],
+
+  [Arpón a la izquierda],
+  [`harpoon.lt`],
+  [`↼`],
+)
+
+@@ AccentElem::base  [src:6f02eb70]
+La base a la que se aplica el acento. Puede estar formada por varias letras.
+
+```example
+$arrow(A B C)$
+```
+
+
+@@ AccentElem::dotless  [src:415888bb]
+Si se quita el punto de las i y j minúsculas al agregar un acento superior.
+
+Esto habilita la característica OpenType `dtls`.
+
+```example
+$hat(dotless: #false, i)$
+```
+
+
+@@ AccentElem::size  [src:62838975]
+El tamaño del acento, relativo al ancho de la base.
+
+#example(
+  title: "Uso básico",
+  ```
+  $dash(A, size: #150%)$
+  ```
+)
+
+Tené en cuenta que el acento resultante puede no tener exactamente el tamaño deseado. Por ejemplo, una flecha puede ser un glifo corto predefinido o un glifo largo armado con
+bloques de construcción (punta de flecha + línea) que proporciona la fuente. Los tamaños de las dos posibilidades pueden no cubrir todo el rango. En consecuencia, no se pueden
+construir flechas de ciertos tamaños intermedios.
+
+#example(
+  title: "Tamaño de la flecha que crece de forma discontinua",
+  ```
+  >>> #set par(spacing: 0.3em)
+  #for i in range(6) {
+    $ arrow(#box(
+      width: 0.4em + 0.3em * i,
+      fill: aqua,
+      height: 0.4em,
+    )) $
+  }
+  ```
+)

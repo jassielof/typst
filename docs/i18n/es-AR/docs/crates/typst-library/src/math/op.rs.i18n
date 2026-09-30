@@ -1,0 +1,19 @@
+@@ OpElem  [src:e2cb0794]
+Un operador de texto en una ecuación.
+
+= Ejemplo <example>
+```example
+$ tan x = (sin x)/(cos x) $
+$ op("custom",
+     limits: #true)_(n->oo) n $
+```
+
+= #short-or-long[Predefinidos][Operadores predefinidos] <predefined>
+Typst predefine los operadores `arccos`, `arcsin`, `arctan`, `arg`, `cos`, `cosh`, `cot`, `coth`, `csc`, `csch`, `ctg`, `deg`, `det`, `dim`, `exp`, `gcd`, `lcm`, `hom`, `id`, `im`, `inf`, `ker`,
+`lg`, `lim`, `liminf`, `limsup`, `ln`, `log`, `max`, `min`, `mod`, `Pr`, `sec`, `sech`, `sin`, `sinc`, `sinh`, `sup`, `tan`, `tanh`, `tg` y `tr`.
+
+@@ OpElem::limits  [src:41ceca18]
+Si el operador debe mostrar los adjuntos como límites en modo de visualización (display).
+
+@@ OpElem::text  [src:7f227353]
+El texto del operador.

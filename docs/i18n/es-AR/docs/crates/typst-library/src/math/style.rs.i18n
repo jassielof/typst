@@ -1,0 +1,191 @@
+@@ bb  [src:a8bfad0d]
+Estilo de fuente de pizarra (doble trazo) en matemática.
+
+Para las letras latinas mayúsculas, la pizarra también está disponible mediante @sym[símbolos] con la forma `NN` y `RR`.
+
+```example
+$ bb(b) $
+$ bb(N) = NN $
+$ f: NN -> RR $
+```
+
+
+@@ bb::body  [src:9f0152bb]
+El contenido al que se da estilo.
+
+@@ bold  [src:c5acdcb2]
+Estilo de fuente en negrita en matemática.
+
+```example
+$ bold(A) := B^+ $
+```
+
+
+@@ bold::body  [src:9f0152bb]
+El contenido al que se da estilo.
+
+@@ cal  [src:8026e199]
+Estilo de fuente caligráfico (chancery) en matemática.
+
+```example
+Let $cal(P)$ be the set of ...
+```
+
+Este es el estilo caligráfico/de escritura por defecto de la mayoría de las fuentes matemáticas. Mirá @math.scr[`scr`] para más información sobre cómo obtener el otro estilo (roundhand).
+
+@@ cal::body  [src:9f0152bb]
+El contenido al que se da estilo.
+
+@@ display  [src:93a8dd11]
+Estilo de visualización (display) forzado en matemática.
+
+Este es el tamaño normal de las ecuaciones en bloque.
+
+```example
+$sum_i x_i/2 = display(sum_i x_i/2)$
+```
+
+
+@@ display::body  [src:fcc66151]
+El contenido al que se da tamaño.
+
+@@ display::cramped  [src:aa5212a7]
+Si se impone una restricción de altura para los exponentes, como hacen los subíndices y superíndices normales.
+
+@@ frak  [src:8554eaf5]
+Estilo de fuente Fraktur en matemática.
+
+```example
+$ frak(P) $
+```
+
+
+@@ frak::body  [src:9f0152bb]
+El contenido al que se da estilo.
+
+@@ inline  [src:c1c68698]
+Estilo en línea (de texto) forzado en matemática.
+
+Este es el tamaño normal de las ecuaciones en línea.
+
+```example
+$ sum_i x_i/2
+    = inline(sum_i x_i/2) $
+```
+
+
+@@ inline::body  [src:fcc66151]
+El contenido al que se da tamaño.
+
+@@ inline::cramped  [src:aa5212a7]
+Si se impone una restricción de altura para los exponentes, como hacen los subíndices y superíndices normales.
+
+@@ italic  [src:5782c714]
+Estilo de fuente cursiva en matemática.
+
+Para las letras romanas y las letras griegas minúsculas, esto ya es el valor por defecto.
+
+@@ italic::body  [src:9f0152bb]
+El contenido al que se da estilo.
+
+@@ mono  [src:cf3c0dd5]
+Estilo de fuente monoespaciada en matemática.
+
+```example
+$ mono(x + y = z) $
+```
+
+
+@@ mono::body  [src:9f0152bb]
+El contenido al que se da estilo.
+
+@@ sans  [src:1d5c1f1d]
+Estilo de fuente sin serifas en matemática.
+
+```example
+$ sans(A B C) $
+```
+
+
+@@ sans::body  [src:9f0152bb]
+El contenido al que se da estilo.
+
+@@ scr  [src:2ddf7071]
+Estilo de fuente de escritura (roundhand) en matemática.
+
+```example
+$scr(L)$ is not the set of linear
+maps $cal(L)$.
+```
+
+Hay dos maneras en que las fuentes pueden admitir la diferenciación entre `cal` y `scr`. La primera es usar secuencias de variación de Unicode. Esto funciona de inmediato en Typst, aunque
+por ahora solo unas pocas fuentes matemáticas lo admiten.
+
+La otra manera es usar @text.features[características de fuente]. Por ejemplo, el estilo roundhand podría estar disponible en una fuente mediante la característica del
+_@text.stylistic-set[conjunto estilístico] 1_ (`ss01`). Para usarlo en Typst, podrías definir tu propia versión de `scr`, como en el siguiente ejemplo.
+
+#example(
+  title: "Recreación con el conjunto estilístico 1",
+  ```
+  #let scr(it) = text(
+    stylistic-set: 1,
+    $cal(it)$,
+  )
+
+  We establish $cal(P) != scr(P)$.
+  ```
+)
+
+@@ scr::body  [src:9f0152bb]
+El contenido al que se da estilo.
+
+@@ script  [src:905fc9ab]
+Estilo de subíndice/superíndice (script) forzado en matemática.
+
+Este es el tamaño más pequeño que se usa en potencias o subíndices y superíndices.
+
+```example
+$sum_i x_i/2 = script(sum_i x_i/2)$
+```
+
+
+@@ script::body  [src:fcc66151]
+El contenido al que se da tamaño.
+
+@@ script::cramped  [src:aa5212a7]
+Si se impone una restricción de altura para los exponentes, como hacen los subíndices y superíndices normales.
+
+@@ serif  [src:9b678391]
+Estilo de fuente con serifas (romana) en matemática.
+
+Este ya es el valor por defecto.
+
+@@ serif::body  [src:9f0152bb]
+El contenido al que se da estilo.
+
+@@ sscript  [src:f1b091ca]
+Estilo de segundo subíndice/superíndice (script) forzado en matemática.
+
+Este es el tamaño más pequeño, que se usa en los subíndices y superíndices de segundo nivel (script del script).
+
+```example
+$sum_i x_i/2 = sscript(sum_i x_i/2)$
+```
+
+
+@@ sscript::body  [src:fcc66151]
+El contenido al que se da tamaño.
+
+@@ sscript::cramped  [src:aa5212a7]
+Si se impone una restricción de altura para los exponentes, como hacen los subíndices y superíndices normales.
+
+@@ upright  [src:a5cfd31d]
+Estilo de fuente vertical (no cursiva) en matemática.
+
+```example
+$ upright(A) != A $
+```
+
+
+@@ upright::body  [src:9f0152bb]
+El contenido al que se da estilo.

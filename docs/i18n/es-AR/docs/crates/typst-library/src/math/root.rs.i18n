@@ -1,0 +1,24 @@
+@@ RootElem  [src:2ed4dd39]
+Una raíz general.
+
+```example
+$ root(3, x) $
+```
+
+
+@@ RootElem::index  [src:9732e4c0]
+Qué raíz del radicando se toma.
+
+@@ RootElem::radicand  [src:8b3b8067]
+La expresión de la que se toma la raíz.
+
+@@ sqrt  [src:192bb74b]
+Una raíz cuadrada.
+
+```example
+$ sqrt(3 - 2 sqrt(2)) = sqrt(2) - 1 $
+```
+
+
+@@ sqrt::radicand  [src:eb286831]
+La expresión de la que se toma la raíz cuadrada.

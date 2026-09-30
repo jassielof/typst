@@ -1,0 +1,103 @@
+@@ BinomElem  [src:90d18af8]
+Una expresión binomial.
+
+= Ejemplo <example>
+```example
+$ binom(n, k) $
+$ binom(n, k_1, k_2, k_3, ..., k_m) $
+```
+
+
+@@ BinomElem::lower  [src:3ebdf61f]
+El índice inferior del binomial.
+
+@@ BinomElem::upper  [src:ca57432e]
+El índice superior del binomial.
+
+@@ FracElem  [src:a43baf39]
+Una fracción matemática.
+
+= Ejemplo <example>
+```example
+$ 1/2 < (x+1)/2 $
+$ ((x+1)) / 2 = frac(a, b) $
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: usá una barra para convertir las expresiones vecinas en una fracción. Se pueden agrupar varios átomos en una única expresión con
+paréntesis redondos de agrupación. Esos paréntesis se quitan de la salida, pero podés anidar varios para forzar que se muestren.
+
+@@ FracElem::denom  [src:afc3b3a7]
+El denominador de la fracción.
+
+@@ FracElem::denom_deparenthesized  [src:e5a9bd4a]
+Si el denominador estaba originalmente rodeado de paréntesis que el analizador eliminó.
+
+@@ FracElem::num  [src:ea644b89]
+El numerador de la fracción.
+
+@@ FracElem::num_deparenthesized  [src:d0f85591]
+Si el numerador estaba originalmente rodeado de paréntesis que el analizador eliminó.
+
+@@ FracElem::style  [src:522f0b15]
+Cómo debe disponerse la fracción.
+
+#example(
+  title: "Estilos",
+  ```
+  $ frac(x, y, style: "vertical") $
+  $ frac(x, y, style: "skewed") $
+  $ frac(x, y, style: "horizontal") $
+  ```
+)
+
+#example(
+  title: "Establecer el valor por defecto",
+  ```
+  #set math.frac(style: "skewed")
+  $ a / b $
+  ```
+)
+
+#example(
+  title: "Manejo de los paréntesis de agrupación",
+  ```
+  // Grouping parentheses are removed.
+  #set math.frac(style: "vertical")
+  $ (a + b) / b $
+
+  // Grouping parentheses are removed.
+  #set math.frac(style: "skewed")
+  $ (a + b) / b $
+
+  // Grouping parentheses are retained.
+  #set math.frac(style: "horizontal")
+  $ (a + b) / b $
+  ```
+)
+
+#example(
+  title: "Distintos estilos en ecuaciones en línea y en bloque",
+  ```
+  // This changes the style for inline equations only.
+  #show math.equation.where(block: false): set math.frac(style: "horizontal")
+
+  This $(x-y)/z = 3$ is inline math, and this is block math:
+  $ (x-y)/z = 3 $
+  ```
+)
+
+#example(
+  title: "Usar la convención de tipo LaTeX",
+  ```
+  // Change the default style.
+  #set math.frac(style: "horizontal")
+  // Define a shorthand with the original style.
+  #let frac = math.frac.with(style: "vertical")
+
+  $ p/q = frac(p, q) $
+
+  // The shadowed definition can still be accessed.
+  #assert.eq($p/q$, $std.math.frac(p, q)$)
+  ```
+)

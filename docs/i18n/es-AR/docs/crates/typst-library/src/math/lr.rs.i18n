@@ -1,0 +1,102 @@
+@@ LrElem  [src:ea3a5d18]
+Escala delimitadores.
+
+Si bien los delimitadores que forman pareja se escalan por defecto, esto se puede usar para escalar delimitadores sin pareja y para controlar con más precisión el escalado de los
+delimitadores.
+
+@@ LrElem::body  [src:3eb26547]
+El contenido delimitado, incluidos los delimitadores.
+
+@@ LrElem::size  [src:c3131b25]
+El tamaño de los paréntesis, relativo a la altura del contenido que envuelven.
+
+@@ MidElem  [src:d5cf27d7]
+Escala delimitadores verticalmente hasta el grupo `{lr()}` circundante más cercano.
+
+```example
+$ { x mid(|) sum_(i=1)^n w_i abs(f_i (x)) < 1 } $
+```
+
+
+@@ MidElem::body  [src:a6233c4b]
+El contenido que se escala.
+
+@@ abs  [src:5736b232]
+Toma el valor absoluto de una expresión.
+
+```example
+$ abs(x/2) $
+```
+
+
+@@ abs::body  [src:8b2c374b]
+La expresión de la que se toma el valor absoluto.
+
+@@ abs::size  [src:cead3abe]
+El tamaño de los paréntesis, relativo a la altura del contenido que envuelven.
+
+Por defecto: el valor actual de @math.lr.size[`lr.size`].
+
+@@ ceil  [src:56fa9cfc]
+Redondea una expresión hacia arriba.
+
+```example
+$ ceil(x/2) $
+```
+
+
+@@ ceil::body  [src:d3b98a0e]
+La expresión que se redondea hacia arriba.
+
+@@ ceil::size  [src:cead3abe]
+El tamaño de los paréntesis, relativo a la altura del contenido que envuelven.
+
+Por defecto: el valor actual de @math.lr.size[`lr.size`].
+
+@@ floor  [src:7fa47172]
+Redondea una expresión hacia abajo.
+
+```example
+$ floor(x/2) $
+```
+
+
+@@ floor::body  [src:7f833e46]
+La expresión que se redondea hacia abajo.
+
+@@ floor::size  [src:cead3abe]
+El tamaño de los paréntesis, relativo a la altura del contenido que envuelven.
+
+Por defecto: el valor actual de @math.lr.size[`lr.size`].
+
+@@ norm  [src:252ff51c]
+Toma la norma de una expresión.
+
+```example
+$ norm(x/2) $
+```
+
+
+@@ norm::body  [src:af56f33a]
+La expresión de la que se toma la norma.
+
+@@ norm::size  [src:cead3abe]
+El tamaño de los paréntesis, relativo a la altura del contenido que envuelven.
+
+Por defecto: el valor actual de @math.lr.size[`lr.size`].
+
+@@ round  [src:f8ea83ff]
+Redondea una expresión.
+
+```example
+$ round(x/2) $
+```
+
+
+@@ round::body  [src:157920e8]
+La expresión que se redondea.
+
+@@ round::size  [src:cead3abe]
+El tamaño de los paréntesis, relativo a la altura del contenido que envuelven.
+
+Por defecto: el valor actual de @math.lr.size[`lr.size`].
