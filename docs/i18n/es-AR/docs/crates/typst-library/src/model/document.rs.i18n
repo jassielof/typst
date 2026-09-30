@@ -1,0 +1,180 @@
+@@ DocumentElem  [src:a306e319]
+Administra metadatos y se usa para agregar un archivo de documento a un bundle.
+
+= Metadatos <metadata>
+El elemento document es la única fuente de verdad de los metadatos del documento. Con él, podés especificar el
+título, los autores, la fecha, etcétera, del documento en un solo lugar. Normalmente, el elemento se usa con una
+@reference:styling:set-rules[regla set] como esta:
+
+```example
+#set document(title: [My doc])
+
+Title is _not_ rendered, but
+embedded in PDF metadata.
+```
+
+Por defecto, los metadatos se incrustan en la salida, pero no se renderizan visiblemente en el documento. Sin
+embargo, pasan a estar @reference:context[disponibles contextualmente] en todo el documento y los elementos y
+plantillas pueden usarlos. Por ejemplo, el elemento incorporado @title toma automáticamente el título de documento
+configurado:
+
+```example
+#set document(title: [My doc])
+
+#title()
+Title is now rendered _and_
+embedded in PDF metadata.
+```
+
+De manera similar al elemento `title`, también podés acceder vos mismo a los metadatos con una
+@reference:context[expresión de contexto].
+
+```example
+// In the document.
+#set document(
+  keywords: ("Typst", "Metadata")
+)
+
+// Somewhere in your template.
+_Keywords:_
+#context document.keywords.join(", ")
+```
+
+En los formatos de exportación de un solo documento, esta función solo se usa con
+@reference:styling:set-rules[reglas set]. Esas reglas set solo deben aparecer en el nivel superior, no dentro de
+ningún contenedor de diseño. También podés crear explícitamente un elemento `document`, pero
+@document:documents-in-bundle-export[eso solo es relevante en la exportación a bundle].
+
+== Consideraciones específicas de cada formato <format-specific-considerations>
+Los metadatos se incrustan en la salida en distinta medida:
+
+- La exportación a PDF admite toda la gama de metadatos y los emite en el _diccionario de información del
+  documento_ del PDF, así como en metadatos XMP.
+
+- La exportación a HTML solo admite las propiedades `title`, `description`, `author` y `keywords`. La propiedad
+  `date` no se admite, ya que el estándar HTML no la prevé.
+
+- La exportación a SVG y PNG no tiene ninguna compatibilidad con metadatos.
+
+= Documentos en la exportación a bundle <documents-in-bundle-export>
+En la @format.bundle[exportación a bundle], un elemento document representa un único archivo de la salida del
+bundle, en uno de los otros formatos de exportación de Typst. Al crear un documento, tenés que proporcionar una
+ruta de salida y algo de contenido. Typst compilará y exportará el contenido proporcionado con el formato
+apropiado. Por defecto, el formato se infiere de la extensión de archivo de la ruta que especificaste, pero
+también podés configurar explícitamente el @document.format[`format`].
+
+```typ
+#document("index.html", title: [Home])[
+  #title()
+  View #link(<list>)[my famous list].
+]
+
+#document("list.html", title: [My Famous List])[
+  #title()
+  - My
+  - Famous
+  - List
+] <list>
+```
+
+== Metadatos <metadata>
+Los elementos document toman los metadatos de las reglas `{set document}` de nivel superior que hay dentro de
+ellos. Esto significa que los documentos escritos para la exportación de un solo documento se pueden usar con
+elementos `document` explícitos y conservar correctamente los metadatos.
+
+```typ
+// Will pick up the title defined in `paper.typ`.
+#document("paper.pdf", include "paper.typ")
+```
+
+```typ
+// paper.typ
+#set document(title: [My Paper])
+...
+```
+
+Tené en cuenta que las reglas set de document dentro de un `document` reemplazan los argumentos explícitos pasados
+al elemento `document`.
+
+Además, las propiedades configuradas como argumentos explícitos de `document` quedan disponibles contextualmente:
+
+```typ
+#document("index.html", title: [My title])[
+  // Both of these will pick up `[My title]`
+  #title()
+  #context document.title
+]
+```
+
+== Configuración de exportación <export-settings>
+Igual que con los metadatos del documento, podés usar reglas set sobre los @format[elementos de formato] para
+configurar los ajustes de exportación de un documento en particular.
+
+```typ
+// Pretty-print all HTML.
+#set format.html(pretty: true)
+
+#document("index.html")[
+  ...
+]
+
+#document("archive.pdf")[
+  // And use a specific PDF standard
+  // for `archive.pdf`.
+  #set pdf(standard: "a-2a")
+  ...
+]
+```
+
+
+@@ DocumentElem::author  [src:7be06c59]
+Los autores del documento.
+
+@@ DocumentElem::body  [src:c086bc28]
+El contenido que compone el documento.
+
+Esta propiedad solo se admite en el destino @format.bundle[bundle].
+
+@@ DocumentElem::date  [src:ef1fa6b8]
+La fecha de creación del documento.
+
+Si es `{auto}` (por defecto), Typst usa la fecha y hora actuales. Establecerlo en `{none}` evita que Typst incruste
+cualquier fecha de creación en los metadatos del PDF.
+
+El componente del año debe ser al menos cero para poder incrustarse en un PDF.
+
+Si querés crear PDF reproducibles byte por byte, establecelo en algo distinto de `{auto}`.
+
+@@ DocumentElem::description  [src:bfae9722]
+La descripción del documento.
+
+@@ DocumentElem::format  [src:d5e0f4d2]
+En qué formato exportar.
+
+Si es `{auto}`, Typst intenta inferir el formato de exportación a partir de la extensión de archivo de la
+@document.path[`path`].
+
+Esta propiedad solo se admite en el destino @format.bundle[bundle].
+
+@@ DocumentElem::keywords  [src:7480aa53]
+Las palabras clave del documento.
+
+@@ DocumentElem::path  [src:f1317655]
+La ruta dentro del bundle donde se ubicará el documento exportado.
+
+Puede contener barras interiores, en cuyo caso los directorios intermedios se crearán automáticamente.
+
+Esta propiedad solo se admite en el destino @format.bundle[bundle].
+
+@@ DocumentElem::title  [src:f684aaaf]
+El título del documento. Se renderiza como el título de la ventana del lector de PDF o de la pestaña del navegador
+de la página.
+
+Por defecto, el título configurado no se renderiza visiblemente en el documento. Podés agregar el título al
+contenido del documento usando el elemento @title, que tomará automáticamente el título configurado acá.
+
+Agregar un título es importante para la accesibilidad, ya que facilita navegar hasta tu documento e identificarlo
+entre otros documentos abiertos. Al exportar a PDF/UA, el título es obligatorio.
+
+Si bien puede ser contenido arbitrario, los lectores de PDF solo admiten títulos en texto plano, por lo que la
+conversión podría perder información.

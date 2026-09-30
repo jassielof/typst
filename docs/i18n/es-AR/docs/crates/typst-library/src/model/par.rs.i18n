@@ -1,0 +1,561 @@
+@@ ParElem  [src:9724312b]
+Una subdivisión lógica de contenido textual.
+
+Typst reúne automáticamente los elementos _en línea_ en párrafos. Los elementos en línea incluyen el
+@text[texto], el @h[espaciado horizontal], los @box[boxes] y las @math.equation[ecuaciones en línea].
+
+Para separar párrafos, usá una línea en blanco (o un @parbreak explícito). Los párrafos también se
+interrumpen automáticamente con cualquier elemento a nivel de bloque (como @block, @place o cualquier cosa
+que se muestre como uno de estos).
+
+El elemento `par` se usa principalmente en reglas set para afectar las propiedades de los párrafos, pero
+también se puede usar para mostrar explícitamente su argumento como un párrafo propio. En ese caso, el
+cuerpo del párrafo no puede contener contenido a nivel de bloque.
+
+= Boxes y bloques <boxes-and-blocks>
+Como se explicó arriba, normalmente los párrafos solo contienen contenido en línea. Sin embargo, podés
+integrar cualquier tipo de contenido a nivel de bloque en un párrafo envolviéndolo en un @box.
+
+Inversamente, podés separar contenido en línea de un párrafo envolviéndolo en un @block. En ese caso, no
+pasará a formar parte de ningún párrafo. Leé la siguiente sección para ver una explicación de por qué esto
+importa y en qué se diferencia de simplemente agregar saltos de párrafo alrededor del contenido.
+
+= ¿Qué se convierte en un párrafo? <what-becomes-a-paragraph>
+Cuando agregás contenido en línea a tu documento, Typst lo envolverá automáticamente en párrafos. Sin
+embargo, un documento típico también contiene algo de texto que, semánticamente, no es parte de un párrafo,
+por ejemplo en un título o un epígrafe.
+
+Las reglas sobre cuándo Typst envuelve contenido en línea en un párrafo son las siguientes:
+
+- Todo el texto en la raíz de un documento se envuelve en párrafos.
+
+- El texto dentro de un contenedor (como un `block`) solo se envuelve en un párrafo si el contenedor tiene
+  contenido a nivel de bloque. Si todo el contenido es en línea, no se crea ningún párrafo.
+
+En el documento ya dispuesto, no se ve de inmediato si el texto pasó a formar parte de un párrafo. Sin
+embargo, sigue siendo importante por varias razones:
+
+- Cierto estilo de párrafo, como `first-line-indent`, solo se aplicará a párrafos propiamente dichos, no a
+  cualquier texto. De manera similar, las reglas show de `par` por supuesto solo se activan con párrafos.
+
+- Una distinción adecuada entre párrafos y otro texto ayuda a las personas que dependen de tecnologías de
+  asistencia (TA) (como los lectores de pantalla) a navegar y entender el documento correctamente.
+
+- La exportación a PDF generará una etiqueta `P` solo para los párrafos.
+
+- La exportación a HTML generará una etiqueta `<p>` solo para los párrafos.
+
+Al crear componentes reutilizables personalizados, podés y deberías hacerte cargo de si Typst crea o no
+párrafos. Al envolver texto en un @block en lugar de simplemente agregar saltos de párrafo alrededor, podés
+forzar la ausencia de un párrafo. Inversamente, al agregar un @parbreak después de algún contenido en un
+contenedor, podés forzar que se convierta en un párrafo aunque sea una sola palabra. Esto es, por ejemplo, lo
+que hacen las listas @list.tight[no `tight`] para forzar que sus elementos se conviertan en párrafos.
+
+= Ejemplo <example>
+```example
+#set par(
+  first-line-indent: 1em,
+  spacing: 0.65em,
+  justify: true,
+)
+
+We proceed by contradiction.
+Suppose that there exists a set
+of positive integers $a$, $b$, and
+$c$ that satisfies the equation
+$a^n + b^n = c^n$ for some
+integer value of $n > 2$.
+
+Without loss of generality,
+let $a$ be the smallest of the
+three integers. Then, we ...
+```
+
+
+@@ ParElem::body  [src:598315ad]
+El contenido del párrafo.
+
+@@ ParElem::first_line_indent  [src:a0203b57]
+La sangría que debe tener la primera línea de un párrafo.
+
+Por defecto, solo se indentará la primera línea de un párrafo consecutivo (no el primero del documento o
+del contenedor, ni los párrafos que siguen inmediatamente a otros elementos a nivel de bloque).
+
+Si en cambio querés indentar todos los párrafos, podés pasar un diccionario que contenga la cantidad
+(`amount`) de sangría como longitud y el par `{all: true}`. Cuando se omite `all` del diccionario, su valor
+por defecto es `{false}`.
+
+Por convención tipográfica, los saltos de párrafo se indican con algo de espacio entre párrafos o con
+primeras líneas con sangría. Considerá
+- reducir el @par.spacing[`spacing` del párrafo] al @par.leading[`leading`] usando
+  `{set par(spacing: 0.65em)}`
+- aumentar el @block.spacing[`spacing` del bloque] (que hereda por defecto el espaciado del párrafo) al
+  espaciado de párrafo original usando `{set block(spacing: 1.2em)}`
+
+```example
+#set block(spacing: 1.2em)
+#set par(
+  first-line-indent: 1.5em,
+  spacing: 0.65em,
+)
+
+The first paragraph is not affected
+by the indent.
+
+But the second paragraph is.
+
+#line(length: 100%)
+
+#set par(first-line-indent: (
+  amount: 1.5em,
+  all: true,
+))
+
+Now all paragraphs are affected
+by the first line indent.
+
+Even the first one.
+```
+
+
+@@ ParElem::hanging_indent  [src:2efe6db3]
+La sangría que deben tener todas las líneas de un párrafo excepto la primera.
+
+```example
+#set par(hanging-indent: 1em)
+
+#lorem(15)
+```
+
+
+@@ ParElem::justification_limits  [src:591aca63]
+Cuánto se puede ajustar el espaciado entre palabras y caracteres durante la justificación.
+
+Al justificar texto, Typst necesita estirar o comprimir una línea hasta el ancho completo de la medida. Para
+lograrlo, por defecto ajusta el espaciado entre palabras. Además, también puede ajustar el espaciado entre
+caracteres individuales. Esta propiedad te permite configurar los límites inferior y superior de estos
+ajustes.
+
+La propiedad acepta un diccionario con dos entradas, `spacing` y `tracking`, cada una con un diccionario con
+las claves `min` y `max`. Las claves `min` definen hasta qué límite inferior se pueden comprimir los espacios,
+mientras que las claves `max` definen hasta qué límite superior se pueden estirar.
+
+- La entrada `spacing` define cuánto se puede ajustar el ancho de los espacios entre palabras. Está
+  estrechamente relacionada con @text.spacing y sus claves `min` y `max` aceptan @relative[longitudes
+  relativas], igual que la propiedad `spacing`.
+
+  Un valor `min` de `{100%}` significa que los espacios deben conservar su tamaño normal (es decir, no
+  comprimirse), mientras que un valor de `{90% - 0.01em}` indicaría que un espacio se puede comprimir hasta un
+  ancho del 90% de su ancho normal menos 0,01 veces el tamaño de fuente actual. De manera similar, un valor
+  `max` de `{100% + 0.02em}` significa que el ancho de un espacio se puede aumentar en 0,02 veces el tamaño
+  de fuente actual. La parte de proporción siempre debe ser positiva. La parte de longitud, en cambio, no debe
+  ser positiva para `min` ni negativa para `max`.
+
+  Tené en cuenta que los espacios igualmente pueden expandirse más allá del valor `max` si no hay otra manera
+  de justificar la línea. Sin embargo, los demás medios de justificación (por ejemplo, separar los caracteres
+  si la entrada `tracking` está configurada en consecuencia) se usan primero hasta su máximo.
+
+- La entrada `tracking` define cuánto se puede ajustar el espaciado entre letras. Está estrechamente
+  relacionada con @text.tracking y sus claves `min` y `max` aceptan @length[longitudes], igual que la propiedad
+  `tracking`. A diferencia de `spacing`, no acepta longitudes relativas, porque la base de la longitud relativa
+  variaría para cada carácter, lo que llevaría a un aspecto visual desparejo. El comportamiento en comparación
+  con `spacing` es como si la base fuera `{100%}`.
+
+  Por lo demás, los valores `min` y `max` funcionan igual que para `spacing`. Un valor `max` de `{0.01em}`
+  significa que se puede insertar un espaciado adicional de 0,01 veces el tamaño de fuente actual entre cada par
+  de caracteres. Tené en cuenta que esto también incluye los espacios entre espacios y caracteres, por lo que,
+  para los espacios, los valores de `tracking` actúan además de los valores de `spacing`.
+
+Si solo especificás uno de `spacing` o `tracking`, el otro conserva su valor establecido previamente (o el
+valor por defecto si no se había establecido).
+
+Si querés habilitar la justificación a nivel de carácter, un buen valor para las claves `min` y `max` ronda
+entre `{0.01em}` y `{0.02em}` (negado para `min`). Usar el mismo valor para ambas da una buena base, pero
+ajustar los dos valores individualmente puede producir resultados más equilibrados, como demuestra el ejemplo
+de abajo. Tené cuidado de no establecer los límites demasiado amplios, ya que rápidamente se ve poco natural.
+
+La justificación a nivel de carácter es una técnica microtipográfica de gran impacto que puede mejorar el
+aspecto del texto justificado, especialmente en columnas angostas. Tené en cuenta, sin embargo, que la
+justificación a nivel de carácter no funciona con todas las fuentes ni idiomas. Por ejemplo, las fuentes
+cursivas conectan las letras. Usar la justificación a nivel de carácter llevaría a conexiones irregulares.
+
+#example(
+  title: "Justificación a nivel de carácter",
+  ```
+  #let example(name) = columns(2, gutter: 10pt)[
+    #place(top, float: true, scope: "parent", strong(name))
+  >>> Anne Christine Bayley (1~June 1934 – 31~December 2024) was an
+  >>> English surgeon. She was awarded the Order of the British Empire
+  >>> for her research into HIV/AIDS patients in Zambia and for
+  >>> documenting the spread of the disease among heterosexual patients in
+  >>> Africa. In addition to her clinical work, she was a lecturer and
+  >>> head of the surgery department at the University of Zambia School of
+  >>> Medicine. In the 1990s, she returned to England, where she was
+  >>> ordained as an Anglican priest. She continued to be active in Africa
+  >>> throughout her retirement years.
+  <<<   /* Text from https://en.wikipedia.org/wiki/Anne_Bayley */
+  ]
+
+  #set page(width: 440pt, height: 21em, margin: 15pt)
+  #set par(justify: true)
+  #set text(size: 0.8em)
+
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 20pt,
+    {
+      // These are Typst's default limits.
+      set par(justification-limits: (
+        spacing: (min: 100% * 2 / 3, max: 150%),
+        tracking: (min: 0em, max: 0em),
+      ))
+      example[Word-level justification]
+    },
+    {
+      // These are our custom character-level limits.
+      set par(justification-limits: (
+        tracking: (min: -0.01em, max: 0.02em),
+      ))
+      example[Character-level justification]
+    },
+  )
+  ```
+)
+
+@@ ParElem::justify  [src:f6b36d20]
+Si se justifica el texto en su línea.
+
+La separación en sílabas se habilitará en los párrafos justificados si la @text.hyphenate[propiedad `hyphenate`
+de la función text] está establecida en `{auto}` y se conoce el idioma actual.
+
+Tené en cuenta que la @align.alignment[alineación] actual igualmente tiene un efecto en la ubicación de la
+última línea, salvo que termine con un @linebreak.justify[salto de línea justificado].
+
+Por defecto, Typst solo cambia el espaciado entre palabras para lograr la justificación. Sin embargo, también
+podés permitirle ajustar el espaciado entre caracteres individuales con la
+@par.justification-limits[propiedad `justification-limits`].
+
+@@ ParElem::leading  [src:6ecd554d]
+El espaciado entre líneas.
+
+El interlineado (leading) define el espacio entre el @text.bottom-edge[borde inferior] de una línea y el
+@text.top-edge[borde superior] de la línea siguiente. Por defecto, estas dos propiedades dependen de la
+fuente, pero también se pueden configurar manualmente con una regla set de text.
+
+Al establecer el borde superior, el borde inferior y el interlineado, también podés configurar una distancia
+constante de línea base a línea base. Podrías, por ejemplo, establecer el interlineado en `{1em}`, el borde
+superior en `{0.8em}` y el borde inferior en `{-0.2em}` para obtener un espacio entre líneas base de
+exactamente `{2em}`. La distribución exacta de los valores de los bordes superior e inferior afecta los límites
+de la primera y la última línea.
+
+```preview
+// Color palette
+#let c = (
+  par-line: aqua.transparentize(60%),
+  leading-line: blue,
+  leading-text: blue.darken(20%),
+  spacing-line: orange.mix(red).darken(15%),
+  spacing-text: orange.mix(red).darken(20%),
+)
+
+// A sample text for measuring font metrics.
+#let sample-text = [A]
+
+// Number of lines in each paragraph
+#let n-lines = (4, 4, 2)
+#let annotated-lines = (4, 8)
+
+// The wide margin is for annotations
+#set page(width: 350pt, margin: (x: 20%))
+
+#context {
+  let text-height = measure(sample-text).height
+  let line-height = text-height + par.leading.to-absolute()
+
+  let jumps = n-lines
+    .map(n => ((text-height,) * n).intersperse(par.leading))
+    .intersperse(par.spacing)
+    .flatten()
+
+  place(grid(
+    ..jumps
+      .enumerate()
+      .map(((i, h)) => if calc.even(i) {
+        // Draw a stripe for the line
+        block(height: h, width: 100%, fill: c.par-line)
+      } else {
+        // Put an annotation for the gap
+        let sw(a, b) = if h == par.leading { a } else { b }
+
+        align(end, block(
+          height: h,
+          outset: (right: sw(0.5em, 1em)),
+          stroke: (
+            left: none,
+            rest: 0.5pt + sw(c.leading-line, c.spacing-line),
+          ),
+          if i / 2 <= sw(..annotated-lines) {
+            place(horizon, dx: 1.3em, text(
+              0.8em,
+              sw(c.leading-text, c.spacing-text),
+              sw([leading], [spacing]),
+            ))
+          },
+        ))
+      })
+  ))
+
+  // Mark top and bottom edges
+  place(
+    // pos: top/bottom edge
+    // dy: Δy to the last mark
+    // kind: leading/spacing
+    for (pos, dy, kind) in (
+      (bottom, text-height, "leading"),
+      (top, par.leading, "leading"),
+      (bottom, (n-lines.first() - 1) * line-height - par.leading, "spacing"),
+      (top, par.spacing, "spacing"),
+    ) {
+      v(dy)
+
+      let c-text = c.at(kind + "-text")
+      let c-line = c.at(kind + "-line")
+
+      place(end, box(
+        height: 0pt,
+        grid(
+          columns: 2,
+          column-gutter: 0.2em,
+          align: pos,
+          move(
+            // Compensate optical illusion
+            dy: if pos == top { -0.2em } else { 0.05em },
+            text(0.8em, c-text)[#repr(pos) edge],
+          ),
+          line(length: 1em, stroke: 0.5pt + c-line),
+        ),
+      ))
+    },
+  )
+}
+
+#set par(justify: true)
+#set text(luma(25%), overhang: false)
+#show ". ": it => it + parbreak()
+#lorem(55)
+```
+
+
+@@ ParElem::linebreaks  [src:8929a1d0]
+Cómo determinar los saltos de línea.
+
+Cuando esta propiedad se establece en `{auto}`, su valor por defecto, se usarán saltos de línea optimizados para
+los párrafos justificados. Habilitar los saltos de línea optimizados para párrafos sin justificar también puede
+valer la pena para mejorar el aspecto del texto.
+
+```example
+#set page(width: 207pt)
+#set par(linebreaks: "simple")
+Some texts feature many longer
+words. Those are often exceedingly
+challenging to break in a visually
+pleasing way.
+
+#set par(linebreaks: "optimized")
+Some texts feature many longer
+words. Those are often exceedingly
+challenging to break in a visually
+pleasing way.
+```
+
+
+@@ ParElem::spacing  [src:2c75efc9]
+El espaciado entre párrafos.
+
+Igual que el interlineado, define el espacio entre el borde inferior de la última línea de un párrafo y el borde
+superior de la primera línea del párrafo siguiente. El espaciado actúa tanto por encima como por debajo y
+colapsa al mayor de los valores definidos por los párrafos adyacentes.
+
+Cuando un párrafo es adyacente a un @block, la propiedad @block.above[`above`] o @block.below[`below`] de ese
+bloque tiene prioridad sobre el espaciado del párrafo. Los títulos, por ejemplo, reducen por defecto el espaciado
+que tienen debajo para lograr un mejor aspecto.
+
+@@ ParLine  [src:1a088433]
+Una línea de párrafo.
+
+Este elemento se usa exclusivamente para configurar los números de línea mediante reglas set y no se puede
+ubicar.
+
+La opción @par.line.numbering[`numbering`] se usa para habilitar los números de línea especificando un formato
+de numeración.
+
+```example
+>>> #set page(margin: (left: 3em))
+#set par.line(numbering: "1")
+
+Roses are red. \
+Violets are blue. \
+Typst is there for you.
+```
+
+La opción `numbering` toma un @numbering[patrón de numeración] predefinido o una función que devuelva contenido
+con estilo. Podés desactivar los números de línea del texto dentro de ciertos elementos estableciendo la
+numeración en `{none}` con reglas show-set.
+
+```example
+>>> #set page(margin: (left: 3em))
+// Styled red line numbers.
+#set par.line(
+  numbering: n => text(red)[#n]
+)
+
+// Disable numbers inside figures.
+#show figure: set par.line(
+  numbering: none
+)
+
+Roses are red. \
+Violets are blue.
+
+#figure(
+  caption: [Without line numbers.]
+)[
+  Lorem ipsum \
+  dolor sit amet
+]
+
+The text above is a sample \
+originating from distant times.
+```
+
+Este elemento expone más opciones que se pueden usar para controlar otros aspectos de la numeración de líneas,
+como su @par.line.number-align[alineación] o su @par.line.number-margin[margen]. Además, podés controlar si la
+numeración se reinicia en cada página mediante la opción @par.line.numbering-scope[`numbering-scope`].
+
+@@ ParLine::number_align  [src:94ed2134]
+La alineación de los números de línea asociados a cada línea.
+
+El valor por defecto `{auto}` indica un valor inteligente en el que los números crecen horizontalmente
+alejándose del texto, teniendo en cuenta el margen en el que están y la dirección de texto actual.
+
+```example
+>>> #set page(margin: (left: 3em))
+#set par.line(
+  numbering: "I",
+  number-align: left,
+)
+
+Hello world! \
+Today is a beautiful day \
+For exploring the world.
+```
+
+
+@@ ParLine::number_clearance  [src:6d18913e]
+La distancia entre los números de línea y el texto.
+
+El valor por defecto `{auto}` produce un espacio que se adapta al ancho de la página y da resultados razonables
+en la mayoría de los casos.
+
+```example
+>>> #set page(margin: (left: 3em))
+#set par.line(
+  numbering: "1",
+  number-clearance: 4pt,
+)
+
+Typesetting \
+Styling \
+Layout
+```
+
+
+@@ ParLine::number_margin  [src:097c0a0b]
+El margen en el que aparecen los números de línea.
+
+_Nota:_ En un documento de varias columnas, los números de línea de los párrafos dentro de la última columna
+siempre aparecerán en el margen `{end}` (margen derecho para texto de izquierda a derecha y margen izquierdo
+para texto de derecha a izquierda), sin importar esta configuración. Ese comportamiento no se puede cambiar por
+el momento.
+
+```example
+>>> #set page(margin: (right: 3em))
+#set par.line(
+  numbering: "1",
+  number-margin: right,
+)
+
+= Report
+- Brightness: Dark, yet darker
+- Readings: Negative
+```
+
+
+@@ ParLine::numbering  [src:632d93ce]
+Cómo numerar cada línea. Acepta un @numbering[patrón o función de numeración] que toma un único número.
+
+```example
+>>> #set page(margin: (left: 3em))
+#set par.line(numbering: "I")
+
+Roses are red. \
+Violets are blue. \
+Typst is there for you.
+```
+
+```example
+>>> #set page(width: 200pt, margin: (left: 3em))
+#set par.line(
+  numbering: i => if calc.rem(i, 5) == 0 or i == 1 { i },
+)
+
+#lorem(60)
+```
+
+
+@@ ParLine::numbering_scope  [src:b4c4ce49]
+Controla cuándo se reinicia la numeración de líneas.
+
+_Nota:_ El ámbito de la numeración de líneas debe ser uniforme en cada serie de páginas (una serie de páginas es
+una secuencia de páginas sin un salto de página explícito entre ellas). Por este motivo, las reglas set para él
+deberían definirse antes de cualquier contenido de página, normalmente al comienzo del documento.
+
+```example
+>>> #set page(margin: (left: 3em))
+#set par.line(
+  numbering: "1",
+  numbering-scope: "page",
+)
+
+First line \
+Second line
+#pagebreak()
+First line again \
+Second line again
+```
+
+
+@@ ParLineMarker  [src:9348018d]
+Un marcador que se usa para indicar la presencia de una línea.
+
+Este elemento se agrega a cada línea de un párrafo y luego se busca para averiguar dónde agregar los números de
+línea.
+
+@@ ParbreakElem  [src:784e5444]
+Un salto de párrafo.
+
+Esto inicia un párrafo nuevo. Es especialmente útil cuando se usa dentro de código, como los
+@reference:scripting:loops[bucles for]. Varios saltos de párrafo consecutivos colapsan en uno solo.
+
+= Ejemplo <example>
+```example
+#for i in range(3) {
+  [Blind text #i: ]
+  lorem(5)
+  parbreak()
+}
+```
+
+= Sintaxis <syntax>
+En lugar de llamar a esta función, podés insertar una línea en blanco en tu marcado para crear un salto de
+párrafo.

@@ -1,0 +1,167 @@
+@@ RefElem  [src:259ed54c]
+Una referencia a una etiqueta o a la bibliografía.
+
+Toma una etiqueta y hace una referencia cruzada a ella. Hay dos tipos de referencias, determinados por su
+@ref.form[`form`]: `{"normal"}` y `{"page"}`.
+
+La referencia por defecto, `{"normal"}`, produce una referencia textual a una etiqueta. Por ejemplo, una referencia
+a un título dará una cadena apropiada como "Sección 1" para una referencia al primer título. La palabra "Sección"
+depende de la configuración de @text.lang[`lang`] y se localiza en consecuencia. Las referencias también son
+enlaces al elemento respectivo. La sintaxis de referencias también se puede usar para @cite[citar] de una
+bibliografía.
+
+Como la forma por defecto requiere un suplemento y una numeración, la etiqueta debe estar adjunta a un _elemento
+referenciable_. Los elementos referenciables incluyen los @heading[títulos], las @figure[figuras], las
+@math.equation[ecuaciones] y las @footnote[notas al pie]. Para crear un elemento referenciable personalizado, como
+un teorema, podés crear una figura de un @figure.kind[`kind`] personalizado y escribir una regla show para ella. En
+el futuro, podría haber una forma más directa de definir un elemento referenciable personalizado.
+
+Si solo querés enlazar a un elemento etiquetado y no obtener una referencia textual automática, considerá usar en
+cambio la función @link.
+
+Una referencia `{"page"}` produce una referencia de página a una etiqueta, mostrando el número de página en su
+ubicación. Podés usar el @page.supplement[suplemento de la página] para modificar el texto que va antes del número
+de página. A diferencia de una referencia `{"normal"}`, la etiqueta se puede adjuntar a cualquier elemento siempre
+que esté establecida la @page.numbering[numeración de la página] correspondiente.
+
+= Ejemplo <example>
+```example
+#set page(numbering: "1")
+#set heading(numbering: "1.")
+#set math.equation(numbering: "(1)")
+
+= Introduction <intro>
+Recent developments in
+typesetting software have
+rekindled hope in previously
+frustrated researchers. @distress
+As shown in @results (see
+#ref(<results>, form: "page")),
+we ...
+
+= Results <results>
+We discuss our approach in
+comparison with others.
+
+== Performance <perf>
+@slow demonstrates what slow
+software looks like.
+$ T(n) = O(2^n) $ <slow>
+
+#bibliography("works.bib")
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: una referencia `{"normal"}` a una etiqueta se puede crear
+escribiendo una `[@]` seguida del nombre de la etiqueta (por ejemplo, `[= Introduction <intro>]` se puede
+referenciar escribiendo `[@intro]`).
+
+Para personalizar el suplemento, agregá contenido entre corchetes después de la referencia: `[@intro[Chapter]]`.
+
+= Personalización <customization>
+Cuando en un documento solo necesitás referenciar páginas de una figura/tabla/título/etcétera, el valor por defecto
+del campo `form` se puede cambiar a `{"page"}` con una regla set. Si preferís un suplemento corto "p." en lugar de
+"página", se puede usar el campo @page.supplement para cambiarlo:
+
+```example
+#set page(
+  numbering: "1",
+  supplement: "p.",
+>>> margin: (bottom: 3em),
+>>> footer-descent: 1.25em,
+)
+#set ref(form: "page")
+
+#figure(
+  stack(
+    dir: ltr,
+    spacing: 1em,
+    circle(),
+    square(),
+  ),
+  caption: [Shapes],
+) <shapes>
+
+#pagebreak()
+
+See @shapes for examples
+of different shapes.
+```
+
+Si escribís una regla show para referencias, podés acceder al elemento referenciado a través del campo `element` de
+la referencia. El `element` puede ser `{none}` aunque exista, si Typst todavía no lo descubrió, por lo que siempre
+necesitás manejar ese caso en tu código.
+
+```example
+#set heading(numbering: "1.")
+#set math.equation(numbering: "(1)")
+
+#show ref: it => {
+  let eq = math.equation
+  let el = it.element
+  // Skip all other references.
+  if el == none or el.func() != eq { return it }
+  // Override equation references.
+  link(el.location(), counter(eq).display(at: el.location()))
+}
+
+= Beginnings <beginning>
+In @beginning we prove @pythagoras.
+$ a^2 + b^2 = c^2 $ <pythagoras>
+```
+
+
+@@ RefElem::citation  [src:21155399]
+Una cita sintetizada.
+
+@@ RefElem::element  [src:857a8cea]
+El elemento referenciado.
+
+@@ RefElem::form  [src:7916ef36]
+El tipo de referencia que se produce.
+
+```example
+#set page(numbering: "1")
+
+Here <here> we are on
+#ref(<here>, form: "page").
+```
+
+
+@@ RefElem::supplement  [src:50f22f65]
+Un suplemento para la referencia.
+
+Si la @ref.form[`form`] se establece en `{"normal"}`:
+- En las referencias a títulos o figuras, se agrega antes del número referenciado.
+- En las citas, se puede usar para agregar un número de página.
+
+Si la @ref.form[`form`] se establece en `{"page"}`, se agrega antes del número de página de la etiqueta
+referenciada.
+
+Si se especifica una función, se le pasa el elemento referenciado y debe devolver contenido.
+
+```example
+#set heading(numbering: "1.")
+#show ref.where(
+  form: "normal"
+): set ref(supplement: it => {
+  if it.func() == heading {
+    "Chapter"
+  } else {
+    "Thing"
+  }
+})
+
+= Introduction <intro>
+In @intro, we see how to turn
+Sections into Chapters. And
+in @intro[Part], it is done
+manually.
+```
+
+
+@@ RefElem::target  [src:187c47a0]
+La etiqueta de destino que se debe referenciar.
+
+Puede ser una etiqueta definida en el documento o, si la @ref.form[`form`] se establece en `["normal"]`, una
+entrada de la @bibliography.

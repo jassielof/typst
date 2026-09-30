@@ -1,0 +1,219 @@
+@@ BibliographyElem  [src:bc18d059]
+Una bibliografía / listado de referencias.
+
+Podés crear una bibliografía nueva llamando a esta función con la ruta de un archivo de bibliografía en uno de
+estos dos formatos:
+
+- Un archivo `.yaml`/`.yml` de Hayagriva. Hayagriva es un formato de archivo de bibliografía nuevo diseñado para
+  usarse con Typst. Visitá su
+  #link("https://github.com/typst/hayagriva/blob/main/docs/file-format.md")[documentación] para más detalles.
+- Un archivo `.bib` de BibLaTeX.
+
+Apenas agregás una bibliografía en algún lugar de tu documento, podés empezar a citar cosas con la sintaxis de
+referencias (`[@key]`) o con llamadas explícitas a la función @cite[cite] (`[#cite(<key>)]`). La bibliografía
+solo mostrará las entradas de las obras que fueron referenciadas en el documento.
+
+= Ejemplo <example>
+```example
+This was already noted by
+pirates long ago. @arrgh
+
+Multiple sources say ...
+@arrgh @netwok.
+
+#bibliography("works.bib")
+```
+
+= Estilos <styles>
+Typst ofrece una amplia selección de @bibliography.style[estilos de citas y bibliografía] incorporados. Además
+de esos, podés agregar y usar archivos personalizados de #link("https://citationstyles.org/")[CSL] (Citation
+Style Language). ¿Te preguntás qué estilo usar? Estos son algunos buenos valores por defecto según la disciplina
+en la que trabajes:
+
+#docs-table(
+  table.header[Campos][Estilos típicos],
+
+  [Ingeniería, informática],
+  [`{"ieee"}`],
+
+  [Psicología, ciencias de la vida],
+  [`{"apa"}`],
+
+  [Ciencias sociales],
+  [`{"chicago-author-date"}`],
+
+  [Humanidades],
+  [`{"mla"}`, `{"chicago-notes"}`, `{"harvard-cite-them-right"}`],
+
+  [Economía],
+  [`{"harvard-cite-them-right"}`],
+
+  [Física],
+  [`{"american-physics-society"}`],
+)
+
+= Varias bibliografías <multiple-bibliographies>
+Cuando un documento de Typst contiene varias bibliografías, cada cita se asigna a una de ellas. Por defecto,
+Typst elegirá automáticamente una bibliografía adecuada (normalmente, la más cercana siguiente que contenga la
+clave de cita referenciada). Esto cubre casos comunes como las bibliografías por capítulo o temáticas. Para un
+control más fino, las citas pueden ser apuntadas explícitamente por una bibliografía mediante un selector
+@bibliography.target[`target`].
+
+@@ BibliographyElem::full  [src:6f7b8ea8]
+Si se incluyen todas las obras de los archivos de bibliografía dados, incluso las que no se citaron en el
+documento.
+
+Para agregar selectivamente obras citadas individuales sin mostrarlas, también podés usar la función `cite` con
+@cite.form[`form`] establecido en `{none}`.
+
+@@ BibliographyElem::group  [src:623a4241]
+Agrupa conceptualmente esta bibliografía con otras bibliografías a los fines de la numeración. Las bibliografías
+del mismo grupo asignarán números de cita consecutivos.
+
+Puede ser:
+- `{none}`: La bibliografía se numerará de forma aislada.
+- `{auto}`: La bibliografía se numerará consecutivamente con todas las demás bibliografías del grupo `{auto}`.
+- Una @str[cadena de texto]: La bibliografía se numerará consecutivamente con todas las demás bibliografías con
+  el mismo valor de `group`.
+
+El grupo `{auto}` funciona igual que cualquier grupo de cadena, pero es el grupo por defecto canónico.
+
+#example(
+  title: [Números de cita consecutivos],
+  ```
+  #show bibliography: set heading(
+    offset: 1,
+  )
+
+  = First part
+  Starts at one: @netwok @arrgh
+  #bibliography(
+    "works.bib",
+    style: "ieee",
+  )
+
+  = Second part
+  Continues with three: @distress
+  #bibliography(
+    "works.bib",
+    style: "nlm-citation-sequence",
+  )
+  ```
+)
+
+#example(
+  title: [Números de cita separados],
+  ```
+  #show bibliography: set heading(
+    offset: 1,
+  )
+  #set bibliography(group: none)
+
+  = First part
+  Starts at one: @netwok @arrgh
+  #bibliography(
+    "works.bib",
+    style: "ieee",
+  )
+
+  = Second part
+  Resets to one: @distress
+  #bibliography(
+    "works.bib",
+    style: "nlm-citation-sequence",
+  )
+  ```
+)
+
+@@ BibliographyElem::lang  [src:907a23b8]
+La configuración de idioma del lugar donde está la bibliografía.
+
+@@ BibliographyElem::region  [src:2093fb27]
+La configuración de región del lugar donde está la bibliografía.
+
+@@ BibliographyElem::sources  [src:96112987]
+Una o varias rutas a archivos `.yaml` de Hayagriva y/o `.bib` de BibLaTeX, o sus bytes sin procesar.
+
+Puede ser:
+- Una cadena de ruta o @path desde donde cargar un archivo de bibliografía.
+- Bytes sin procesar a partir de los cuales se debe decodificar la bibliografía.
+- Un array en el que cada elemento es una de las opciones anteriores.
+
+@@ BibliographyElem::style  [src:83234acd]
+El estilo de bibliografía.
+
+Puede ser:
+- Una cadena de texto con el nombre de uno de los estilos incorporados (ver abajo). Algunos de los estilos
+  listados abajo aparecen dos veces: una con su nombre completo y otra con un alias corto.
+- Una cadena de ruta o @path a un #link("https://citationstyles.org/")[archivo CSL].
+- Bytes sin procesar a partir de los cuales se debe decodificar un estilo CSL.
+
+@@ BibliographyElem::target  [src:b605c775]
+Define qué citas se incluyen en la bibliografía.
+
+Typst asignará automáticamente cada cita del documento a una bibliografía. Concretamente, una cita se asignará a
+(en orden de precedencia)
++ la primera bibliografía que la incluya en su selector `target`; o, si no existe tal bibliografía,
++ la bibliografía _siguiente_ más cercana con `{target: auto}` que contenga su clave; o, si no sigue ninguna
+  bibliografía así,
++ la bibliografía _anterior_ más cercana con `{target: auto}` que contenga su clave.
+
+#example(
+  title: [Bibliografía local],
+  ```
+  #let info(body) = block(
+    stroke: (left: 1.5pt + blue),
+    fill: aqua.lighten(50%),
+    inset: 1em,
+    context {
+      body
+      show divider: set block(spacing: 1.2em)
+      divider()
+      bibliography(
+        "works.bib",
+        title: none,
+        target: selector(cite).within(here()),
+        style: "mla",
+      )
+    }
+  )
+
+  = On the matter of dumplings
+  In recent years, we can observe an uptick in
+  dumpling consumption across the board. @netwok
+
+  #info[
+    Dumplings are particularly enjoyed
+    among pirates. @arrgh
+  ]
+
+  #bibliography("works.bib")
+  ```
+)
+
+@@ BibliographyElem::title  [src:9f04c9a6]
+El título de la bibliografía.
+
+- Cuando se establece en `{auto}`, se usará un título apropiado para el @text.lang[idioma del texto]. Este es el
+  valor por defecto.
+- Cuando se establece en `{none}`, la bibliografía no tendrá título.
+- Se puede establecer un título personalizado pasando contenido.
+
+El título de la bibliografía no estará numerado por defecto, pero podés forzarlo con una regla show-set:
+`{show bibliography: set heading(numbering: "1.")}`
+
+@@ CslIndentElem  [src:25a6a9f6]
+Traducción de `display="indent"` en CSL.
+
+Un `display="block"` simplemente se traduce a un `BlockElem` de Typst. De manera similar, podríamos traducir
+`display="indent"` a un `PadElem`, pero (a) todavía no tiene compatibilidad en HTML y (b) un `PadElem` describe un
+relleno fijo, mientras que CSL deja la cantidad de relleno definida por el usuario, por lo que no es un encaje
+perfecto.
+
+@@ CslLightElem  [src:7e8af052]
+Traducción de `font-weight="light"` en CSL.
+
+Traducimos `font-weight: "bold"` a `<strong>`, ya que es probable que la especificación de CSL hable de negrita
+solo porque no tiene la noción de elementos semánticos. Los beneficios de una lectura estricta de la
+especificación también son bastante cuestionables, mientras que usar elementos semánticos hace que la bibliografía
+sea más accesible, más fácil de estilizar y más portable entre destinos de exportación.

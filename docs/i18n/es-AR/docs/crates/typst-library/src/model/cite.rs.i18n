@@ -1,0 +1,109 @@
+@@ CiteElem  [src:d8f84d20]
+Cita una obra de la bibliografía.
+
+Antes de empezar a citar, necesitás agregar una @bibliography[bibliografía] en algún lugar de tu documento.
+
+= Ejemplo <example>
+```example
+This was already noted by
+pirates long ago. @arrgh
+
+Multiple sources say ...
+@arrgh @netwok.
+
+You can also call `cite`
+explicitly. #cite(<arrgh>)
+
+#bibliography("works.bib")
+```
+
+Si el nombre de tu fuente contiene ciertos caracteres, como barras, que la sintaxis `<>` no reconoce, podés
+llamar explícitamente a `label` en su lugar.
+
+```typ
+Computer Modern is an example of a modernist serif typeface.
+#cite(label("DBLP:books/lib/Knuth86a")).
+```
+
+= Sintaxis <syntax>
+Esta función tiene indirectamente una sintaxis dedicada. Las @ref[referencias] se pueden usar para citar obras
+de la bibliografía. La etiqueta corresponde entonces a la clave de la cita.
+
+@@ CiteElem::form  [src:d403330a]
+El tipo de cita que se produce. Las distintas formas son útiles en distintos escenarios: una cita normal es útil
+como fuente al final de una oración, mientras que una cita "prose" es más adecuada para incluirla en el flujo del
+texto.
+
+Si se establece en `{none}`, la obra citada se incluye en la bibliografía, pero no se mostrará nada.
+
+```example
+#cite(<netwok>, form: "prose")
+show the outsized effects of
+pirate life on the human psyche.
+>>> #set text(0pt)
+>>> #bibliography("works.bib", style: "apa")
+```
+
+
+@@ CiteElem::key  [src:df760af0]
+La clave de cita que identifica la entrada de la bibliografía que se debe citar, como etiqueta.
+
+```example
+// All the same
+@netwok \
+#cite(<netwok>) \
+#cite(label("netwok"))
+>>> #set text(0pt)
+>>> #bibliography("works.bib", style: "apa")
+```
+
+
+@@ CiteElem::lang  [src:73520574]
+La configuración de idioma del texto del lugar donde está la cita.
+
+@@ CiteElem::region  [src:cf94fc30]
+La configuración de región del texto del lugar donde está la cita.
+
+@@ CiteElem::style  [src:7d5f214e]
+El estilo de cita.
+
+Puede ser:
+- `{auto}` para usar automáticamente el @bibliography.style[estilo de la bibliografía] para las citas.
+- Una cadena de texto con el nombre de uno de los estilos incorporados (ver abajo). Algunos de los estilos
+  listados abajo aparecen dos veces: una con su nombre completo y otra con un alias corto.
+- Una cadena de ruta o @path a un #link("https://citationstyles.org/")[archivo CSL].
+- Bytes sin procesar a partir de los cuales se debe decodificar un estilo CSL.
+
+@@ CiteElem::supplement  [src:f07184ca]
+Un suplemento de la cita, como el número de página o de capítulo.
+
+En la sintaxis de referencias, el suplemento se puede agregar entre corchetes:
+
+```example
+This has been proven. @distress[p.~7]
+
+#bibliography("works.bib")
+```
+
+
+@@ CiteGroup  [src:25929a13]
+Un grupo de citas consecutivas.
+
+Este elemento se crea automáticamente a partir de citas adyacentes durante la materialización. Las citas se
+agrupan sin tener en cuenta a qué bibliografía terminan asignadas. Solo se dividen en subgrupos durante la
+asignación de bibliografía dentro del árbol de llamadas de [`Works::generate`].
+
+Cada subgrupo creado ahí puede consistir en una o varias citas que hayagriva procesa como una unión. Si hayagriva
+admitiera un único grupo de citas para varias bibliografías, se podría eliminar el concepto de subgrupo, pero no
+está claro si eso se puede admitir razonablemente.
+
+Otra alternativa habría sido segmentar ya por bibliografía asignada al agrupar citas consecutivas en
+[`CiteGroup`]s durante la materialización. Esto sería bastante limpio, pero lamentablemente implicaría una
+iteración adicional del documento, un precio demasiado alto para pagar por la limpieza conceptual.
+
+El elemento de grupo de citas se mantiene deliberadamente interno para conservar flexibilidad en cómo se
+recolecta.
+
+@@ CiteGroup::children  [src:a5a1ea8d]
+Contiene citas y, potencialmente, los espacios entre ellas. Los espacios se conservan para poder renderizarlos
+correctamente entre subgrupos asignados a distintas bibliografías.
