@@ -199,7 +199,7 @@ def check_pair(src, tr, lang, is_tutorial=False):
         for (ls, cs), (lt, ct) in zip(fs, ft):
             if ls != lt:
                 out.append(f"code block language changed {ls!r} -> {lt!r}")
-            elif ls == "example":
+            elif ls in ("example", "") or (ls == "typ" and is_tutorial):
                 if skeleton(cs) != skeleton(ct):
                     out.append(f"example code changed: {list((skeleton(cs) - skeleton(ct)).elements())[:4]}")
                 elif not is_tutorial and cs != ct:
