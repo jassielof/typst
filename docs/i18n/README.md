@@ -100,5 +100,7 @@ git checkout docs-translation && git branch -D sync-test
   caliente (los archivos del overlay sí).
 - Los sidecars se usan aunque estén desactualizados (`status` avisa; no hay
   fallback automático al inglés por hash).
-- Faltan por traducir: la mayor parte de `reference/library`, `guides` y los
-  doc comments de Rust; el changelog queda en inglés a propósito.
+- Sin traducir (cae al inglés): el changelog (a propósito), los ejemplos de código
+  fuera del tutorial, y las etiquetas de interfaz sin hook (p. ej. tooltips).
+- `check` marca un falso positivo conocido en `PdfFormat` (un span `raw` que
+  cruza un salto de línea en el original).
