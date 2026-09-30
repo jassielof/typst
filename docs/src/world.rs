@@ -161,7 +161,9 @@ impl DocsFiles {
     }
 
     fn resolve(&self, id: FileId) -> FileResult<PathBuf> {
-        if let Some(path) = crate::i18n::overlay_path(id) { return Ok(path); }
+        if let Some(path) = crate::i18n::overlay_path(id) {
+            return Ok(path);
+        }
         self.root(id)?.resolve(id.vpath())
     }
 
@@ -183,7 +185,9 @@ impl DocsFiles {
 
 impl FileLoader for DocsFiles {
     fn load(&self, id: FileId) -> FileResult<Bytes> {
-        if let Some(bytes) = crate::i18n::overlay(id) { return Ok(bytes); }
+        if let Some(bytes) = crate::i18n::overlay(id) {
+            return Ok(bytes);
+        }
         self.root(id)?.load(id.vpath())
     }
 }

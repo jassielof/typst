@@ -41,7 +41,9 @@ const SITE_PATH: &str = "docs/dist/site";
 
 /// Entry point.
 fn main() -> ExitCode {
-    if let Some(code) = i18n::subcommand() { return code; }
+    if let Some(code) = i18n::subcommand() {
+        return code;
+    }
     match &ARGS.command {
         Command::Compile(command) => compile(command),
         Command::Watch(command) => watch(command),
@@ -141,8 +143,9 @@ impl Config {
         Self {
             input: args.input.clone().unwrap_or(workspace.join(ENTRYPOINT)),
             output: args.output.clone().or_else(|| match args.format {
-                OutputFormat::Pdf if args.lang.is_some() => Some(workspace.join(format!("docs/dist/docs-{}.pdf", args.lang.as_ref().unwrap()))),
-                OutputFormat::Pdf => Some(workspace.join(PDF_PATH)),
+                OutputFormat::Pdf => {
+                    Some(i18n::pdf_path(&workspace, PDF_PATH, args.lang.as_deref()))
+                }
                 OutputFormat::Website if serve => None,
                 OutputFormat::Website => Some(workspace.join(SITE_PATH)),
             }),

@@ -42,7 +42,12 @@ pub fn init(lang: Option<&str>, workspace: &Path) {
         let ui = std::fs::read_to_string(root.join("ui.toml"))
             .map(|text| parse_ui(&text))
             .unwrap_or_default();
-        State { lang: lang.into(), root, ui, sidecars: Mutex::default() }
+        State {
+            lang: lang.into(),
+            root,
+            ui,
+            sidecars: Mutex::default(),
+        }
     });
     let _ = STATE.set(state);
 }
@@ -61,7 +66,9 @@ pub fn overlay_path(id: FileId) -> Option<PathBuf> {
 
 /// Loads the translated replacement for a file, if there is one.
 pub fn overlay(id: FileId) -> Option<Bytes> {
-    overlay_path(id).and_then(|path| std::fs::read(path).ok()).map(Bytes::new)
+    overlay_path(id)
+        .and_then(|path| std::fs::read(path).ok())
+        .map(Bytes::new)
 }
 
 /// Defines the translation-related items of the `stdx` module.
@@ -122,7 +129,7 @@ pub fn parse_sidecar(text: &str) -> HashMap<String, String> {
     for line in text.split_inclusive('\n') {
         if let Some(header) = line.strip_prefix("@@ ") {
             if let Some((key, body)) = current.take() {
-                map.insert(key, body);
+                map.insert(key, finish(body));
             }
             let key = header.split("[src:").next().unwrap_or(header).trim();
             current = Some((key.to_string(), String::new()));
@@ -131,14 +138,22 @@ pub fn parse_sidecar(text: &str) -> HashMap<String, String> {
         }
     }
     if let Some((key, body)) = current {
-        map.insert(key, body);
-    }
-    // The blank line before the next header is a separator, not content.
-    for body in map.values_mut() {
-        let trimmed = body.trim_end_matches('\n');
-        *body = format!("{trimmed}\n");
+        map.insert(key, finish(body));
     }
     map
+}
+
+/// The blank line before the next header is a separator, not content.
+fn finish(body: String) -> String {
+    format!("{}\n", body.trim_end_matches('\n'))
+}
+
+/// The default PDF output path, which is language-specific for translated builds.
+pub fn pdf_path(workspace: &Path, default: &str, lang: Option<&str>) -> PathBuf {
+    match lang {
+        Some(lang) => workspace.join(format!("docs/dist/docs-{lang}.pdf")),
+        None => workspace.join(default),
+    }
 }
 
 /// Parses a minimal TOML subset: `"key" = "value"` lines and `#` comments.
