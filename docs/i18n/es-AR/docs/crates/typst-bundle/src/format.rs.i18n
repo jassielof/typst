@@ -1,0 +1,131 @@
+@@ AssetElem  [src:5c44e90f]
+Agrega un archivo personalizado a un bundle.
+
+Esta función crea un único archivo en un @format.bundle[bundle], a partir de @bytes[datos de bytes sin procesar]. A diferencia de los @document[documentos], los recursos (assets) se emitirán tal cual, sin
+pasar por compilación.
+
+La función `asset` se puede combinar con @read para copiar un archivo del proyecto al bundle de salida. El primer argumento de `asset` define la ruta de salida del recurso en el bundle, mientras que la ruta
+que se le pasa a `read` define desde dónde del proyecto se leen los datos.
+
+```typ
+// Copy the file `styles.css` into the bundle.
+#asset("styles.css", read("styles.css"))
+```
+
+Dicho esto, `asset` no está atado a `read`. También podés generar bytes directamente o usar una función como @json.encode para emitir datos serializados.
+
+```typ
+// Emits a JSON file with the number
+// of headings in the document.
+#context {
+  let headings = query(heading)
+  let meta = (
+    count: headings.len(),
+  )
+  asset("meta.json", json.encode(meta))
+}
+
+#document("doc.pdf")[
+  = Introduction
+  = Conclusion
+]
+```
+
+Esto emitiría un archivo `meta.json` con el siguiente contenido en el bundle resultante:
+
+```json
+{
+  "count": 2
+}
+```
+
+Esta función está definida en el elemento @format.bundle, pero también está disponible directamente en el ámbito global. Solo se puede usar en el destino @format.bundle[bundle].
+
+@@ AssetElem::data  [src:ff359afc]
+Los datos sin procesar que se escribirán en el archivo de la ruta especificada.
+
+Si se da una cadena de texto, se codificará en UTF-8.
+
+@@ AssetElem::path  [src:9f29c2e5]
+La ruta en el bundle en la que se ubicará el recurso.
+
+Puede contener barras interiores, en cuyo caso los directorios intermedios se crearán automáticamente.
+
+@@ BundleFormat  [src:0336948f]
+El formato de exportación a bundle de Typst (experimental).
+
+#info[
+  La exportación a bundle solo está disponible para experimentar detrás de un flag de característica. No uses esta característica en casos de uso de producción. En la CLI, podés experimentar con ella
+  pasando `--features bundle` o estableciendo la variable de entorno `TYPST_FEATURES` en `bundle`. Para usar las características `bundle` y `html` al mismo tiempo, especificá ambas separadas por una coma
+  (es decir, `bundle,html`). En la app web, la exportación a bundle no está disponible por el momento.
+]
+
+Con la exportación a bundle de Typst, podés emitir varios archivos de salida a partir de un único proyecto de Typst. La salida en bundle es útil para crear sitios web de varias páginas con exportación a
+HTML, pero no se limita a la exportación a HTML. Podés crear bundles que contengan cualquier combinación de @html[páginas HTML], @pdf[PDF], @format.png[PNG], @format.svg[SVG] y @asset[recursos] arbitrarios.
+
+= Exportar como bundle <exporting-as-a-bundle>
+== Línea de comandos <command-line>
+Pasá `--format bundle` al subcomando `compile` o `watch`. Tené en cuenta que también tenés que pasar `--features bundle` o establecer `TYPST_FEATURES=bundle` para habilitar este destino de exportación
+experimental.
+
+Al usar `typst watch`, Typst lanzará un servidor HTTP con recarga en vivo que sirve tus archivos. Podés configurarlo así:
+
+- Pasá `--port` para cambiar el puerto. (Por defecto, el primer puerto libre del rango 3000-3005.)
+- Pasá `--no-reload` para desactivar la inyección de un script de recarga en vivo en las páginas HTML. (El HTML que se escribe en el disco no se ve afectado en ningún caso.) Los documentos que no son HTML no
+  admiten la recarga en vivo.
+- Pasá `--no-serve` para desactivar por completo el servidor.
+
+== App web <web-app>
+Actualmente no está disponible.
+
+= Crear archivos <creating-files>
+Un bundle es una colección de archivos. Cada uno de estos archivos del bundle pertenece a una de dos categorías: documento o recurso. Un @document toma @content[contenido] que se exporta con uno de los otros
+formatos de exportación de Typst. Por su parte, un @asset toma @bytes[datos de bytes] sin procesar de tu elección que se escribirán en el disco tal cual. Ambos elementos toman como primer argumento la ruta de
+salida deseada.
+
+El siguiente ejemplo muestra un caso básico de cómo se podría usar la exportación a bundle en la práctica:
+
+```typ
+#document("index.html", title: [Home])[
+  #title()
+  - #link(<blog>)[Go to blog]
+]
+
+#document("blog.html", title: [Blog])[
+  #title()
+  Welcome to my blog!
+
+  ...
+
+  This blog also exists as a
+  #link(<blog-pdf>)[single PDF].
+] <blog>
+
+#document("blog.pdf", title: [Blog])[
+  ...
+] <blog-pdf>
+
+#asset(
+  "favicon.ico",
+  read("images/favicon.ico", encoding: none),
+)
+```
+
+En el ejemplo, creamos dos documentos HTML: una página de inicio y un blog. La página de inicio enlaza al blog mediante un enlace de etiqueta. El mecanismo de enlaces incorporado de Typst admite de forma nativa
+los @link:links-in-bundle-export[enlaces entre documentos] y resuelve por vos las rutas relativas correctas. El bundle también contiene una versión en PDF del blog, que se enlaza desde la versión HTML. En la
+práctica, ahora podrías compartir el contenido entre la versión HTML y la PDF guardándolo en una variable y usándola en ambas. Esto se omite acá por brevedad. Por último, el bundle contiene un recurso de ícono
+para el sitio web. En este caso, proporcionamos los datos del recurso leyendo un archivo del disco. Como alternativa, también es posible generar los datos del recurso desde dentro de Typst (por ejemplo, con una
+función como @json.encode).
+
+Los documentos y los recursos son elementos normales, así que podés usarlos con los mecanismos habituales de scripting, estilos e introspección de Typst. Para más detalles, consultá la documentación de @document
+y @asset.
+
+= Introspección <introspection>
+Las introspecciones siempre observan el bundle completo y no los documentos individuales. Por ejemplo, consultar los títulos te dará todos los títulos de todos los documentos y no solo los del documento actual.
+De manera similar, las etiquetas son globales al bundle: podés ubicar y @link:links-in-bundle-export[enlazar etiquetas de otros documentos]. Los contadores y el estado también son globales. #footnote[Una excepción
+a esto es el contador de páginas, que (naturalmente) es por documento.] En particular, si habilitás cosas como la numeración de títulos, la numeración avanzará de forma consecutiva a lo largo de todo el bundle.
+
+Si estás usando la exportación a bundle para construir una obra conceptual que se divide en varios archivos de salida, normalmente esto es lo que querés. Si, en cambio, estás usando la exportación a bundle para
+exportar varias obras conceptualmente separadas, quizás quieras que las introspecciones consideren cada documento de forma aislada. Actualmente, vas a tener que hacerlo manualmente (por ejemplo, reiniciando
+contadores, ajustando selectores, etcétera). Nosotros
+#link("https://github.com/typst/typst/issues/7735#issuecomment-3908841853")[planeamos ofrecer más herramientas] para administrar el alcance preciso de la introspección en el futuro.

@@ -1,0 +1,137 @@
+@@ FrameElem  [src:d83cd679]
+Un elemento que dispone su contenido como un SVG en línea.
+
+A veces, convertir contenido de Typst a HTML no es deseable. Puede ser el caso de los gráficos y de otro contenido que depende del posicionamiento y del estilo para transmitir su mensaje.
+
+Esta función te permite usar el motor de diseño de Typst, el mismo que se usaría para la exportación a PDF, SVG y PNG, para renderizar una parte de tu documento exactamente como aparecería al
+exportarlo en uno de esos formatos. Incrusta el contenido como un SVG en línea.
+
+@@ FrameElem::body  [src:2b05e218]
+El contenido que se debe disponer.
+
+@@ HtmlElem  [src:327fd412]
+Un elemento HTML que puede contener contenido de Typst.
+
+La exportación a HTML de Typst genera automáticamente las etiquetas apropiadas para la mayoría de los elementos. Sin embargo, a veces es deseable conservar más control. Por ejemplo, al usar Typst
+para generar tu blog, podrías usar esta función para envolver cada artículo en una etiqueta `<article>`.
+
+Typst sabe qué es HTML válido. Una etiqueta y sus atributos deben formar HTML sintácticamente válido. Algunas etiquetas, como `meta`, no aceptan contenido. Por lo tanto, no debés proporcionarles un
+cuerpo. Es posible que agreguemos más comprobaciones en el futuro, así que asegurate de generar HTML válido al usar esta función.
+
+Normalmente, Typst generará por vos las etiquetas `html`, `head` y `body`. Si en cambio las creás con esta función, Typst omitirá las suyas.
+
+```typ
+#html.elem("div", attrs: (style: "background: aqua"))[
+  A div with _Typst content_ inside!
+]
+```
+
+
+@@ HtmlElem::attrs  [src:07403463]
+Los atributos HTML del elemento.
+
+@@ HtmlElem::body  [src:9ac53a96]
+El contenido del elemento HTML.
+
+El cuerpo puede ser contenido arbitrario de Typst.
+
+@@ HtmlElem::css  [src:fcfc7747]
+Las propiedades CSS del elemento. Actualmente solo se usa para los estilos generados.
+
+@@ HtmlElem::parent  [src:ce81e0db]
+El padre lógico del elemento, si lo hay.
+
+@@ HtmlElem::role  [src:2a8b3cbf]
+Un rol que se debe aplicar al elemento HTML con estilo de nivel superior, pero no a sus descendientes. Si alguna vez tenemos reglas set que se apliquen a un elemento específico en lugar de a un
+subárbol, podrían reemplazar esto. Si necesitamos el mismo mecanismo para cosas como `class`, esto se podría extender potencialmente a atributos arbitrarios. Por ahora es mínimo.
+
+Esto se ignora para los elementos `<p>`, ya que, de lo contrario, tiende a adjuntarse involuntariamente a párrafos que resultan de agrupar un solo elemento, en lugar de adjuntarse a ese elemento. Es un
+poco un parche, pero por ahora alcanza, ya que la propiedad `role` es puramente interna y nosotros controlamos para qué se usa.
+
+@@ HtmlElem::tag  [src:ecb1c11f]
+La etiqueta del elemento.
+
+@@ HtmlFormat  [src:cf5c67c3]
+El formato de exportación a HTML de Typst (experimental).
+
+#info[
+  La exportación a HTML de Typst está actualmente en desarrollo activo. La característica todavía es muy incompleta y solo está disponible para experimentar detrás de un flag de característica. No uses
+  esta característica en casos de uso de producción. En la CLI, podés experimentar con la exportación a HTML pasando `--features html` o estableciendo la variable de entorno `TYPST_FEATURES` en `html`.
+  En la app web, podés habilitarla igualmente como característica experimental. Visitá el
+  #link("https://github.com/typst/typst/issues/5512")[issue de seguimiento] para seguir el progreso de la exportación a HTML y conocer más sobre las características planeadas.
+]
+
+Los archivos HTML describen un documento de forma estructural. El objetivo de la exportación a HTML de Typst es capturar la estructura de un documento de entrada y producir HTML semánticamente rico que
+conserve esa estructura. El HTML resultante debería ser accesible, legible por personas y editable a mano y con herramientas posteriores.
+
+La exportación a PDF, PNG y SVG, en cambio, producen todas representaciones _visuales_ de un documento totalmente dispuesto. Esta divergencia en las intenciones de los formatos significa que Typst no puede
+simplemente producir HTML perfecto para tus documentos de Typst existentes. No siempre puede saber cuál es la mejor representación semántica en HTML de tu contenido.
+
+En cambio, te da a _vos_ el control total: podés comprobar el formato de exportación actual mediante la función @target y, cuando está establecido en HTML, generar @html.elem[elementos HTML sin procesar].
+El uso principal previsto de estos elementos es en plantillas y reglas show. De esta manera, el contenido del documento puede ser totalmente independiente del destino de exportación y el contenido se puede
+compartir entre la exportación a PDF y a HTML.
+
+En el formato de exportación `html`, Typst producirá un único archivo HTML. También podés usar Typst para crear un sitio web que conste de varios documentos HTML y recursos adicionales. Typst llama a esa
+colección un _bundle_ y admite este caso de uso con el @format.bundle[destino `bundle`] dedicado. Consultá su documentación para aprender más. Tené en cuenta que, tanto en el destino `html` como en el
+destino `bundle`, Typst actualmente siempre emitirá un archivo HTML independiente. Está planeado para el futuro admitir la emisión de fragmentos que se puedan integrar en otros documentos HTML.
+
+Typst actualmente no produce hojas de estilo CSS, sino que se centra en emitir marcado semántico. Por supuesto, podés escribir tus propios estilos CSS y aun así beneficiarte de compartir tu _contenido_ entre
+PDF y HTML. Para el futuro, planeamos darte la opción de emitir CSS automáticamente, teniendo en cuenta más de tus reglas set existentes.
+
+= Exportar como HTML <exporting-as-html>
+== Línea de comandos <command-line>
+Pasá `--format html` al subcomando `compile` o `watch`, o proporcioná un nombre de archivo de salida que termine en `.html`. Tené en cuenta que también tenés que pasar `--features html` o establecer
+`TYPST_FEATURES=html` para habilitar este destino de exportación experimental.
+
+Al usar `typst watch`, Typst lanzará un servidor HTTP con recarga en vivo. Podés configurarlo así:
+
+- Pasá `--port` para cambiar el puerto. (Por defecto, el primer puerto libre del rango 3000-3005.)
+- Pasá `--no-reload` para desactivar la inyección de un script de recarga en vivo. (El HTML que se escribe en el disco no se ve afectado en ningún caso.)
+- Pasá `--no-serve` para desactivar por completo el servidor.
+
+== App web <web-app>
+La exportación a HTML se puede habilitar como característica experimental en la app web.
+#insertion("html-web-app")
+
+= Funcionalidad específica de HTML <html-specific-functionality>
+Typst expone la funcionalidad específica de HTML en el elemento global `html`. Mirá abajo las definiciones y opciones que contiene.
+
+#category-settings(groups: (
+  (
+    name: "typed",
+    title: "HTML tipado",
+    definitions: dictionary(stdx.describe(html).scope)
+      .filter(val => "typed-html" in stdx.describe(val).keywords),
+    description: "Documentación de la API de HTML tipado.",
+    docs: [
+      Una capa tipada sobre los elementos HTML sin procesar.
+
+      El módulo `html` ofrece una capa tipada sobre la función @html.elem sin procesar que te permite crear elementos HTML cómodamente. Los atributos HTML se exponen como parámetros de función que
+      aceptan tipos de Typst y se encargan automáticamente de convertirlos al HTML apropiado.
+
+      Algunos parámetros son comunes a todas las funciones de HTML tipado. Por legibilidad, se enumeran al final, en la sección @html:typed:global-attributes[Atributos globales], en lugar de hacerlo
+      explícitamente en cada elemento.
+
+      = Ejemplo <example>
+      ```typ
+      #html.video(
+        controls: true,
+        width: 1280,
+        height: 720,
+        src: "sunrise.mp4",
+      )[
+        Your browser does not support the video tag.
+      ]
+      ```
+    ],
+    epilogue: [
+      = Atributos globales <global-attributes>
+      Estos parámetros son comunes a todas las funciones de HTML tipado. Se enumeran acá una sola vez, en lugar de hacerlo explícitamente en cada elemento, por legibilidad.
+    ],
+  ),
+))
+
+@@ HtmlFormat::pretty  [src:007d4982]
+Si se da formato legible al documento HTML producido.
+
+Esto da formato a la salida de una manera más legible para las personas, pero menos eficiente en espacio.

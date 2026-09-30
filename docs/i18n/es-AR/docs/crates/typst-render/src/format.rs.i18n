@@ -1,0 +1,47 @@
+@@ PngFormat  [src:c2eac5d2]
+El formato de exportación a PNG de Typst.
+
+En lugar de crear un PDF, Typst también puede renderizar páginas directamente a gráficos ráster PNG. Los PNG son imágenes comprimidas sin pérdida que pueden contener una página a la vez. Al exportar un documento
+de varias páginas, Typst emitirá varios PNG. Los PNG son una buena opción cuando querés usar la salida de Typst en un software de edición de imágenes o cuando no podés usar ninguno de los otros formatos de
+exportación de Typst.
+
+A diferencia de los otros formatos de exportación de Typst, los PNG están atados a una resolución específica. Al exportar a PNG, podés configurar la resolución como píxeles por pulgada (PPI). Si el medio en el
+que ves el PNG tiene una resolución más fina que el PNG que exportaste, vas a notar una pérdida de calidad. Typst calcula la resolución de tus PNG según las dimensiones físicas de cada página y el PPI. Si
+necesitás una guía para elegir un valor de PPI, considerá lo siguiente:
+
+- Un valor de 300 o 600 es típico para la impresión de escritorio.
+- Las impresiones profesionales de gráficos detallados pueden llegar hasta 1200 PPI.
+- Si tu documento solo se ve a distancia, por ejemplo un póster, podés elegir un valor menor que 300.
+- Si tu documento se ve en pantallas, un valor de PPI típico para un smartphone es 400-500.
+
+Como los PNG solo contienen una trama de píxeles, el texto que contienen no se puede extraer automáticamente (sin OCR), por ejemplo copiando y pegando o con un lector de pantalla. Si necesitás que el texto sea
+accesible, exportá en cambio un archivo PDF o HTML.
+
+Los PNG pueden tener fondos transparentes. Por defecto, Typst producirá un PNG con un fondo blanco opaco. Podés hacer transparente el fondo con `[#set page(fill: none)]`. Conocé más en la
+@page.fill[página de referencia de la función `page`].
+
+= Exportar como PNG <exporting-as-png>
+== Línea de comandos <command-line>
+Pasá `--format png` al subcomando `compile` o `watch`, o proporcioná un nombre de archivo de salida que termine en `.png`.
+
+Si tu documento tiene más de una página, Typst creará varios archivos de imagen. El nombre del archivo de salida debe ser entonces una cadena de plantilla que contenga al menos uno de estos
+- `[{p}]`, que se reemplazará por el número de página
+- `[{0p}]`, que se reemplazará por el número de página rellenado con ceros (para que todos los números tengan la misma longitud)
+- `[{t}]`, que se reemplazará por la cantidad total de páginas
+
+Al exportar a PNG, tenés las siguientes opciones de configuración:
+
+- Con qué resolución renderizar, especificando `--ppi` seguido de una cantidad de píxeles por pulgada. El valor por defecto es `144`.
+
+- Qué páginas exportar, especificando `--pages` seguido de una lista de números separados por comas o de rangos de números separados por guiones. Los rangos pueden ser semiabiertos. Ejemplo: `2,3,7-9,11-`.
+
+== App web <web-app>
+Hacé clic en "File" > "Export as" > "PNG" o hacé clic en la flecha hacia abajo junto al botón de descarga rápida y seleccioná "Export as PNG". Al exportar a PNG, tenés las siguientes opciones de configuración:
+
+- La resolución con la que se deben renderizar las páginas, como una cantidad de píxeles por pulgada. El valor por defecto es `144`.
+
+- Qué páginas exportar. Las opciones válidas son "All pages", "Current page" y "Custom ranges". Los rangos personalizados son una lista de números separados por comas o de rangos de números separados por
+  guiones. Los rangos pueden ser semiabiertos. Ejemplo: `2,3,7-9,11-`.
+
+@@ PngFormat::ppi  [src:8a45aaa9]
+El PPI (píxeles por pulgada) que se usa para la exportación a PNG.

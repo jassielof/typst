@@ -1,0 +1,38 @@
+@@ SvgFormat  [src:35815e03]
+El formato de exportación a SVG de Typst.
+
+En lugar de crear un PDF, Typst también puede renderizar páginas directamente a gráficos vectoriales escalables (SVG), que son el formato preferido para incrustar gráficos vectoriales en páginas web. Igual que
+los archivos PDF, los SVG muestran tu documento exactamente como lo dispusiste en Typst. Del mismo modo, comparten el beneficio de no estar atados a una resolución específica. Por lo tanto, podés imprimir o ver
+archivos SVG en cualquier dispositivo sin sufrir una pérdida de calidad. (Tené en cuenta que la calidad de impresión de las fuentes puede ser mejor con un PDF.) A diferencia de un PDF, un SVG no puede contener
+varias páginas. Al exportar un documento de varias páginas, Typst emitirá varios SVG.
+
+Los SVG pueden representar el texto de dos maneras: incrustando el propio texto y renderizándolo con las fuentes disponibles en la computadora del visor, o incrustando las formas de cada glifo de la fuente usada
+para crear el documento. Para asegurar que el archivo SVG se vea igual en todos los dispositivos en los que se lo vea, Typst elige el segundo método. Esto significa que el texto del SVG no se puede extraer
+automáticamente, por ejemplo copiando y pegando o con un lector de pantalla. Si necesitás que el texto sea accesible, exportá en cambio un archivo PDF o HTML.
+
+Los SVG pueden tener fondos transparentes. Por defecto, Typst producirá un SVG con un fondo blanco opaco. Podés hacer transparente el fondo con `[#set page(fill: none)]`. Conocé más en la
+@page.fill[página de referencia de la función `page`].
+
+= Exportar como SVG <exporting-as-svg>
+== Línea de comandos <command-line>
+Pasá `--format svg` al subcomando `compile` o `watch`, o proporcioná un nombre de archivo de salida que termine en `.svg`.
+
+Si tu documento tiene más de una página, Typst creará varios archivos de imagen. El nombre del archivo de salida debe ser entonces una cadena de plantilla que contenga al menos uno de estos
+- `[{p}]`, que se reemplazará por el número de página
+- `[{0p}]`, que se reemplazará por el número de página rellenado con ceros (para que todos los números tengan la misma longitud)
+- `[{t}]`, que se reemplazará por la cantidad total de páginas
+
+Al exportar a SVG, tenés las siguientes opciones de configuración:
+
+- Qué páginas exportar, especificando `--pages` seguido de una lista de números separados por comas o de rangos de números separados por guiones. Los rangos pueden ser semiabiertos. Ejemplo: `2,3,7-9,11-`.
+
+== App web <web-app>
+Hacé clic en "File" > "Export as" > "SVG" o hacé clic en la flecha hacia abajo junto al botón de descarga rápida y seleccioná "Export as SVG". Al exportar a SVG, tenés las siguientes opciones de configuración:
+
+- Qué páginas exportar. Las opciones válidas son "All pages", "Current page" y "Custom ranges". Los rangos personalizados son una lista de números separados por comas o de rangos de números separados por
+  guiones. Los rangos pueden ser semiabiertos. Ejemplo: `2,3,7-9,11-`.
+
+@@ SvgFormat::pretty  [src:963e2a96]
+Si se da formato legible al archivo SVG producido.
+
+Esto da formato a la salida de una manera más legible para las personas, pero menos eficiente en espacio.

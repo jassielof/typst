@@ -1,0 +1,373 @@
+@@ AttachElem  [src:7bf033c4]
+Un archivo que se adjuntará al PDF de salida.
+
+Esto se puede usar para distribuir dentro del PDF archivos adicionales asociados a él. Los lectores de PDF mostrarán los archivos en una lista de archivos.
+
+Algunos estándares internacionales usan este mecanismo para adjuntar datos legibles por máquinas (por ejemplo, ZUGFeRD/Factur-X para facturas) que reflejan el contenido visual del PDF.
+
+= Ejemplo <example>
+```typ
+#pdf.attach(
+  "experiment.csv",
+  relationship: "supplement",
+  mime-type: "text/csv",
+  description: "Raw Oxygen readings from the Arctic experiment",
+)
+```
+
+= Notas <notes>
+- Este elemento se ignora al exportar a un formato distinto de PDF.
+- Actualmente no se admiten los archivos adjuntos en PDF/A-2, aunque el archivo adjunto cumpla con PDF/A-1 o PDF/A-2.
+
+@@ AttachElem::data  [src:9dd24249]
+Datos sin procesar del archivo, opcionales.
+
+Si se omite, los datos se leen de la ruta especificada.
+
+@@ AttachElem::description  [src:71c251f2]
+Una descripción del archivo adjunto.
+
+@@ AttachElem::mime_type  [src:fcf88cff]
+El tipo MIME del archivo adjunto.
+
+@@ AttachElem::path  [src:8be8d085]
+La ruta del archivo que se adjunta.
+
+Siempre se debe especificar, pero solo se lee de ella si no se proporcionan datos en el siguiente argumento.
+
+@@ AttachElem::relationship  [src:58dd9d6d]
+La relación del archivo adjunto con el documento.
+
+Se ignora si la exportación no apunta a PDF/A-3.
+
+@@ PdfFormat  [src:2e1d4b92]
+El formato de exportación a PDF de Typst.
+
+Los archivos PDF se centran en describir documentos visualmente con precisión, pero también tienen facilidades para anotar su estructura. Este enfoque híbrido los hace muy adecuados para el intercambio de
+documentos: se renderizan exactamente igual en todos los dispositivos, pero también admiten la extracción del contenido y la estructura de un documento (al menos hasta cierto punto). A diferencia de los archivos
+PNG, los PDF no están atados a una resolución específica. Por lo tanto, podés verlos a cualquier tamaño sin sufrir una pérdida de calidad.
+
+= Exportar como PDF <exporting-as-pdf>
+== Línea de comandos <command-line>
+PDF es el formato de exportación por defecto de Typst. Ejecutar el subcomando `compile` o `watch` sin especificar un formato creará un PDF. Al exportar a PDF, tenés las siguientes opciones de configuración:
+
+- Con qué @pdf.standard[estándares de PDF] debe garantizar Typst la conformidad, especificando `--pdf-standard` seguido de uno o varios estándares separados por comas. Los estándares válidos son `1.4`,
+  `1.5`, `1.6`, `1.7`, `2.0`, `a-1b`, `a-1a`, `a-2b`, `a-2u`, `a-2a`, `a-3b`, `a-3u`, `a-3a`, `a-4`, `a-4f`, `a-4e` y `ua-1`. Por defecto, Typst produce archivos conformes con PDF-1.7.
+
+- Podés desactivar por completo el etiquetado del PDF con `--pdf-tagged=false`. Por defecto, Typst siempre escribirá un _PDF etiquetado (Tagged PDF)_ para ofrecer un nivel básico de accesibilidad. Con este flag,
+  podés desactivar las etiquetas. Esto hará que tu archivo sea inaccesible e impedirá la conformidad con los niveles de conformidad accesibles de PDF/A y con todas las partes de PDF/UA.
+
+- Qué páginas exportar, especificando `--pages` seguido de una lista de números separados por comas o de rangos de números separados por guiones. Los rangos pueden ser semiabiertos. Ejemplo: `2,3,7-9,11-`.
+
+== App web <pdf:web-app>
+Hacé clic en el botón de descarga rápida de la parte superior derecha para exportar un PDF con la configuración por defecto. Para configurar más, hacé clic en "File" > "Export as" > "PDF" o hacé clic en la
+flecha hacia abajo junto al botón de descarga rápida y seleccioná "Export as PDF". Al exportar a PDF, tenés las siguientes opciones de configuración:
+
+- Con qué estándares de PDF debe garantizar Typst la conformidad. Por defecto, Typst produce archivos conformes con PDF-1.7. Podés elegir libremente la versión de PDF entre 1.4 y 2.0. Los estándares
+  adicionales válidos son `A-1b`, `A-1a`, `A-2b`, `A-2u`, `A-2a`, `A-3b`. `A-3u`, `A-3a`, `A-4`, `A-4f`, `A-4e` y `UA-1`.
+
+- Qué páginas exportar. Las opciones válidas son "All pages", "Current page" y "Custom ranges". Los rangos personalizados son una lista de números separados por comas o de rangos de números separados por
+  guiones. Los rangos pueden ser semiabiertos. Ejemplo: `2,3,7-9,11-`.
+
+= Funcionalidad específica de PDF <pdf-specific-functionality>
+Typst expone la funcionalidad específica de PDF en el elemento global `pdf`. Mirá abajo las definiciones y opciones que contiene.
+
+Este elemento contiene algunas funciones sin una API definitiva. Están diseñadas para mejorar la accesibilidad de documentos con tablas complejas. Esto incluye @[`table-summary`],
+@pdf.header-cell[`header-cell`] y @pdf.data-cell[`data-cell`]. Todas estas funciones se eliminarán en una futura versión de Typst, ya sea integrándolas en las funciones de tablas o eliminándolas por completo.
+Podés habilitar estas funciones pasando `--features
+a11y-extras` o estableciendo la variable de entorno `TYPST_FEATURES` en `a11y-extras`. En la app web, estas características no están disponibles por el momento.
+
+@@ PdfFormat::data_cell  [src:b7326e49]
+Define explícitamente esta celda como una celda de datos.
+
+Cada celda de una tabla es una celda de encabezado o una celda de datos. Por defecto, todas las celdas de @table.header son celdas de encabezado y todas las demás celdas son celdas de datos.
+
+Si tu encabezado contiene una celda que no es una celda de encabezado, podés usar esta función para marcarla como celda de datos.
+
+La API de esta característica es temporal. Por lo tanto, llamar a esta función requiere por el momento habilitar el flag de característica `a11y-extras`. En una futura versión de Typst, esta funcionalidad podría
+salir del módulo `pdf` para que las tablas de otros destinos de exportación puedan contener la misma información.
+
+```example
+#show table.cell.where(x: 0): set text(weight: "bold")
+#show table.cell.where(x: 1): set text(style: "italic")
+#show table.cell.where(x: 1, y: 0): set text(style: "normal")
+
+#table(
+  columns: 3,
+  align: (left, left, center),
+
+  table.header[Objective][Key Result][Status],
+
+  table.header(
+    level: 2,
+    table.cell(colspan: 2)[Improve Customer Satisfaction],
+    // Status is data for this objective, not a header
+    pdf.data-cell[✓ On Track],
+  ),
+  [], [Increase NPS to 50+], [45],
+  [], [Reduce churn to \<5%], [4.2%],
+
+  table.header(
+    level: 2,
+    table.cell(colspan: 2)[Grow Revenue],
+    pdf.data-cell[⚠ At Risk],
+  ),
+  [], [Achieve \$2M ARR], [\$1.8M],
+  [], [Close 50 enterprise deals], [38],
+)
+```
+
+
+@@ PdfFormat::data_cell::cell  [src:fa0f45f4]
+La celda de la tabla.
+
+Puede ser contenido o una llamada a @table.cell.
+
+@@ PdfFormat::header_cell  [src:402fd854]
+Define explícitamente una celda como celda de encabezado.
+
+Las celdas de encabezado ayudan a los usuarios de tecnologías de asistencia (TA) a entender y navegar tablas complejas. Cuando tu tabla está correctamente marcada con celdas de encabezado, las TA pueden anunciar
+la información de encabezado relevante a demanda al entrar en una celda.
+
+Por defecto, Typst marcará automáticamente todas las celdas de @table.header como celdas de encabezado. Se aplicarán a las columnas que tienen debajo. Podés usar el parámetro @table.header.level[`level`] de esa
+función para que las celdas de encabezado estén etiquetadas por otras celdas de encabezado.
+
+La función `pdf.header-cell` te permite indicar que una celda es una celda de encabezado en las siguientes situaciones adicionales:
+
+- Tenés una *columna de encabezado* en la que cada celda se aplica a su fila. En ese caso, pasás `{"row"}` como argumento del @pdf.header-cell.scope[parámetro `scope`] para indicar que la celda de encabezado
+  se aplica a la fila.
+- Tenés una celda en @table.header, por ejemplo al comienzo, que etiqueta tanto su fila como su columna. En ese caso, pasás `{"both"}` como argumento del parámetro @pdf.header-cell.scope[`scope`].
+- Tenés una celda de encabezado en una fila que no contiene otras celdas de encabezado. En ese caso, podés usar esta función para marcarla como celda de encabezado.
+
+La API de esta característica es temporal. Por lo tanto, llamar a esta función requiere por el momento habilitar el flag de característica `a11y-extras`. En una futura versión de Typst, esta funcionalidad podría
+salir del módulo `pdf` para que las tablas de otros destinos de exportación puedan contener la misma información.
+
+```example
+>>> #set text(font: "IBM Plex Sans")
+#show table.cell.where(x: 0): set text(weight: "medium")
+#show table.cell.where(y: 0): set text(weight: "bold")
+
+#table(
+  columns: 3,
+  align: (start, end, end),
+
+  table.header(
+    // Top-left cell: Labels both the nutrient rows
+    // and the serving size columns.
+    pdf.header-cell(scope: "both")[Nutrient],
+    [Per 100g],
+    [Per Serving],
+  ),
+
+  // First column cells are row headers
+  pdf.header-cell(scope: "row")[Calories],
+  [250 kcal], [375 kcal],
+  pdf.header-cell(scope: "row")[Protein],
+  [8g], [12g],
+  pdf.header-cell(scope: "row")[Fat],
+  [12g], [18g],
+  pdf.header-cell(scope: "row")[Carbs],
+  [30g], [45g],
+)
+```
+
+
+@@ PdfFormat::header_cell::cell  [src:fa0f45f4]
+La celda de la tabla.
+
+Puede ser contenido o una llamada a @table.cell.
+
+@@ PdfFormat::header_cell::level  [src:fad67072]
+El nivel de anidamiento de esta celda de encabezado.
+
+@@ PdfFormat::header_cell::scope  [src:19898596]
+A qué pista de la tabla se aplica esta celda de encabezado.
+
+@@ PdfFormat::pages  [src:e974878e]
+Especifica qué rangos de páginas se deben incluir en el PDF. Puede ser:
+
+- `{none}` para exportar todas las páginas.
+- Un único rango de páginas.
+- Un array de rangos de páginas.
+
+Un rango de páginas es uno de los siguientes:
+
+- Un número que especifica exactamente una página (los números de página empiezan en uno).
+- Un diccionario con las claves `from` (que indica el inicio de un rango de páginas) y/o `to` (que indica el final de un rango de páginas). Debe estar presente al menos una de las claves y tanto el número
+  inicial como el final son inclusivos. Por lo tanto, el rango `{(from: 1, to: 3)}` es la lista de páginas `{(1, 2, 3)}`.
+
+Especificar una única página o rango de páginas:
+```typ
+#set pdf(pages: 3)
+#set pdf(pages: (from: 3))
+#set pdf(pages: (to: 5))
+#set pdf(pages: (from: 3, to: 5))
+```
+
+Especificar varias páginas, rangos de páginas o una mezcla:
+```typ
+#set pdf(pages: (5, 7, 9))
+#set pdf(pages: ((to: 3), 5, (from: 7, to: 8), (from: 10)))
+```
+
+
+@@ PdfFormat::pretty  [src:648cfde6]
+Si se da formato legible al documento PDF producido.
+
+Esto da formato a la salida de una manera más legible para las personas, pero menos eficiente en espacio.
+
+@@ PdfFormat::standard  [src:38fadfb3]
+Una lista de estándares de PDF con los que Typst garantizará la conformidad. Puede ser un único estándar o un array de estándares.
+
+La Organización Internacional de Normalización (ISO) publicó el estándar PDF base y varios estándares que lo extienden para que los PDF sean más adecuados para casos de uso específicos. Por defecto, Typst exporta
+archivos PDF 1.7. Adobe Acrobat 8 y posteriores, así como todos los demás visores de PDF de uso común, son compatibles con esta versión de PDF.
+
+Algunas características de Typst pueden no estar disponibles según el estándar de PDF que elijas. Podés combinar estándares PDF/A y PDF/UA compatibles. En particular, PDF/UA-1 y PDF/A-4 son mutuamente
+incompatibles, ya que el primero requiere PDF 1.7 o anterior y el segundo requiere PDF 2.0.
+
+= Versiones de PDF <pdf-versions>
+Typst admite cinco versiones distintas de PDF: 1.4, 1.5, 1.6, 1.7 (por defecto) y 2.0. Podés elegir cualquiera de estas versiones para la exportación de tu documento. Sin embargo, según las características que
+hayas usado puede haber una versión mínima. Del mismo modo, los estándares a los que apuntes pueden limitar qué versiones podés elegir (mirá más abajo para más información).
+
+Esta es una lista de cómo cada versión nueva mejora respecto de PDF 1.4 para los documentos de Typst:
+
+- *PDF 1.5* (2003): Mejor gestión del color, extracción de texto, accesibilidad de tablas, reflujo y fuentes de emojis
+- *PDF 1.6* (2004): Enlaces más flexibles
+- *PDF 1.7* (2006): Permite @pdf.attach[archivos adjuntos], mejor reflujo
+- *PDF 2.0* (2017): Mejores metadatos y semántica de etiquetas para la accesibilidad
+
+El software que se use para leer tu archivo debe admitir tu versión de PDF. En circunstancias normales, esto no plantea ningún problema, pero puede ser una fuente de errores al trabajar con hardware más antiguo.
+Para el intercambio general, recomendamos mantener la configuración por defecto de PDF 1.7 o elegir PDF 2.0.
+
+Al usar archivos PDF como @image[imágenes] en tu documento, la versión de PDF de exportación debe igualar o superar las versiones de los archivos de imagen.
+
+= PDF/UA <pdf-ua>
+Typst admite escribir archivos conformes con PDF/UA. Los archivos PDF/UA están diseñados para el _@guides:accessibility:basics[acceso universal]._ Cuando elegís este estándar de PDF, Typst ejecutará
+comprobaciones adicionales al exportar tu documento. Estas comprobaciones se asegurarán de que estés siguiendo las mejores prácticas de accesibilidad. Por ejemplo, se asegurará de que todas tus imágenes
+vengan con descripciones alternativas.
+
+Tené en cuenta que hay algunas reglas en PDF/UA que son cruciales para la accesibilidad pero que no se pueden comprobar automáticamente. Por lo tanto, al exportar un documento PDF/UA-1, asegurate de haber hecho lo
+siguiente:
+
+- Si tu documento está escrito en un idioma distinto del inglés, asegurate de @text.lang[establecer el idioma del texto] antes de cualquier contenido.
+- Asegurate de usar los elementos semánticos de Typst (como los @heading[títulos], las @figure[figuras] y las @list[listas]) cuando corresponda, en lugar de definir construcciones personalizadas. Esto le permite a
+  Typst saber (y exportar) el rol que cumple una construcción en el documento. Mirá @guides:accessibility[la guía de accesibilidad] para más detalles.
+- No uses exclusivamente el contraste, el color, el formato o el diseño para comunicar una idea. Usá texto o descripciones alternativas en lugar de estos elementos, o además de ellos.
+- Envolvé en @pdf.artifact todos los elementos decorativos sin significado semántico.
+- No uses imágenes de texto. En cambio, insertá el texto directamente en tu marcado.
+
+Actualmente, Typst solo admite la parte uno (PDF/UA-1), que se basa en PDF 1.7 (2006). Al exportar a PDF/UA-1, tené en cuenta que vas a tener que proporcionar manualmente
+@math:accessibility[descripciones alternativas de la matemática] en lenguaje natural.
+
+Se agregaron nuevas características de accesibilidad a PDF 2.0 (2017). Cuando se establece la exportación a PDF 2.0, Typst aprovechará algunas de estas características. Sin embargo, PDF 2.0 y PDF/UA-1 son mutuamente
+incompatibles. Para documentos accesibles, actualmente recomendamos exportar a PDF/UA-1 en lugar de PDF 2.0, por las comprobaciones adicionales y la mayor compatibilidad. La segunda parte de PDF/UA está diseñada
+para PDF 2.0, pero Typst todavía no la admite.
+
+= PDF/A <pdf-a>
+Typst admite opcionalmente emitir archivos conformes con PDF/A. Los archivos PDF/A están orientados a la máxima compatibilidad con las herramientas de PDF actuales y futuras. No dependen de características difíciles de
+implementar o propietarias y contienen metadatos exhaustivos. Esto los hace adecuados para el archivado a largo plazo.
+
+El estándar PDF/A tiene varias versiones (_partes_ en la terminología de ISO) y la mayoría de las partes tienen varios perfiles que indican el nivel de conformidad del archivo. Podés apuntar a una parte y a un nivel de
+conformidad a la vez. Actualmente, Typst admite estos perfiles de salida PDF/A:
+
+- *PDF/A-1b:* El nivel de conformidad _básico_ de ISO 19005-1. Esta versión de PDF/A se basa en PDF 1.4 (2001) y produce archivos PDF autocontenidos y archivables. A diferencia de las partes posteriores del estándar
+  PDF/A, no se permite la transparencia en los archivos PDF/A-1.
+
+- *PDF/A-1a:* Este es el nivel de conformidad _accesible_ que se construye sobre el nivel básico PDF/A-1b. Para cumplir con este nivel, tu archivo debe ser un _PDF etiquetado_ accesible. Tené en cuenta que la
+  accesibilidad mejora en las partes posteriores, ya que no todas las características de accesibilidad de PDF están disponibles para archivos PDF 1.4. Además, todo el texto del archivo debe consistir en puntos de
+  código Unicode conocidos.
+
+- *PDF/A-2b:* El nivel de conformidad _básico_ de ISO 19005-2. Esta versión de PDF/A se basa en PDF 1.7 (2006) y produce archivos PDF autocontenidos y archivables.
+
+- *PDF/A-2u:* Este es el nivel de conformidad _asignable a Unicode_ que se construye sobre el nivel básico A-2b. También agrega reglas según las cuales todo el texto del documento debe consistir en puntos de código
+  Unicode conocidos. Si es posible, preferí siempre este estándar en lugar de PDF/A-2b.
+
+- *PDF/A-2a:* Este es el nivel de conformidad _accesible_ que se construye sobre el nivel asignable a Unicode A-2u. Este nivel de conformidad también agrega dos requisitos: tu archivo debe ser un _PDF etiquetado_
+  accesible. Typst agrega automáticamente etiquetas para ayudarte a alcanzar este nivel de conformidad. Prestá atención también a las secciones de accesibilidad a lo largo de la referencia y a la
+  @guides:accessibility[guía de accesibilidad] cuando apuntes a este nivel de conformidad. Por último, PDF/A-2a te prohíbe usar puntos de código del
+  #link("https://en.wikipedia.org/wiki/Private_Use_Areas")[área de uso privado de Unicode]. Si querés construir un archivo accesible, considerá también apuntar adicionalmente a PDF/UA-1, que habilita más
+  comprobaciones de accesibilidad automáticas.
+
+- *PDF/A-3b:* El nivel de conformidad _básico_ de ISO 19005-3. Esta versión de PDF/A se basa en PDF 1.7 (2006) y produce archivos PDF archivables que pueden contener otros archivos relacionados arbitrarios como
+  @pdf.attach[archivos adjuntos]. La única diferencia con PDF/A-2b es la capacidad de adjuntar archivos que no cumplen con PDF/A.
+
+- *PDF/A-3u:* Este es el nivel de conformidad _asignable a Unicode_ que se construye sobre el nivel básico A-3b. Igual que PDF/A-2b, requiere que todo el texto consista en puntos de código Unicode conocidos. Estas
+  reglas no se aplican a los archivos adjuntos. Si es posible, preferí siempre este estándar en lugar de PDF/A-3b.
+
+- *PDF/A-3a:* Este es el nivel de conformidad _accesible_ que se construye sobre el nivel asignable a Unicode A-3u. Igual que PDF/A-2a, requiere que los archivos sean un _PDF etiquetado_ accesible y que no usen
+  caracteres del área de uso privado de Unicode. Igual que antes, estas reglas no se aplican a los archivos adjuntos.
+
+- *PDF/A-4:* El nivel de conformidad básico de ISO 19005-4. Esta versión de PDF/A se basa en PDF 2.0 (2017) y produce archivos PDF autocontenidos y archivables. PDF/A-4 no tiene partes relacionadas con la
+  accesibilidad. En cambio, el tema se elaboró más en el estándar PDF/UA dedicado. Los archivos PDF/A-4 pueden cumplir con PDF/UA-2 (actualmente no admitido en Typst).
+
+- *PDF/A-4f:* El nivel de conformidad de _archivos incrustados_ que se construye sobre el nivel básico A-4. Los archivos que cumplen con este nivel pueden contener otros archivos relacionados arbitrarios como
+  @pdf.attach[archivos adjuntos], igual que los archivos que cumplen con la parte 3 de ISO 19005. La única diferencia con PDF/A-4 es la capacidad de adjuntar archivos que no cumplen con PDF/A.
+
+- *PDF/A-4e:* El nivel de conformidad de _ingeniería_ que se construye sobre el nivel de archivos incrustados A-4f. Los archivos que cumplen con este nivel pueden contener objetos 3D. Typst no admite contenido 3D,
+  por lo que, desde la perspectiva de Typst, esto es funcionalmente equivalente a PDF/A-4f.
+
+Si querés apuntar a PDF/A pero no estás seguro de qué configuración particular usar, hay algunas buenas reglas empíricas. Primero, tenés que determinar tu *parte,* que es el "número de versión" del estándar.
+Hacete estas preguntas:
+
++ *¿Necesita leer mi archivo software o equipamiento anterior a 2006?* Si es así, elegí la parte uno (PDF/A-1).
+
++ *Si no, ¿necesita mi archivo @pdf.attach[archivos adjuntos]?* Si es así, tenés que elegir la parte tres (PDF/A-3) o el nivel de archivos incrustados de la parte cuatro (PDF/A-4f).
+
++ *¿Necesita tu archivo usar características introducidas en PDF 2.0?* Actualmente, el uso de características de PDF 2.0 en Typst se limita a mejoras menores en accesibilidad, por ejemplo para el
+  @title[elemento title]. Si podés prescindir de estas mejoras, maximizá la compatibilidad eligiendo la parte dos (cuando no necesitás adjuntos) o la parte tres (cuando sí necesitás adjuntos). Si dependés de
+  características de PDF 2.0, usá la parte cuatro.
+
+Ahora solo necesitás elegir un *nivel de conformidad* (la letra minúscula del final).
+
+- *Si elegiste la parte uno, dos o tres,* normalmente deberías elegir el nivel de conformidad accesible de tu parte, indicado con una `a` minúscula al final. Si tu documento es inherentemente inaccesible, por
+  ejemplo el portafolio de un artista que no se puede reducir a descripciones alternativas, elegí en cambio el nivel de conformidad `u`. Solo si esto produce un error del compilador, por ejemplo porque usaste
+  puntos de código del área de uso privado de Unicode, usá el nivel básico `b`.
+
+- *Si elegiste la parte cuatro,* deberías elegir el nivel de conformidad básico (PDF/A-4), salvo que necesites incrustar archivos.
+
+Al elegir entre exportar PDF/A y PDF normal, tené en cuenta que los archivos PDF/A contienen metadatos adicionales y que algunos lectores impedirán que el usuario modifique un archivo PDF/A.
+
+@@ PdfFormat::table_summary  [src:8b098f25]
+Un resumen del propósito y la estructura de una tabla compleja.
+
+Estará disponible para las tecnologías de asistencia (TA), como los lectores de pantalla, al exportar a PDF, pero no para los lectores videntes de tu archivo.
+
+Este campo está pensado para instrucciones que ayuden al usuario a navegar la tabla con TA. No es una descripción alternativa, así que no dupliques adentro el contenido de la tabla. Del mismo modo, no lo uses
+para la conclusión central de la tabla. En cambio, incluila en el texto que rodea la tabla o, mejor aún, en un @figure.caption[epígrafe de figura].
+
+Si tenés dudas sobre si tu tabla es lo bastante compleja como para justificar un resumen, inclinate por no incluir uno. Si estás seguro de que tu tabla es lo bastante compleja, considerá si un usuario vidente
+podría encontrarla difícil. Podría beneficiarse de las instrucciones que pongas acá, así que considerá imprimirlas visiblemente en el documento.
+
+La API de esta característica es temporal. Por lo tanto, llamar a esta función requiere por el momento habilitar el flag de característica `a11y-extras`. Aunque esta funcionalidad llegue a estar disponible sin un
+flag de característica en el futuro, el resumen seguirá siendo exclusivo de la exportación a PDF.
+
+```example
+#figure(
+  pdf.table-summary(
+    // The summary just provides orientation and structural
+    // information for AT users.
+    summary: "The first two columns list the names of each participant. The last column contains cells spanning multiple rows for their assigned group.",
+    table(
+      columns: 3,
+      table.header[First Name][Given Name][Group],
+      [Mike], [Davis], table.cell(rowspan: 3)[Sales],
+      [Anna], [Smith],
+      [John], [Johnson],
+      [Sara], [Wilkins], table.cell(rowspan: 2)[Operations],
+      [Tom], [Brown],
+    ),
+  ),
+  // This is the key takeaway of the table, so we put it in the caption.
+  caption: [The Sales org now has a new member],
+)
+```
+
+
+@@ PdfFormat::table_summary::table  [src:1a5423ba]
+La tabla.
+
+@@ PdfFormat::tagged  [src:e44d350d]
+Si se produce un documento PDF etiquetado.
+
+El etiquetado está habilitado por defecto para ofrecer un nivel básico de accesibilidad. Se puede desactivar manualmente, por ejemplo para reducir el tamaño del documento, y se desactivará automáticamente al
+exportar un rango de páginas específico.
