@@ -1,0 +1,19 @@
+@@ Angle  [src:2722ac70]
+Un ángulo que describe una rotación.
+
+Typst admite las siguientes unidades angulares:
+
+- Grados: `{180deg}`
+- Radianes: `{3.14rad}`
+
+= Ejemplo <example>
+```example
+#rotate(10deg)[Hello there!]
+```
+
+
+@@ Angle::to_deg  [src:8125a4c0]
+Convierte este ángulo a grados.
+
+@@ Angle::to_rad  [src:daf00418]
+Convierte este ángulo a radianes.

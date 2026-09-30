@@ -1,0 +1,326 @@
+@@ BlockElem  [src:a4585ebb]
+Un contenedor a nivel de bloque.
+
+Un contenedor así se puede usar para separar contenido, para darle @block.width[tamaño]
+o @block.clip[recortarlo], o para darle un @block.fill[fondo] o un @block.stroke[borde].
+
+Los bloques también son la forma principal de controlar si el texto pasa a formar
+parte de un párrafo o no. Mirá
+@par:what-becomes-a-paragraph[la documentación de párrafos] para más detalles.
+
+= Ejemplos <examples>
+Con un bloque, podés darle un fondo al contenido y, aun así, permitir que se corte
+entre varias páginas.
+
+```example
+#set page(height: 100pt)
+#block(
+  fill: luma(230),
+  inset: 8pt,
+  radius: 4pt,
+  lorem(30),
+)
+```
+
+Los bloques también son útiles para forzar a que elementos que de otro modo serían
+en línea pasen a ser de nivel de bloque, especialmente al escribir reglas show.
+
+```example
+#show heading: it => it.body
+= Blockless
+More text.
+
+#show heading: it => block(it.body)
+= Blocky
+More text.
+```
+
+
+@@ BlockElem::above  [src:9a2937a5]
+El espaciado entre este bloque y su antecesor.
+
+@@ BlockElem::below  [src:f88f237a]
+El espaciado entre este bloque y su sucesor.
+
+@@ BlockElem::body  [src:7c1c843d]
+El contenido del bloque.
+
+@@ BlockElem::breakable  [src:69121cca]
+Si el bloque se puede cortar y continuar en la página siguiente.
+
+```example
+#set page(height: 80pt)
+The following block will
+jump to its own page.
+#block(
+  breakable: false,
+  lorem(15),
+)
+```
+
+
+@@ BlockElem::clip  [src:21744874]
+Si se recorta el contenido que está dentro del bloque.
+
+Recortar es útil cuando el contenido del bloque es más grande que el propio bloque,
+ya que todo el contenido que exceda los límites del bloque quedará oculto.
+
+```example
+#block(
+  width: 50pt,
+  height: 50pt,
+  clip: true,
+  image("tiger.jpg", width: 100pt, height: 100pt)
+)
+```
+
+
+@@ BlockElem::fill  [src:534c933d]
+El color de fondo del bloque. Mirá la
+@rect.fill[documentación del rectángulo] para más detalles.
+
+@@ BlockElem::height  [src:bd6a8207]
+La altura del bloque. Cuando la altura es mayor que el espacio restante de una página
+y @block.breakable[`breakable`] es `{true}`, el bloque continuará en la página
+siguiente con la altura restante.
+
+```example
+#set page(height: 80pt)
+#set align(center)
+#block(
+  width: 80%,
+  height: 150%,
+  fill: aqua,
+)
+```
+
+
+@@ BlockElem::inset  [src:9367761c]
+Cuánto relleno se agrega al contenido del bloque. Mirá la
+@box.inset[documentación de box] para más detalles.
+
+@@ BlockElem::outset  [src:116a2e5c]
+Cuánto se expande el tamaño del bloque sin afectar el diseño. Mirá la
+@box.outset[documentación de box] para más detalles.
+
+@@ BlockElem::radius  [src:1ddafcb4]
+Cuánto se redondean las esquinas del bloque. Mirá la
+@rect.radius[documentación del rectángulo] para más detalles.
+
+@@ BlockElem::spacing  [src:0800a2c5]
+El espaciado alrededor del bloque. Cuando es `{auto}`, hereda el
+@par.spacing[`spacing`] del párrafo.
+
+Entre dos bloques adyacentes, gana el mayor entre el espaciado `below` del primer
+bloque y el `above` del segundo. Además, el espaciado de bloques tiene prioridad sobre
+el @par.spacing[`spacing`] del párrafo.
+
+Tené en cuenta que esto es solo un atajo para establecer `above` y `below` en el mismo
+valor. Como los valores de `above` y `below` pueden diferir, un bloque de
+@reference:context[contexto] solo da acceso a `{block.above}` y `{block.below}`, no
+directamente a `{block.spacing}`.
+
+Esta propiedad se puede usar en combinación con una regla show para ajustar el
+espaciado alrededor de elementos arbitrarios a nivel de bloque.
+
+```example
+#set align(center)
+#show math.equation: set block(above: 8pt, below: 16pt)
+
+This sum of $x$ and $y$:
+$ x + y = z $
+A second paragraph.
+```
+
+
+@@ BlockElem::sticky  [src:80ab39aa]
+Si este bloque debe quedar pegado al siguiente, sin corte entre ambos.
+
+Por defecto, esto se establece en los bloques de títulos para evitar títulos huérfanos
+al final de la página.
+
+```example
+>>> #set page(height: 140pt)
+// Disable stickiness of headings.
+#show heading: set block(sticky: false)
+#lorem(20)
+
+= Chapter
+#lorem(10)
+```
+
+
+@@ BlockElem::stroke  [src:126f228e]
+El color del borde del bloque. Mirá la
+@rect.stroke[documentación del rectángulo] para más detalles.
+
+@@ BlockElem::width  [src:c7ec1f4c]
+El ancho del bloque.
+
+```example
+#set align(center)
+#block(
+  width: 60%,
+  inset: 8pt,
+  fill: silver,
+  lorem(10),
+)
+```
+
+
+@@ BoxElem  [src:fddf3790]
+Un contenedor en línea que da tamaño al contenido.
+
+Todos los elementos, excepto la matemática en línea, el texto y los boxes, son de
+nivel de bloque y no pueden aparecer dentro de un @par[párrafo]. La función box se
+puede usar para integrar esos elementos en un párrafo. Por defecto, los boxes toman el
+tamaño de su contenido, pero también se les puede @box.width[dar tamaño] explícitamente.
+
+De manera similar a los bloques, los boxes se pueden usar para @box.clip[recortar]
+contenido o para darle un @box.fill[fondo] o un @box.stroke[borde]. Sin embargo, solo
+deberían usarse con estos fines si el contenedor resultante se usa en un contexto en
+línea. De lo contrario, es preferible un @block.
+
+= Ejemplo <example>
+```example
+Refer to the docs
+#box(
+  height: 9pt,
+  image("docs.svg")
+)
+for more information.
+```
+
+
+@@ BoxElem::baseline  [src:9f4fc5f1]
+La posición vertical de la línea base del box. Se usa para alinear el box con el texto
+que lo rodea en un párrafo, ya que la línea base está pensada para ir justo debajo del
+texto por defecto.
+
+Por defecto, la línea base del box coincidirá con la línea base de su contenido (por
+ejemplo, del texto o la ecuación que contiene): esta es la opción `{auto}`. Sin
+embargo, la línea base se puede ajustar de dos maneras. La primera es simplemente
+elegir una @alignment[alineación] vertical, como `{top}`, `{horizon}` o `{bottom}`,
+para colocar la línea base en esa posición, en relación con la altura total del box
+(incluido el inset).
+
+La otra manera de ajustarla es desplazar verticalmente la línea base por defecto una
+cierta cantidad, especificada como una @relative[longitud relativa]. Por ejemplo, un
+valor de `{2pt}` la moverá hacia arriba esa longitud exacta (lo que hace que el
+contenido baje, ya que el punto de alineación sube), mientras que `{-40%}` desplazará
+la línea base _hacia abajo_ un 40% de la altura total del box, incluido el inset (lo
+que hace que el contenido suba).
+
+Ambas opciones se pueden especificar al mismo tiempo mediante un diccionario con las
+claves `at` y `shift`, respectivamente. Por ejemplo, al especificar
+`{(at: bottom, shift: 10pt)}`, la línea base del box se establecerá a una altura
+exactamente `{10pt}` por encima de la parte inferior de su contenido.
+
+```example
+Image: #box(baseline: 40%, image("tiger.jpg", width: 2cm)).
+```
+
+
+@@ BoxElem::body  [src:3d8ab5cd]
+El contenido del box.
+
+@@ BoxElem::clip  [src:ae933718]
+Si se recorta el contenido que está dentro del box.
+
+Recortar es útil cuando el contenido del box es más grande que el propio box, ya que
+todo el contenido que exceda los límites del box quedará oculto.
+
+```example
+#box(
+  width: 50pt,
+  height: 50pt,
+  clip: true,
+  image("tiger.jpg", width: 100pt, height: 100pt)
+)
+```
+
+
+@@ BoxElem::fill  [src:ddd82daf]
+El color de fondo del box. Mirá la
+@rect.fill[documentación del rectángulo] para más detalles.
+
+@@ BoxElem::height  [src:b1419478]
+La altura del box.
+
+@@ BoxElem::inset  [src:d198a71e]
+Cuánto relleno se agrega al contenido del box.
+
+Puede ser una única longitud para todos los lados o un diccionario de longitudes para
+lados individuales. Al pasar un diccionario, puede contener las siguientes claves, en
+orden de precedencia: `top`, `right`, `bottom`, `left` (que controlan los lados
+respectivos de la celda), `x`, `y` (que controlan los insets vertical y horizontal) y
+`rest` (que abarca todos los insets no definidos por otras entradas del diccionario).
+Todas las claves son opcionales; las claves omitidas usarán su valor establecido
+previamente o el valor por defecto si nunca se establecieron.
+
+Las @relative[longitudes relativas] de este parámetro son relativas al tamaño del box
+sin contar el @box.outset[outset]. Tené en cuenta que los insets y outsets relativos
+son distintos de los @box.width[anchos] y @box.height[altos] relativos, que son
+relativos al contenedor.
+
+_Nota:_ Cuando el box contiene texto, su tamaño exacto depende de los
+@text.top-edge[bordes de texto] actuales.
+
+```example
+#rect(inset: 0pt)[Tight]
+```
+
+
+@@ BoxElem::outset  [src:ad8636b5]
+Cuánto se expande el tamaño del box sin afectar el diseño.
+
+Puede ser una única longitud para todos los lados o un diccionario de longitudes para
+lados individuales. Las @relative[longitudes relativas] de este parámetro son
+relativas al tamaño del box sin contar el outset. Mirá la documentación de
+@box.inset[inset] de arriba para más detalles.
+
+Esto es útil para evitar que el relleno afecte el diseño de las líneas. Para una versión
+generalizada del ejemplo de abajo, mirá la documentación del
+@raw.block[parámetro block del texto raw].
+
+```example
+An inline
+#box(
+  fill: luma(235),
+  inset: (x: 3pt, y: 0pt),
+  outset: (y: 3pt),
+  radius: 2pt,
+)[rectangle].
+```
+
+
+@@ BoxElem::radius  [src:40b88466]
+Cuánto se redondean las esquinas del box. Mirá la
+@rect.radius[documentación del rectángulo] para más detalles.
+
+@@ BoxElem::stroke  [src:ae8c172f]
+El color del borde del box. Mirá la @rect.stroke[documentación del rectángulo] para más
+detalles.
+
+@@ BoxElem::width  [src:0ea60fc5]
+El ancho del box.
+
+Los boxes pueden tener anchos @fraction[fraccionarios], como demuestra el siguiente
+ejemplo.
+
+_Nota:_ Actualmente, dentro de los párrafos solo los boxes, y solo sus anchos, pueden
+tener tamaño fraccionario. En el futuro se podría agregar compatibilidad con imágenes,
+formas y más con tamaño fraccionario.
+
+```example
+Line in #box(width: 1fr, line(length: 100%)) between.
+```
+
+
+@@ InlineElem  [src:9d64660c]
+Un contenedor en línea que puede producir elementos arbitrarios que se pueden cortar
+entre líneas.
+
+@@ InlineElem::body  [src:8f20e9f0]
+Un callback que se invoca con las regiones para producir elementos en línea
+arbitrarios.

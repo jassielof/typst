@@ -1,0 +1,28 @@
+@@ HideElem  [src:fc12447c]
+Oculta contenido sin afectar el diseño.
+
+La función `hide` te permite ocultar contenido mientras el diseño todavía lo "ve".
+Esto es útil para crear espacio en blanco que sea exactamente tan grande como algún
+contenido.
+
+= Ejemplo <example>
+```example
+Hello Jane \
+#hide[Hello] Joe
+```
+
+= Censura <redaction>
+Esta función también puede ser útil para censurar contenido, ya que sus argumentos no
+están presentes visualmente ni son accesibles para las tecnologías de asistencia. Dicho
+esto, puede haber _algunos_ rastros del contenido oculto (como un título con marcador
+en el esquema del documento del PDF).
+
+Tené en cuenta que, según las circunstancias, podría ser posible reconstruir el
+contenido a partir de su tamaño en el diseño. Por eso no recomendamos usar esta
+función para ocultar información muy sensible.
+
+@@ HideElem::body  [src:7fa1b2ac]
+El contenido que se oculta.
+
+@@ HideElem::hidden  [src:d9a9009a]
+Este estilo se establece en el contenido incluido en el elemento `hide`.

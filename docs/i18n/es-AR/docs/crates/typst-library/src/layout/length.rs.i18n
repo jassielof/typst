@@ -1,0 +1,75 @@
+@@ Length  [src:94b67f5c]
+Un tamaño o una distancia, posiblemente expresados con unidades contextuales.
+
+Typst admite las siguientes unidades de longitud:
+
+- Puntos: `{72pt}`
+- Milímetros: `{254mm}`
+- Centímetros: `{2.54cm}`
+- Pulgadas: `{1in}`
+- Relativa al tamaño de la fuente: `{2.5em}`
+
+Podés multiplicar longitudes por enteros y flotantes, y dividirlas por ellos.
+
+= Ejemplo <example>
+```example
+#rect(width: 20pt)
+#rect(width: 2em)
+#rect(width: 1in)
+
+#(3em + 5pt).em \
+#(20pt).em \
+#(40em + 2pt).abs \
+#(5em).abs
+```
+
+= Campos <fields>
+- `abs`: Una longitud con solo el componente absoluto de la longitud actual (es decir,
+  sin el componente `em`).
+- `em`: La cantidad de unidades `em` de esta longitud, como @float[flotante].
+
+@@ Length::to_absolute  [src:7a619819]
+Resuelve esta longitud a una longitud absoluta.
+
+```example
+#set text(size: 12pt)
+#context [
+  #(6pt).to-absolute() \
+  #(6pt + 10em).to-absolute() \
+  #(10em).to-absolute()
+]
+
+#set text(size: 6pt)
+#context [
+  #(6pt).to-absolute() \
+  #(6pt + 10em).to-absolute() \
+  #(10em).to-absolute()
+]
+```
+
+
+@@ Length::to_cm  [src:d6849127]
+Convierte esta longitud a centímetros.
+
+Falla con un error si esta longitud tiene unidades `em` distintas de cero. Mirá el
+método @length.pt[`pt`] para más detalles.
+
+@@ Length::to_inches  [src:7b260818]
+Convierte esta longitud a pulgadas.
+
+Falla con un error si esta longitud tiene unidades `em` distintas de cero. Mirá el
+método @length.pt[`pt`] para más detalles.
+
+@@ Length::to_mm  [src:5211d70c]
+Convierte esta longitud a milímetros.
+
+Falla con un error si esta longitud tiene unidades `em` distintas de cero. Mirá el
+método @length.pt[`pt`] para más detalles.
+
+@@ Length::to_pt  [src:7c25b6fd]
+Convierte esta longitud a puntos.
+
+Falla con un error si esta longitud tiene unidades `em` distintas de cero (como
+`5em + 2pt` en lugar de solo `2pt`). Usá el campo `abs` (como en
+`(5em + 2pt).abs.pt()`) para ignorar el componente `em` de la longitud (y así convertir
+solo su componente absoluto).

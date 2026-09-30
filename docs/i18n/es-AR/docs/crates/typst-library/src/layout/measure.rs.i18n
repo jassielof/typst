@@ -1,0 +1,61 @@
+@@ measure  [src:c17f7b77]
+Mide el tamaño dispuesto del contenido.
+
+La función `measure` te permite determinar el tamaño dispuesto de un contenido. Por
+defecto se supone un espacio infinito, por lo que las dimensiones medidas no
+necesariamente coinciden con las dimensiones finales del contenido. Si querés medir con
+las dimensiones de diseño actuales, podés combinar `measure` y @layout.
+
+= Ejemplo <example>
+El mismo contenido puede tener un tamaño distinto según el @reference:context[contexto]
+en el que se lo coloque. En el siguiente ejemplo, el `[#content]` es, por supuesto, más
+grande cuando aumentamos el tamaño de la fuente.
+
+```example
+#let content = [Hello!]
+#content
+#set text(14pt)
+#content
+```
+
+Por este motivo, solo podés medir cuando hay contexto disponible.
+
+```example
+#let thing(body) = context {
+  let size = measure(body)
+  [Width of "#body" is #size.width]
+}
+
+#thing[Hey] \
+#thing[Welcome]
+```
+
+La función measure devuelve un diccionario con las entradas `width`, `height` y
+`baseline`, todas de tipo @length. La entrada `baseline` es la posición vertical de la
+línea base del contenido relativa a su borde superior, con valores positivos que se
+extienden hacia abajo.
+
+@@ measure::content  [src:298cf8ab]
+El contenido cuyo tamaño se mide.
+
+@@ measure::height  [src:c42fb7c6]
+La altura disponible para disponer el contenido.
+
+Establecerla en `{auto}` indica altura disponible infinita.
+
+@@ measure::width  [src:e93970e1]
+El ancho disponible para disponer el contenido.
+
+Establecerlo en `{auto}` indica ancho disponible infinito.
+
+Tené en cuenta que usar los parámetros `width` y `height` de esta función es distinto
+de medir un @block con tamaño que contiene el contenido. En el siguiente ejemplo, lo
+primero obtendrá las dimensiones del contenido interior en lugar de las dimensiones del
+bloque.
+
+```example
+#context measure(lorem(100), width: 400pt)
+
+#context measure(block(lorem(100), width: 400pt))
+```
+

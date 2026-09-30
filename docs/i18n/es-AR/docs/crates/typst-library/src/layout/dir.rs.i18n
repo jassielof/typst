@@ -1,0 +1,165 @@
+@@ Dir  [src:38581354]
+Las cuatro direcciones en las que se puede disponer el contenido.
+
+Los valores posibles son: @direction.ltr[`ltr`], @direction.rtl[`rtl`],
+@direction.ttb[`ttb`] y @direction.btt[`btt`].
+
+Estos valores están disponibles globalmente y también en el ámbito del tipo direction,
+así que podés escribir cualquiera de las dos formas siguientes:
+
+```example
+#stack(dir: rtl)[A][B][C]
+#stack(dir: direction.rtl)[A][B][C]
+```
+
+
+@@ Dir::BTT  [src:a6620559]
+De abajo hacia arriba.
+
+```example
+#stack(
+  dir: btt,
+  spacing: 0.2cm,
+  circle(),
+  line(),
+  square(),
+)
+```
+
+
+@@ Dir::LTR  [src:9c7b11fd]
+De izquierda a derecha.
+
+```example
+#stack(
+  dir: ltr,
+  spacing: 0.2cm,
+  circle(),
+  line(),
+  square(),
+)
+```
+
+
+@@ Dir::RTL  [src:d48a93c6]
+De derecha a izquierda.
+
+```example
+#stack(
+  dir: rtl,
+  spacing: 0.2cm,
+  circle(),
+  line(),
+  square(),
+)
+```
+
+
+@@ Dir::TTB  [src:6a112dd1]
+De arriba hacia abajo.
+
+```example
+#stack(
+  dir: ttb,
+  spacing: 0.2cm,
+  circle(),
+  line(),
+  square(),
+)
+```
+
+
+@@ Dir::axis  [src:40b9302f]
+El eje al que pertenece esta dirección, `{"horizontal"}` o `{"vertical"}`.
+
+```example
+#ltr.axis() \
+#ttb.axis()
+```
+
+
+@@ Dir::end  [src:fa3f1f91]
+El punto final de esta dirección.
+
+Esta función hace lo opuesto de @direction.to.
+
+```example
+#ltr.end() \
+#rtl.end() \
+#ttb.end() \
+#btt.end()
+```
+
+
+@@ Dir::from  [src:19a21cf5]
+Devuelve una dirección a partir de un punto de partida.
+
+Esta función hace lo opuesto de @direction.start.
+
+```example
+#direction.from(left) \
+#direction.from(right) \
+#direction.from(top) \
+#direction.from(bottom)
+```
+
+
+@@ Dir::from::side  [src:1edeb6a7]
+El punto de partida de la dirección.
+
+No puede ser `{start}` ni `{end}`.
+
+@@ Dir::inv  [src:ae7648c8]
+La dirección inversa (opuesta).
+
+```example
+#ltr.inv() \
+#rtl.inv() \
+#ttb.inv() \
+#btt.inv()
+```
+
+
+@@ Dir::sign  [src:0361cecd]
+El signo correspondiente, para usar en cálculos.
+
+Es el signo del vector que va en esta dirección a lo largo del eje correspondiente.
+
+```example
+#ltr.sign() \
+#rtl.sign() \
+#ttb.sign() \
+#btt.sign()
+```
+
+
+@@ Dir::start  [src:52478a91]
+El punto de partida de esta dirección.
+
+Esta función hace lo opuesto de @direction.from.
+
+```example
+#ltr.start() \
+#rtl.start() \
+#ttb.start() \
+#btt.start()
+```
+
+
+@@ Dir::to  [src:aa117a50]
+Devuelve una dirección a partir de un punto final.
+
+Esta función hace lo opuesto de @direction.end.
+
+```example
+#direction.to(left) \
+#direction.to(right) \
+#direction.to(top) \
+#direction.to(bottom)
+```
+
+
+@@ Dir::to::side  [src:fa9240a0]
+El punto final de la dirección.
+
+No puede ser `{start}` ni `{end}`.

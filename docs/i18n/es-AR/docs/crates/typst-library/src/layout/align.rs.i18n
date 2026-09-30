@@ -1,0 +1,223 @@
+@@ AlignElem  [src:e2254c54]
+Alinea contenido horizontal y verticalmente.
+
+= Ejemplo <example>
+Empecemos centrando nuestro contenido horizontalmente:
+
+```example
+#set page(height: 120pt)
+#set align(center)
+
+Centered text, a sight to see \
+In perfect balance, visually \
+Not left nor right, it stands alone \
+A work of art, a visual throne
+```
+
+Para centrar algo verticalmente, usá la alineación _horizon_:
+
+```example
+#set page(height: 120pt)
+#set align(horizon)
+
+Vertically centered, \
+the stage had entered, \
+a new paragraph.
+```
+
+= Combinar alineaciones <combining-alignments>
+Podés combinar dos alineaciones con el operador `+`. Además, apliquemos esto solo a
+un fragmento de contenido usando la forma de función en lugar de una regla set:
+
+```example
+#set page(height: 120pt)
+Though left in the beginning ...
+
+#align(right + bottom)[
+  ... they were right in the end, \
+  and with addition had gotten, \
+  the paragraph to the bottom!
+]
+```
+
+= Alineación anidada <nested-alignment>
+Podés usar alineaciones distintas para los contenedores de diseño y los elementos
+que hay dentro de ellos. De esta manera, podés crear diseños intrincados:
+
+```example
+#align(center, block[
+  #set align(left)
+  Though centered together \
+  alone \
+  we \
+  are \
+  left.
+])
+```
+
+= Alineación dentro de la misma línea <alignment-within-the-same-line>
+La función `align` realiza una alineación a nivel de bloque y, por lo tanto, siempre
+interrumpe el párrafo actual. Para tener una alineación distinta en partes de la
+misma línea, tenés que usar en su lugar @h[espaciado fraccionario]:
+
+```example
+Start #h(1fr) End
+```
+
+
+@@ AlignElem::alignment  [src:c434a5eb]
+La @alignment[alineación] en ambos ejes.
+
+```example
+#set page(height: 6cm)
+#set text(lang: "ar")
+
+مثال
+#align(
+  end + horizon,
+  rect(inset: 12pt)[ركن]
+)
+```
+
+
+@@ AlignElem::body  [src:70994d69]
+El contenido que se alinea.
+
+@@ Alignment  [src:74dd94e3]
+Dónde alinear algo a lo largo de un eje.
+
+Los valores posibles son:
+- Alineaciones horizontales: @alignment.start[`start`], @alignment.end[`end`],
+  @alignment.left[`left`], @alignment.center[`center`] y @alignment.right[`right`].
+- Alineaciones verticales: @alignment.top[`top`], @alignment.horizon[`horizon`] y
+  @alignment.bottom[`bottom`].
+- @alignment:2d-alignments[Alineaciones 2D], como `{center + horizon}`.
+
+Estos valores están disponibles globalmente y también en el ámbito del tipo
+alignment, así que podés escribir cualquiera de las dos formas siguientes:
+
+```example
+#align(center)[Hi]
+#align(alignment.center)[Hi]
+```
+
+= Alineaciones 2D <2d-alignments>
+Para alinear en ambos ejes al mismo tiempo, sumá las dos alineaciones con el
+operador `+`. Por ejemplo, `{top + right}` alinea el contenido a la esquina
+superior derecha.
+
+```example
+#set page(height: 3cm)
+#align(center + bottom)[Hi]
+```
+
+= Campos <fields>
+Los campos `x` e `y` contienen los componentes horizontal y vertical de la
+alineación, respectivamente (como otro `alignment` más). Pueden ser `{none}`.
+
+```example
+#(top + right).x \
+#left.x \
+#left.y (none)
+```
+
+
+@@ Alignment::BOTTOM  [src:53fb8708]
+Alineación vertical inferior.
+
+```example
+#set page(height: 3cm)
+#align(bottom)[Bottom]
+```
+
+
+@@ Alignment::CENTER  [src:a93d89cc]
+Alineación horizontal centrada.
+
+```example
+#align(center)[Center]
+```
+
+
+@@ Alignment::END  [src:1a0e4499]
+Alineación horizontal hacia el @direction.end[final] de la @text.dir[dirección del
+texto].
+
+```example
+#set text(dir: ltr)
+#align(end, emoji.arrow.r)
+
+#set text(dir: rtl)
+#align(end, emoji.arrow.l)
+```
+
+
+@@ Alignment::HORIZON  [src:6cf350ce]
+Alineación vertical central.
+
+```example
+#set page(height: 3cm)
+#align(horizon)[Horizon]
+```
+
+
+@@ Alignment::LEFT  [src:29b3565f]
+Alineación horizontal a la izquierda.
+
+```example
+#align(left)[Left]
+```
+
+
+@@ Alignment::RIGHT  [src:f9caaf9b]
+Alineación horizontal a la derecha.
+
+```example
+#align(right)[Right]
+```
+
+
+@@ Alignment::START  [src:5788da76]
+Alineación horizontal hacia el @direction.start[inicio] de la @text.dir[dirección
+del texto].
+
+```example
+#set text(dir: ltr)
+#align(start, emoji.arrow.r)
+
+#set text(dir: rtl)
+#align(start, emoji.arrow.l)
+```
+
+
+@@ Alignment::TOP  [src:144e436c]
+Alineación vertical superior.
+
+```example
+#set page(height: 3cm)
+#align(top)[Top]
+```
+
+
+@@ Alignment::axis  [src:6f0fda65]
+El eje al que pertenece esta alineación.
+- `{"horizontal"}` para `start`, `left`, `center`, `right` y `end`
+- `{"vertical"}` para `top`, `horizon` y `bottom`
+- `{none}` para alineaciones bidimensionales
+
+```example
+#left.axis() \
+#bottom.axis()
+```
+
+
+@@ Alignment::inv  [src:27cfaf6a]
+La alineación inversa.
+
+```example
+#top.inv() \
+#left.inv() \
+#center.inv() \
+#(left + bottom).inv()
+```
+

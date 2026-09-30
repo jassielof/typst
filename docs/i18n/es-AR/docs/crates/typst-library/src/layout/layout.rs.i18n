@@ -1,0 +1,77 @@
+@@ LayoutElem  [src:d635f01e]
+Ejecuta una llamada a `layout`.
+
+@@ LayoutElem::func  [src:a0fb74b5]
+La función a la que se llama con el tamaño del contenedor exterior (o de la página).
+
+@@ layout  [src:3c6bb009]
+Proporciona acceso a las dimensiones (ancho y alto) del contenedor exterior actual (o
+de la página, si no hay ninguno).
+
+Acepta una función que recibe un único parámetro, que es un diccionario con las claves
+`width` y `height`, ambas de tipo @length. A la función se le proporciona
+@reference:context[contexto], lo que significa que no necesitás usarla en combinación
+con la palabra clave `context`. Por eso se puede llamar a @measure en el siguiente
+ejemplo.
+
+```example
+#let text = lorem(30)
+#layout(size => [
+  #let (height,) = measure(
+    width: size.width,
+    text,
+  )
+  This text is #height high with
+  the current page width: \
+  #text
+])
+```
+
+Tené en cuenta que la función `layout` fuerza su contenido dentro de un contenedor a
+nivel de @block[bloque], por lo que dentro de ella no es posible ubicar elementos
+relativos a la página ni hacer saltos de página.
+
+Si la llamada a `layout` se coloca dentro de un box con un ancho de `{800pt}` y una
+altura de `{400pt}`, la función especificada recibirá el argumento
+`{(width: 800pt, height: 400pt)}`. Si se coloca directamente en la página, recibe las
+dimensiones de la página menos sus márgenes. Esto es útil sobre todo en combinación
+con la @measure[medición].
+
+Para obtener la altura _restante_ de la página en lugar de su tamaño completo, podés
+envolver tu llamada a `layout` en un `{block(height: 1fr)}`. Esto funciona porque el
+bloque crece automáticamente para llenar el espacio restante (mirá la documentación de
+@fraction[fracciones] para más detalles).
+
+```example
+#set page(height: 150pt)
+
+#lorem(20)
+
+#block(height: 1fr, layout(size => [
+  Remaining height: #size.height
+]))
+```
+
+También podés usar esta función para resolver un @ratio en una longitud fija. Esto
+puede venir bien si estás construyendo tus propias abstracciones de diseño.
+
+```example
+#layout(size => {
+  let half = 50% * size.width
+  [Half a page is #half wide.]
+})
+```
+
+Tené en cuenta que el ancho o la altura que proporciona `layout` serán infinitos si la
+dimensión de página correspondiente está establecida en `{auto}`.
+
+@@ layout::func  [src:e3541038]
+Una función a la que se llama con el tamaño del contenedor exterior. Su valor de
+retorno se muestra en el documento.
+
+El tamaño del contenedor se da como un @dictionary[diccionario] con las claves `width`
+y `height`, ambas de tipo @length.
+
+Esta función se llama una vez por cada vez que el contenido devuelto por `layout`
+aparece en el documento. Esto permite generar contenido que dependa de las dimensiones
+de su contenedor.

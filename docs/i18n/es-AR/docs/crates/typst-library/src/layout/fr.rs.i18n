@@ -1,0 +1,13 @@
+@@ Fr  [src:35fdf9c1]
+Define cómo se distribuye el espacio restante en un diseño.
+
+Cada elemento con tamaño fraccionario recibe espacio según la proporción entre su
+fracción y la suma de todas las fracciones.
+
+Para más detalles, mirá también las funciones @h y @v y la @grid[función `grid`].
+
+= Ejemplo <example>
+```example
+Left #h(1fr) Left-ish #h(2fr) Right
+```
+

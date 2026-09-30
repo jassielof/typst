@@ -1,0 +1,155 @@
+@@ ColbreakElem  [src:254c77ec]
+Fuerza un salto de columna.
+
+La función se comporta como un @pagebreak[salto de página] cuando se usa en un diseño
+de una sola columna o en la última columna de una página. De lo contrario, el
+contenido posterior al salto de columna se ubicará en la siguiente columna.
+
+= Ejemplo <example>
+```example
+#set page(columns: 2)
+Preliminary findings from our
+ongoing research project have
+revealed a hitherto unknown
+phenomenon of extraordinary
+significance.
+
+#colbreak()
+Through rigorous experimentation
+and analysis, we have discovered
+a hitherto uncharacterized process
+that defies our current
+understanding of the fundamental
+laws of nature.
+```
+
+
+@@ ColbreakElem::weak  [src:a616a20c]
+Si es `{true}`, el salto de columna se omite si la columna actual ya está vacía.
+
+@@ ColumnsElem  [src:4cd632e7]
+Separa una región en varias columnas de igual tamaño.
+
+La función `column` te permite separar el contenido de cualquier contenedor en varias
+columnas. Por defecto, las columnas ocupan la altura de su contenedor o la altura
+restante de la página y se van llenando una tras otra. Usá @colbreak para terminar
+explícitamente una columna y continuar en la siguiente. Usá el @columns.balanced[parámetro
+`balanced`] para igualar automáticamente la altura de las columnas.
+
+= Ejemplo <example>
+```example
+#columns(2, gutter: 8pt)[
+  This text is in the
+  first column.
+
+  #colbreak()
+
+  This text is in the
+  second column.
+]
+```
+
+= #short-or-long[A nivel de página][Columnas a nivel de página] <page-level>
+Si necesitás insertar columnas en todo tu documento, usá en su lugar el
+@page.columns[parámetro `columns`] de la función `{page}`. Esto creará las columnas
+directamente a nivel de página en lugar de envolver todo tu contenido en un
+contenedor de diseño. Como resultado, cosas como los @pagebreak[saltos de página], las
+@footnote[notas al pie] y los @par.line[números de línea] seguirán funcionando como
+se espera. Para más información, leé también la
+@guides:page-setup:columns[parte relevante de la guía de configuración de página].
+
+= #short-or-long[Salir][Salir de las columnas] <breaking-out>
+Para salir temporalmente de las columnas (por ejemplo, para el título de un trabajo),
+usá una ubicación flotante con ámbito en el padre:
+
+#example(
+  single: true,
+  ```
+  #set page(columns: 2, height: 150pt)
+
+  #place(
+    top + center,
+    scope: "parent",
+    float: true,
+    text(1.4em, weight: "bold")[
+      My document
+    ],
+  )
+
+  #lorem(40)
+  ```
+)
+
+@@ ColumnsElem::balanced  [src:11f82af1]
+Si se iguala la altura de las columnas cortándolas antes.
+
+```example
+#set page(columns: 2, height: 5cm)
+#set par(justify: true)
+>>> #set columns(gutter: 15pt)
+#set columns(balanced: true)
+#lorem(30)
+```
+
+
+@@ ColumnsElem::body  [src:7dbd2cb1]
+El contenido que se dispone en las columnas.
+
+@@ ColumnsElem::count  [src:a1288d8d]
+La cantidad de columnas.
+
+@@ ColumnsElem::gutter  [src:5e1744e1]
+El tamaño del espacio entre columnas (gutter).
+
+```example
+#set page(columns: 2, height: 5cm)
+#set par(justify: true)
+#set columns(gutter: 15mm)
+#lorem(30)
+```
+
+
+@@ ColumnsElem::separator  [src:084215a9]
+El separador que se coloca entre cada par de columnas no vacías.
+
+Por defecto, el contenido se centra y las @line[líneas] usan una longitud de
+`{100%}` y un ángulo de `{90deg}`, salvo que se especifique otra cosa.
+
+```example
+#set page(columns: 2, height: 5cm)
+#set par(justify: true)
+#set columns(
+  gutter: 2em,
+  separator: line(),
+)
+#lorem(35)
+```
+
+#example(
+  title: "Separador con línea punteada extendida",
+  ```
+  #set page(columns: 2, height: 5cm)
+  #set par(justify: true)
+  #set columns(
+    gutter: 2em,
+    separator: line(
+      stroke: (dash: "dotted"),
+      length: 100% + 2 * 4pt,
+    ),
+  )
+  #lorem(35)
+  ```
+)
+
+#example(
+  title: "Adorno de separador personalizado",
+  ```
+  #set page(columns: 3, width: 15cm, height: 3cm)
+  #set par(justify: true)
+  #set columns(
+    gutter: 30pt,
+    separator: curve(curve.cubic((-8pt, 0%), (8pt, 50%), (0pt, 50%))
+  ))
+  #lorem(36)
+  ```
+)

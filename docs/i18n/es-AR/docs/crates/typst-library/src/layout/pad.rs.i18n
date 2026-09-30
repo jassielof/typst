@@ -1,0 +1,39 @@
+@@ PadElem  [src:51bd1e5e]
+Agrega espaciado alrededor del contenido.
+
+El espaciado se puede especificar para cada lado individualmente o para todos los lados
+a la vez mediante un argumento posicional.
+
+= Ejemplo <example>
+```example
+#set align(center)
+
+#pad(x: 16pt, image("typing.jpg"))
+_Typing speeds can be
+ measured in words per minute._
+```
+
+
+@@ PadElem::body  [src:8768e2ad]
+El contenido al que se le agrega relleno en los lados.
+
+@@ PadElem::bottom  [src:c57f086c]
+El relleno del lado inferior.
+
+@@ PadElem::left  [src:3e494c8c]
+El relleno del lado izquierdo.
+
+@@ PadElem::rest  [src:75b19f9b]
+Un atajo para establecer los cuatro lados en el mismo valor.
+
+@@ PadElem::right  [src:dadea531]
+El relleno del lado derecho.
+
+@@ PadElem::top  [src:fbdbb05c]
+El relleno del lado superior.
+
+@@ PadElem::x  [src:d76ac207]
+Un atajo para establecer `left` y `right` en el mismo valor.
+
+@@ PadElem::y  [src:9b8d2f6b]
+Un atajo para establecer `top` y `bottom` en el mismo valor.
