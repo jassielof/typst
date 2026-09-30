@@ -19,11 +19,12 @@
 Ya tenés un buen enfoque para tu informe. Así que empecemos escribiendo la introducción. Ingresá algo de texto en el panel del editor. Vas a notar que el texto aparece de inmediato en la página de la vista previa.
 
 ```example
-In this report, we will explore the
-various factors that influence fluid
-dynamics in glaciers and how they
-contribute to the formation and
-behaviour of these natural structures.
+En este informe, exploraremos los
+diversos factores que influyen en la
+dinámica de fluidos en los glaciares
+y cómo contribuyen a la formación y
+al comportamiento de estas
+estructuras naturales.
 ```
 
 _A lo largo de este tutorial, vamos a mostrar ejemplos de código como este. Igual que en la app, el primer panel contiene el marcado y el segundo muestra una vista previa. Achicamos la página para que entren los ejemplos y puedas ver lo que pasa._
@@ -31,12 +32,13 @@ _A lo largo de este tutorial, vamos a mostrar ejemplos de código como este. Igu
 El siguiente paso es agregar un título y resaltar algo de texto. Typst usa un marcado simple para las tareas de formato más comunes. Para agregar un título, escribí el carácter `=`, y para resaltar texto en cursiva, encerralo entre `[_underscores_]`.
 
 ```example
-= Introduction
-In this report, we will explore the
-various factors that influence _fluid
-dynamics_ in glaciers and how they
-contribute to the formation and
-behaviour of these natural structures.
+= Introducción
+En este informe, exploraremos los
+diversos factores que influyen en la
+_dinámica de fluidos_ en los glaciares
+y cómo contribuyen a la formación y
+al comportamiento de estas
+estructuras naturales.
 ```
 
 ¡Qué fácil! Para agregar un párrafo nuevo, simplemente dejá una línea en blanco entre dos líneas de texto. Si ese párrafo necesita un subtítulo, lo generás escribiendo `==` en lugar de `=`. La cantidad de caracteres `=` determina el nivel de anidación del título.
@@ -44,19 +46,19 @@ behaviour of these natural structures.
 Ahora queremos enumerar algunas de las circunstancias que influyen en la dinámica de los glaciares. Para eso usamos una lista numerada. Para cada ítem de la lista, escribimos un carácter `+` al principio de la línea. Typst numera los ítems automáticamente.
 
 ```example
-+ The climate
-+ The topography
-+ The geology
++ El clima
++ La topografía
++ La geología
 ```
 
 Si quisiéramos agregar una lista con viñetas, usaríamos el carácter `-` en lugar del carácter `+`. También podemos anidar listas: por ejemplo, podemos agregar una sublista al primer ítem de la lista anterior indentándola.
 
 ```example
-+ The climate
-  - Temperature
-  - Precipitation
-+ The topography
-+ The geology
++ El clima
+  - Temperatura
+  - Precipitación
++ La topografía
++ La geología
 ```
 
 = #short-or-long[Figura][Agregar una figura] <figure>
@@ -94,8 +96,8 @@ El epígrafe consiste en marcado arbitrario. Para pasarle marcado a una función
 #figure(
   image("glacier.jpg", width: 70%),
   caption: [
-    _Glaciers_ form an important part
-    of the earth's climate system.
+    Los _glaciares_ son una parte importante
+    del sistema climático de la Tierra.
   ],
 )
 ```
@@ -103,15 +105,15 @@ El epígrafe consiste en marcado arbitrario. Para pasarle marcado a una función
 Seguís escribiendo tu informe y ahora querés hacer referencia a la figura. Para eso, primero adjuntale una etiqueta a la figura. Una etiqueta identifica de forma única un elemento de tu documento. Agregá una después de la figura encerrando algún nombre entre paréntesis angulares. Después podés referenciar la figura en tu texto escribiendo un símbolo `[@]` seguido de ese nombre. Los títulos y las ecuaciones también se pueden etiquetar para que sean referenciables.
 
 ```example
-Glaciers as the one shown in
-@glaciers will cease to exist if
-we don't take action soon!
+¡Glaciares como el que se muestra en
+@glaciers dejarán de existir si
+no actuamos pronto!
 
 #figure(
   image("glacier.jpg", width: 70%),
   caption: [
-    _Glaciers_ form an important part
-    of the earth's climate system.
+    Los _glaciares_ son una parte importante
+    del sistema climático de la Tierra.
   ],
 ) <glaciers>
 ```
@@ -124,87 +126,87 @@ we don't take action soon!
   Por ejemplo, la función image espera una ruta a un archivo de imagen. No tendría sentido pasarle, por ejemplo, un párrafo de texto u otra imagen como ruta de la imagen. Por eso acá solo se permiten cadenas. En cambio, las cadenas funcionan en cualquier lugar donde se espere contenido, porque el texto es un tipo válido de contenido.
 ]
 
-= #short-or-long[Bibliography][Adding a bibliography] <bibliography>
-As you write up your report, you need to back up some of your claims. You can add a bibliography to your document with the @bibliography function. This function expects a path to a bibliography file.
+= #short-or-long[Bibliografía][Agregar una bibliografía] <bibliography>
+Mientras escribís tu informe, necesitás respaldar algunas de tus afirmaciones. Podés agregar una bibliografía a tu documento con la función @bibliography. Esta función espera la ruta de un archivo de bibliografía.
 
-Typst's native bibliography format is #link("https://github.com/typst/hayagriva/blob/main/docs/file-format.md")[Hayagriva], but for compatibility you can also use BibLaTeX files. As your classmate has already done a literature survey and sent you a `.bib` file, you'll use that one. Upload the file through the file panel to access it in Typst.
+El formato nativo de bibliografía de Typst es #link("https://github.com/typst/hayagriva/blob/main/docs/file-format.md")[Hayagriva], pero, por compatibilidad, también podés usar archivos BibLaTeX. Como tu compañero ya hizo un relevamiento bibliográfico y te mandó un archivo `.bib`, vas a usar ese. Subí el archivo desde el panel de archivos para acceder a él en Typst.
 
-Once the document contains a bibliography, you can start citing from it. Citations use the same syntax as references to a label. As soon as you cite a source for the first time, it will appear in the bibliography section of your document. Typst supports different citation and bibliography styles. Consult the @bibliography.style[reference] for more details.
+Una vez que el documento contiene una bibliografía, podés empezar a citarla. Las citas usan la misma sintaxis que las referencias a una etiqueta. Apenas citás una fuente por primera vez, aparece en la sección de bibliografía de tu documento. Typst admite distintos estilos de citas y de bibliografía. Consultá la @bibliography.style[referencia] para más detalles.
 
 ```example
-= Methods
-We follow the glacier melting models
-established in @glacier-melt.
+= Métodos
+Seguimos los modelos de derretimiento
+de glaciares establecidos en @glacier-melt.
 
 #bibliography("works.bib")
 ```
 
-= Maths <maths>
-After fleshing out the methods section, you move on to the meat of the document: Your equations. Typst has built-in mathematical typesetting and uses its own math notation. Let's start with a simple equation. We wrap it in `[$]` signs to let Typst know it should expect a mathematical expression:
+= Matemática <maths>
+Después de desarrollar la sección de métodos, pasás a lo central del documento: tus ecuaciones. Typst tiene composición matemática integrada y usa su propia notación matemática. Empecemos con una ecuación simple. La encerramos entre signos `[$]` para que Typst sepa que tiene que esperar una expresión matemática:
 
 ```example
-The equation $Q = rho A v + C$
-defines the glacial flow rate.
+La ecuación $Q = rho A v + C$
+define el caudal glacial.
 ```
 
-The equation is typeset inline, on the same line as the surrounding text. If you want to have it on its own line instead, you should insert a single space at its start and end:
+La ecuación se compone en línea, en la misma línea que el texto que la rodea. Si en cambio querés que quede en su propia línea, tenés que insertar un solo espacio al principio y al final:
 
 ```example
-The flow rate of a glacier is
-defined by the following equation:
+El caudal de un glaciar está
+definido por la siguiente ecuación:
 
 $ Q = rho A v + C $
 ```
 
-We can see that Typst displayed the single letters `Q`, `A`, `v`, and `C` as-is, while it translated `rho` into a Greek letter. Math mode will always show single letters verbatim. Multiple letters, however, are interpreted as symbols, variables, or function names. To imply a multiplication between single letters, put spaces between them.
+Podemos ver que Typst mostró las letras sueltas `Q`, `A`, `v` y `C` tal cual, mientras que tradujo `rho` a una letra griega. El modo matemático siempre muestra las letras sueltas literalmente. En cambio, las secuencias de varias letras se interpretan como símbolos, variables o nombres de funciones. Para indicar una multiplicación entre letras sueltas, poné espacios entre ellas.
 
-If you want to have a variable that consists of multiple letters, you can enclose it in quotes:
+Si querés tener una variable formada por varias letras, podés encerrarla entre comillas:
 
 ```example
-The flow rate of a glacier is given
-by the following equation:
+El caudal de un glaciar está dado
+por la siguiente ecuación:
 
-$ Q = rho A v + "time offset" $
+$ Q = rho A v + "desfase temporal" $
 ```
 
-You'll also need a sum formula in your paper. We can use the `sum` symbol and then specify the range of the summation in sub- and superscripts:
+También vas a necesitar una fórmula de sumatoria en tu trabajo. Podemos usar el símbolo `sum` y después especificar el rango de la sumatoria en subíndices y superíndices:
 
 ```example
-Total displaced soil by glacial flow:
+Total de suelo desplazado por el flujo glacial:
 
 $ 7.32 beta +
   sum_(i=0)^nabla Q_i / 2 $
 ```
 
-To add a subscript to a symbol or variable, type a `_` character and then the subscript. Similarly, use the `^` character for a superscript. If your sub- or superscript consists of multiple things, you must enclose them in round parentheses.
+Para agregar un subíndice a un símbolo o variable, escribí un carácter `_` y después el subíndice. De manera similar, usá el carácter `^` para un superíndice. Si tu subíndice o superíndice está formado por varias cosas, tenés que encerrarlas entre paréntesis.
 
-The above example also showed us how to insert fractions: Simply put a `/` character between the numerator and the denominator and Typst will automatically turn it into a fraction. Parentheses are smartly resolved, so you can enter your expression as you would into a calculator and Typst will replace parenthesized sub-expressions with the appropriate notation.
+El ejemplo anterior también nos mostró cómo insertar fracciones: simplemente poné un carácter `/` entre el numerador y el denominador, y Typst lo convierte automáticamente en una fracción. Los paréntesis se resuelven de forma inteligente, así que podés ingresar tu expresión como lo harías en una calculadora y Typst reemplaza las subexpresiones entre paréntesis por la notación adecuada.
 
 ```example
-Total displaced soil by glacial flow:
+Total de suelo desplazado por el flujo glacial:
 
 $ 7.32 beta +
   sum_(i=0)^nabla
     (Q_i (a_i - epsilon)) / 2 $
 ```
 
-Not all math constructs have special syntax. Instead, we use functions, just like the `image` function we have seen before. For example, to insert a column vector, we can use the @math.vec[`vec`] function. Within math mode, function calls don't need to start with the `#` character.
+No todas las construcciones matemáticas tienen una sintaxis especial. En su lugar, usamos funciones, igual que la función `image` que vimos antes. Por ejemplo, para insertar un vector columna, podemos usar la función @math.vec[`vec`]. Dentro del modo matemático, las llamadas a funciones no necesitan empezar con el carácter `#`.
 
 ```example
 $ v := vec(x_1, x_2, x_3) $
 ```
 
-Some functions are only available within math mode. For example, the @math.cal[`cal`] function is used to typeset calligraphic letters commonly used for sets. The @math[math section of the reference] provides a complete list of all functions that math mode makes available.
+Algunas funciones solo están disponibles dentro del modo matemático. Por ejemplo, la función @math.cal[`cal`] se usa para componer letras caligráficas, que se usan comúnmente para conjuntos. La @math[sección de matemática de la referencia] ofrece una lista completa de todas las funciones que el modo matemático pone a disposición.
 
-One more thing: Many symbols, such as the arrow, have a lot of variants. You can select among these variants by appending a dot and a modifier name to a symbol's name:
+Una cosa más: muchos símbolos, como la flecha, tienen muchas variantes. Podés elegir entre estas variantes agregando un punto y el nombre de un modificador al nombre del símbolo:
 
 ```example
 $ a arrow.squiggly b $
 ```
 
-This notation is also available in markup mode, but the symbol name must be preceded with `#sym.` there. See the @sym[symbols section] for a list of all available symbols.
+Esta notación también está disponible en el modo marcado, pero ahí el nombre del símbolo tiene que estar precedido por `#sym.`. Mirá la @sym[sección de símbolos] para ver una lista de todos los símbolos disponibles.
 
-= Review <review>
-You have now seen how to write a basic document in Typst. You learned how to emphasize text, write lists, insert images, align content, and typeset mathematical expressions. You also learned about Typst's functions. There are many more kinds of content that Typst lets you insert into your document, such as @table[tables], @reference:visualize[shapes], and @raw[code blocks]. You can peruse the @reference[reference] to learn more about these and other features.
+= Repaso <review>
+Ya viste cómo escribir un documento básico en Typst. Aprendiste a resaltar texto, escribir listas, insertar imágenes, alinear contenido y componer expresiones matemáticas. También aprendiste sobre las funciones de Typst. Hay muchos más tipos de contenido que Typst te permite insertar en tu documento, como @table[tablas], @reference:visualize[formas] y @raw[bloques de código]. Podés recorrer la @reference[referencia] para aprender más sobre estas y otras características.
 
-For the moment, you have completed writing your report. You have already saved a PDF by clicking on the download button in the top right corner. However, you think the report could look a bit less plain. In the next section, we'll learn how to customize the look of our document.
+Por el momento, terminaste de escribir tu informe. Ya guardaste un PDF haciendo clic en el botón de descarga de la esquina superior derecha. Sin embargo, pensás que el informe podría verse un poco menos simple. En la próxima sección, vamos a aprender a personalizar el aspecto de tu documento.

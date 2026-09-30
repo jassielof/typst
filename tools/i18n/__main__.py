@@ -173,7 +173,7 @@ def strip_strings(code):
 def skeleton(code):
     """Function calls / `#names` / named args of code, ignoring text."""
     code = strip_strings(code)
-    return collections.Counter(re.findall(r"#?[A-Za-z_][\w.-]*(?=\()|#[A-Za-z][\w.-]*|[A-Za-z][\w-]*(?=:)", code))
+    return collections.Counter(re.findall(r"#?[A-Za-z_][\w.-]*(?=\()|#[A-Za-z][\w.-]*|(?<=[(,])\s*[A-Za-z][\w-]*(?=:)", code))
 
 
 def multiset(rx, text):
@@ -208,7 +208,7 @@ def check_pair(src, tr, lang, is_tutorial=False):
                 out.append(f"code block changed: {cs.strip()[:40]!r}")
     ps, pt = prose(src), prose(tr)
     diff_ms("#calls", multiset(r"#[A-Za-z][\w.-]*", ps), multiset(r"#[A-Za-z][\w.-]*", pt), out)
-    diff_ms("@refs", multiset(r"@[A-Za-z][\w:.-]*", ps), multiset(r"@[A-Za-z][\w:.-]*", pt), out)
+    diff_ms("@refs", multiset(r"@[A-Za-z][\w:.-]*\w", ps), multiset(r"@[A-Za-z][\w:.-]*\w", pt), out)
     diff_ms("<labels>", multiset(r"<[A-Za-z][\w:.-]*>", ps), multiset(r"<[A-Za-z][\w:.-]*>", pt), out)
     diff_ms("urls", multiset(r"https?://[^\s)\]\"]+", ps), multiset(r"https?://[^\s)\]\"]+", pt), out)
     diff_ms("`raw`", multiset(r"`[^`\n]+`", ps), multiset(r"`[^`\n]+`", pt), out)
