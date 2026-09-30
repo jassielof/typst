@@ -125,7 +125,7 @@
   let pills = input-types.map(ty-pill)
   let modifiers = ()
   if param.required {
-    modifiers.push[Required]
+    modifiers.push(stdx.ui("Required"))
   }
   if param.positional {
     if param.named {
@@ -233,7 +233,7 @@
     let strings = cast-strings(param.input)
     if strings.len() > 0 {
       let t = docs-table(
-        table.header[Variant][Details],
+        table.header(stdx.ui("Variant"), stdx.ui("Details")),
         ..strings
           .map(((variant, details)) => (
             context if target() == "paged" {
@@ -730,7 +730,7 @@
 
   {
     let base-label = <parameters>
-    labelled(heading[Parameters], base-label)
+    labelled(heading(stdx.ui("Parameters")), base-label)
     params-section(
       func,
       info.params,
@@ -811,7 +811,7 @@
   let constants = info.definitions.filter(v => not is-function(v))
   if constants.len() > 0 {
     let base-label = <constants>
-    labelled(heading[Constants], base-label)
+    labelled(heading(stdx.ui("Constants")), base-label)
     for (key, value) in constants {
       const-member(
         value,
@@ -825,7 +825,7 @@
   let functions = info.definitions.filter(is-function)
   if functions.len() > 0 {
     let base-label = <functions>
-    labelled(heading[Functions], base-label)
+    labelled(heading(stdx.ui("Functions")), base-label)
     for (key, value) in functions {
       func-member(
         value,
@@ -911,7 +911,7 @@
     }
 
     outline(
-      title: [Definitions],
+      title: stdx.ui("Definitions"),
       indent: 0pt,
       target: selector.or(..dests),
     )
@@ -1046,7 +1046,7 @@
 
       {
         let base-label = <parameters>
-        labelled(heading[Parameters], base-label)
+        labelled(heading(stdx.ui("Parameters")), base-label)
         params-section(
           func,
           info.params,
