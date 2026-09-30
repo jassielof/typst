@@ -373,7 +373,7 @@
   }
   if info.contextual != none and info.contextual {
     gap
-    small(with-tooltip[Contextual][
+    small(with-tooltip[#stdx.ui("Contextual")][
       Contextual functions can only be used when the context is known.
     ])
   }
