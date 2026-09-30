@@ -44,6 +44,7 @@ fn main() -> ExitCode {
     if let Some(code) = i18n::subcommand() {
         return code;
     }
+
     match &ARGS.command {
         Command::Compile(command) => compile(command),
         Command::Watch(command) => watch(command),
@@ -128,6 +129,7 @@ struct Config {
     server: Option<HttpServer>,
     /// Whether to open the output after compilation.
     open: bool,
+
     /// The translation language, if any.
     lang: Option<String>,
 }
@@ -156,6 +158,7 @@ impl Config {
             server: (serve && args.format == OutputFormat::Website)
                 .then(|| HttpServer::new("docs", None, true).unwrap()),
             open: args.open,
+
             lang: args.lang.clone(),
         }
     }
