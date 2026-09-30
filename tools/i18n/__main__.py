@@ -21,6 +21,8 @@ ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs"
 EXTRA_FILES = ["components/preface.typ"]
 SKIP_DIRS = ("content/changelog",)
+# Files without translatable prose (only includes).
+NO_TRANSLATION = {"content/index.typ"}
 
 
 def h(text: str) -> str:
@@ -48,7 +50,7 @@ def source_files():
     out = [p for p in (DOCS / "content").rglob("*.typ")
            if not any(str(p.relative_to(DOCS)).startswith(s) for s in SKIP_DIRS)]
     out += [DOCS / f for f in EXTRA_FILES]
-    return sorted(p.relative_to(DOCS).as_posix() for p in out)
+    return sorted(r for r in (p.relative_to(DOCS).as_posix() for p in out) if r not in NO_TRANSLATION)
 
 
 def rust_docs():
@@ -216,7 +218,7 @@ def check_pair(src, tr, lang, is_tutorial=False):
     diff_ms("urls", multiset(r"https?://[^\s)\]\"]+", ps), multiset(r"https?://[^\s)\]\"]+", pt), out)
     diff_ms("`raw`", multiset(r"`[^`\n]+`", ps), multiset(r"`[^`\n]+`", pt), out)
     def words(t):  # visible words only: no raw, refs, calls, urls
-        t = re.sub(r"`[^`\n]*`|@[\w:.-]+|#[\w.-]+|https?://\S+|<[\w:.-]+>", " ", t)
+        t = re.sub(r"`[^`\n]*`|@[\w:.-]+|#[\w.-]+|https?://\S+|<[\w:.-]+>|\"[^\"\n]*\"|\b[\w-]+:(?=\s)", " ", t)
         return t.lower()
     wps, wpt = words(ps), words(pt)
     for a, b in (("[", "]"), ("{", "}")):
