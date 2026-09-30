@@ -140,7 +140,7 @@
     }
   }
   if param.variadic {
-    modifiers.push(with-tooltip[Variadic][
+    modifiers.push(with-tooltip[#stdx.ui("Variadic")][
       Variadic parameters can be specified multiple times.
     ])
   }
