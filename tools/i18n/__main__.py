@@ -216,8 +216,14 @@ def check_pair(src, tr, lang, is_tutorial=False):
     diff_ms("@refs", multiset(r"@[A-Za-z][\w:.-]*\w", ps), multiset(r"@[A-Za-z][\w:.-]*\w", pt), out)
     diff_ms("<labels>", multiset(r"<[A-Za-z][\w:.-]*>", ps), multiset(r"<[A-Za-z][\w:.-]*>", pt), out)
     diff_ms("urls", multiset(r"https?://[^\s)\]\"]+", ps), multiset(r"https?://[^\s)\]\"]+", pt), out)
-    diff_ms("`raw`", multiset(r"`[^`\n]+`", ps), multiset(r"`[^`\n]+`", pt), out)
+    def raws(t):
+        # Inline ``` fences and `{"alt text"}` samples are prose, not code.
+        t = re.sub(r"```[^\n]*?```", " ", t)
+        return re.sub(r"`\{\"[^`\n]*\"\}`", " ", t)
+    diff_ms("`raw`", multiset(r"`[^`\n]+`", raws(ps)), multiset(r"`[^`\n]+`", raws(pt)), out)
     def words(t):  # visible words only: no raw, refs, calls, urls
+        t = re.sub(r"(?m)^\s*(//.*|\[[\w ]+\],)$", " ", t)
+        t = re.sub(r"\b[\w-]+(\.[\w-]+)+\(", " ", t)
         t = re.sub(r"`[^`\n]*`|@[\w:.-]+|#[\w.-]+|https?://\S+|<[\w:.-]+>|\"[^\"\n]*\"|\b[\w-]+:(?=\s)", " ", t)
         return t.lower()
     wps, wpt = words(ps), words(pt)
