@@ -1,0 +1,363 @@
+@@ FigureCaption  [src:f88808b6]
+El epígrafe de una figura. Este elemento se puede usar en reglas set y show para personalizar el
+aspecto de los epígrafes de todas las figuras o de las figuras de un tipo específico.
+
+Además de su `position` y su `body`, el `caption` también proporciona como campos el `kind`, el
+`supplement`, el `counter` y la `numbering` de la figura. Estas partes se pueden usar en selectores
+@function.where[`where`] y en reglas show para construir un epígrafe completamente personalizado.
+
+```example
+#show figure.caption: emph
+
+#figure(
+  rect[Hello],
+  caption: [A rectangle],
+)
+```
+
+
+@@ FigureCaption::body  [src:fdc9d7a9]
+El cuerpo del epígrafe.
+
+Se puede usar junto con `kind`, `supplement`, `counter`, `numbering` y `location` para personalizar
+por completo el epígrafe.
+
+```example
+#show figure.caption: it => [
+  #underline(it.body) |
+  #it.supplement
+  #context it.counter.display(it.numbering)
+]
+
+#figure(
+  rect[Hello],
+  caption: [A rectangle],
+)
+```
+
+
+@@ FigureCaption::counter  [src:c6f2d905]
+El contador de la figura.
+
+@@ FigureCaption::figure_location  [src:e5f5a254]
+La ubicación de la figura.
+
+@@ FigureCaption::kind  [src:10ce10bf]
+El suplemento de la figura.
+
+@@ FigureCaption::numbering  [src:eafed2ab]
+Cómo numerar la figura.
+
+@@ FigureCaption::position  [src:38262a20]
+La posición del epígrafe en la figura. Puede ser `{top}` o `{bottom}`.
+
+```example
+#show figure.where(
+  kind: table
+): set figure.caption(position: top)
+
+#figure(
+  table(columns: 2)[A][B],
+  caption: [I'm up here],
+)
+
+#figure(
+  rect[Hi],
+  caption: [I'm down here],
+)
+
+#figure(
+  table(columns: 2)[A][B],
+  caption: figure.caption(
+    position: bottom,
+    [I'm down here too!]
+  )
+)
+```
+
+
+@@ FigureCaption::separator  [src:5eb530cf]
+El separador que aparecerá entre el número y el cuerpo.
+
+Si se establece en `{auto}`, el separador se adaptará al @text.lang[idioma] y a la
+@text.region[región] actuales.
+
+```example
+#set figure.caption(separator: [ --- ])
+
+#figure(
+  rect[Hello],
+  caption: [A rectangle],
+)
+```
+
+
+@@ FigureCaption::supplement  [src:10ce10bf]
+El suplemento de la figura.
+
+@@ FigureElem  [src:6296de8c]
+Una figura con un epígrafe opcional.
+
+Detecta automáticamente su tipo para seleccionar la pista de conteo correcta. Por ejemplo, las figuras
+que contienen imágenes se numerarán por separado de las que contienen tablas.
+
+= Ejemplos <examples>
+El siguiente ejemplo muestra una figura básica con una imagen:
+
+```example
+@glacier shows a glacier. Glaciers
+are complex systems.
+
+#figure(
+  image("glacier.jpg", width: 80%),
+  caption: [A curious figure.],
+) <glacier>
+```
+
+También podés insertar @table[tablas] en figuras para darles un epígrafe. La figura lo detectará y
+usará automáticamente un contador separado.
+
+```example
+#figure(
+  table(
+    columns: 4,
+    [t], [1], [2], [3],
+    [y], [0.3s], [0.4s], [0.8s],
+  ),
+  caption: [Timing results],
+)
+```
+
+Este comportamiento se puede reemplazar especificando explícitamente el `kind` de la figura. Todas las
+figuras del mismo tipo comparten un contador común.
+
+= Comportamiento de las figuras <figure-behaviour>
+Por defecto, las figuras se ubican dentro del flujo del contenido. Para hacer que floten hacia la parte
+superior o inferior de la página, podés usar el argumento @figure.placement[`placement`].
+
+Si tu figura es demasiado grande y su contenido se puede cortar entre páginas (por ejemplo, si contiene
+una tabla grande), podés hacer que la propia figura también se pueda cortar entre páginas con esta regla
+show:
+
+```typ
+#show figure: set block(breakable: true)
+```
+
+Mirá la documentación de @block.breakable[block] para más información sobre los bloques que se pueden
+cortar y los que no.
+
+= Personalización del epígrafe <caption-customization>
+Podés modificar el aspecto del epígrafe de la figura con su función asociada @figure.caption[`caption`].
+En el siguiente ejemplo, enfatizamos todos los epígrafes:
+
+```example
+#show figure.caption: emph
+
+#figure(
+  rect[Hello],
+  caption: [I am emphasized!],
+)
+```
+
+Con un selector @function.where[`where`], podemos limitar esas reglas a tipos específicos de figuras. Por
+ejemplo, para ubicar el epígrafe encima de las tablas, pero mantenerlo debajo en todos los demás tipos de
+figuras, podríamos escribir la siguiente regla show-set:
+
+```example
+#show figure.where(
+  kind: table
+): set figure.caption(position: top)
+
+#figure(
+  table(columns: 2)[A][B][C][D],
+  caption: [I'm up here],
+)
+```
+
+= Accesibilidad <accessibility>
+Podés usar el parámetro @figure.alt[`alt`] para proporcionar una
+@guides:accessibility:textual-representations[descripción alternativa] de la figura para lectores de
+pantalla y otras tecnologías de asistencia (TA). Consultá @figure.alt[su documentación] para aprender más.
+
+Podés usar figuras para agregar descripciones alternativas a rutas, formas o visualizaciones que no tienen
+su propio parámetro `alt`. Si tu gráfico es puramente decorativo y no tiene un significado semántico,
+considerá envolverlo en cambio en @pdf.artifact, lo que lo ocultará a las TA al exportar a PDF.
+
+Las TA siempre leerán la figura en el punto donde aparece en el documento, sin importar su
+@figure.placement[`placement`]. Poné su marcado donde tenga más sentido en el orden de lectura.
+
+@@ FigureElem::alt  [src:95217892]
+Una descripción alternativa de la figura.
+
+Cuando agregás una descripción alternativa, las TA leerán tanto ella como el epígrafe (si lo hay). Sin
+embargo, se omitirá el contenido de la figura en sí.
+
+Cuando el cuerpo de tu figura es una @image[imagen] con su propio texto `alt` establecido, este parámetro
+no debería usarse en el elemento figure. Del mismo modo, no uses este parámetro cuando la figura contiene
+una tabla, código u otro contenido que ya es accesible. En esos casos, las TA leerán el contenido de la
+figura y agregar una descripción alternativa llevaría a una pérdida de información.
+
+Podés aprender a escribir buenas descripciones alternativas en la
+@guides:accessibility:textual-representations[guía de accesibilidad].
+
+@@ FigureElem::body  [src:eff48de8]
+El contenido de la figura. A menudo, una @image[imagen].
+
+@@ FigureElem::caption  [src:b5c84d23]
+El epígrafe de la figura.
+
+@@ FigureElem::counter  [src:613e617e]
+Campo de conveniencia para acceder al contador de esta figura.
+
+El contador solo depende del `kind`:
+- Para @table[tablas]: `{counter(figure.where(kind: table))}`
+- Para @image[imágenes]: `{counter(figure.where(kind: image))}`
+- Para un tipo personalizado: `{counter(figure.where(kind: kind))}`
+
+Estos son los contadores que necesitás modificar si querés saltear un número o reiniciar el contador.
+
+@@ FigureElem::gap  [src:4c29f15d]
+El espacio vertical entre el cuerpo y el epígrafe.
+
+@@ FigureElem::kind  [src:dfbebda8]
+El tipo de figura que es.
+
+Todas las figuras del mismo tipo comparten un contador común.
+
+Si se establece en `{auto}`, la figura intentará determinar automáticamente su tipo según el tipo de su
+cuerpo. Los tipos detectados automáticamente son las @table[tablas] y el @raw[código]. En los demás casos,
+el tipo inferido es el de una @image[imagen].
+
+Establecerlo en algo distinto de `{auto}` reemplazará la detección automática. Esto puede ser útil si
+- querés crear un tipo de figura personalizado que no sea una @image[imagen], una @table[tabla] ni
+  @raw[código],
+- querés forzar a la figura a usar un contador específico sin importar su contenido.
+
+Podés establecer el tipo como una función de elemento o como una cadena de texto. Si lo establecés como una
+función de elemento distinta de @table, @raw o @image, vas a tener que especificar manualmente el
+suplemento de la figura.
+
+#example(
+  title: "Personalizar el tipo de figura",
+  ```
+  #figure(
+    circle(radius: 10pt),
+    caption: [A curious atom.],
+    kind: "atom",
+    supplement: [Atom],
+  )
+  ```
+)
+
+Si querés modificar un contador para saltear un número o reiniciarlo, podés acceder al @counter[contador]
+de cada tipo de figura con un selector @function.where[`where`]:
+
+- Para @table[tablas]: `{counter(figure.where(kind: table))}`
+- Para @image[imágenes]: `{counter(figure.where(kind: image))}`
+- Para un tipo personalizado: `{counter(figure.where(kind: kind))}`
+
+#example(
+  title: "Modificar el contador de figuras para tipos específicos",
+  ```
+  #figure(
+    table(columns: 2, $n$, $1$),
+    caption: [The first table.],
+  )
+
+  #counter(
+    figure.where(kind: table)
+  ).update(41)
+
+  #figure(
+    table(columns: 2, $n$, $42$),
+    caption: [The 42nd table],
+  )
+
+  #figure(
+    rect[Image],
+    caption: [Does not affect images],
+  )
+  ```
+)
+
+Para usar cómodamente el contador correcto en una regla show, podés acceder al campo `counter`. Hay un
+ejemplo de esto en la documentación del @figure.caption.body[campo `body` del elemento
+`figure.caption`].
+
+@@ FigureElem::locale  [src:8b81ba74]
+La configuración regional de este elemento (se usa para la descripción alternativa).
+
+@@ FigureElem::numbering  [src:1ff86817]
+Cómo numerar la figura. Acepta un @numbering[patrón o función de numeración] que toma un único número.
+
+@@ FigureElem::outlined  [src:f30185d3]
+Si la figura debe aparecer en un @outline de figuras.
+
+@@ FigureElem::placement  [src:848474de]
+La ubicación de la figura en la página.
+
+- `{none}`: La figura permanece en el flujo, exactamente donde se la especificó, como cualquier otro
+  contenido.
+- `{auto}`: La figura elige `{top}` o `{bottom}` según cuál esté más cerca.
+- `{top}`: La figura flota hacia la parte superior de la página.
+- `{bottom}`: La figura flota hacia la parte inferior de la página.
+
+El espacio entre el contenido del flujo principal y la figura flotante se controla con el argumento
+@place.clearance[`clearance`] de la función `place`.
+
+```example
+#set page(height: 200pt)
+#show figure: set place(
+  clearance: 1em,
+)
+
+= Introduction
+#figure(
+  placement: bottom,
+  caption: [A glacier],
+  image("glacier.jpg", width: 60%),
+)
+#lorem(60)
+```
+
+
+@@ FigureElem::scope  [src:6d451671]
+En relación con qué ámbito contenedor se ubica la figura.
+
+Establecelo en `{"parent"}` para crear una figura de ancho completo en un documento de dos columnas.
+
+No tiene efecto si `placement` es `{none}`.
+
+```example
+#set page(height: 250pt, columns: 2)
+
+= Introduction
+#figure(
+  placement: bottom,
+  scope: "parent",
+  caption: [A glacier],
+  image("glacier.jpg", width: 60%),
+)
+#lorem(60)
+```
+
+
+@@ FigureElem::supplement  [src:365be79b]
+El suplemento de la figura.
+
+Si se establece en `{auto}`, la figura intentará determinar automáticamente el suplemento correcto según el
+`kind` y el @text.lang[idioma del texto] activo. Si usás un tipo de figura personalizado, vas a tener que
+especificar manualmente el suplemento.
+
+Si se especifica una función, se le pasa el primer descendiente del `kind` especificado (normalmente, el
+cuerpo de la figura) y debe devolver contenido.
+
+```example
+#figure(
+  [The contents of my figure!],
+  caption: [My custom figure],
+  supplement: [Bar],
+  kind: "foo",
+)
+```
+

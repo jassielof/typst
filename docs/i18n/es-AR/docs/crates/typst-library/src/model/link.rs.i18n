@@ -1,0 +1,185 @@
+@@ DirectLinkElem  [src:b98e8beb]
+Esto es un parche temporal para despachar a
+- un enlace sin procesar que no pasa por `LinkElem` en la exportación paginada
+- `LinkElem` en HTML (no hay un equivalente a un enlace directo)
+
+En el futuro querremos despachar todos los tipos de enlaces a `LinkElem`, pero esto es un cambio visualmente
+disruptivo en la exportación paginada, ya que, por ejemplo, `show link: underline` de repente también
+afectará a las referencias, las referencias inversas de la bibliografía, las referencias a notas al pie,
+etcétera. Querremos hacer este cambio con cuidado y de un modo que ofrezca una buena forma de seguir dando
+estilo solo a los enlaces de URL, lo cual es un poco demasiado complicado de lograr ahora para un requisito
+tan básico.
+
+@@ LinkElem  [src:8fc006c8]
+Enlaces a una URL o a una ubicación del documento.
+
+Por defecto, los enlaces no se ven distintos del texto normal. Sin embargo, podés aplicar fácilmente un
+estilo a tu elección con una regla show.
+
+= Ejemplo <example>
+```example
+#show link: underline
+
+https://example.com \
+
+#link("https://example.com") \
+#link("https://example.com")[
+  See example.com
+]
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: el texto que empieza con `http://` o `https://` se
+convierte automáticamente en un enlace.
+
+Para evitar la creación automática de un enlace, podés poner el texto en una @str[cadena de texto]. Para
+incrustar la cadena en el marcado, anteponele un numeral. Como alternativa, si el texto con forma de enlace
+es código informático, también podés ponerlo en un @raw[elemento `raw`]. Tené en cuenta que, en ambos
+casos, el texto puede seguir siendo cliqueable en el PDF, porque algunos lectores de PDF detectan enlaces
+automáticamente.
+
+```example
+#show link: set text(blue)
+
+// Automatic link
+https://example.com
+
+// String, not a link
+#"https://example.com"
+
+// Raw, not a link
+`https://*.com`
+```
+
+= Separación en sílabas <hyphenation>
+Si activás la separación en sílabas o la justificación, por defecto no se aplicará a los enlaces, para
+evitar separaciones no deseadas en las URL. Podés desactivar este comportamiento por defecto con
+`{show link: set text(hyphenate: true)}`.
+
+= Accesibilidad <accessibility>
+El destino de un enlace debería quedar claro a partir del propio texto del enlace o, al menos, del texto que
+lo rodea inmediatamente. En la exportación a PDF, Typst generará automáticamente una descripción emergente
+para los enlaces según su destino. Para los enlaces a URL, se usará la propia URL como descripción emergente.
+
+= Enlaces en la exportación a HTML <links-in-html-export>
+En la @html[exportación a HTML], un enlace a una @label[etiqueta] o @location[ubicación] se convertirá en un
+enlace de fragmento a un punto de anclaje con nombre. Para admitirlo, los destinos sin un ID existente
+recibirán automáticamente un ID en el DOM. Cómo funciona esto varía según el tipo de nodo(s) HTML en que se
+convirtió el destino del enlace:
+
+- Si el destino del enlace se convirtió en un único elemento HTML, ese elemento recibirá el ID. Este es, por
+  ejemplo, el caso típico cuando se enlaza a un título de nivel superior (que se convierte en un único
+  elemento `<h2>`).
+
+- Si el destino del enlace se convirtió en un único nodo de texto, el nodo se envolverá en un `<span>`, que
+  recibirá el ID.
+
+- Si el destino del enlace se convirtió en varios nodos, el primer nodo recibirá el ID.
+
+- Si el destino del enlace no se convirtió en ningún nodo, se generará un span vacío que sirva como destino
+  del enlace.
+
+Si dependés de una estructura de DOM específica, deberías asegurarte de que el destino del enlace se
+convierta en uno o varios elementos, ya que el compilador no da garantías sobre la segmentación precisa del
+texto en nodos de texto.
+
+Si está presente, la generación automática de ID intenta reutilizar la etiqueta del destino del enlace para
+crear un ID legible. Una etiqueta se puede reutilizar si:
+
+- Todos los caracteres son alfabéticos o numéricos según Unicode, o un guion, o un guion bajo.
+
+- La etiqueta no empieza con un dígito ni con un guion.
+
+Estas reglas aseguran que la etiqueta sea tanto un identificador CSS válido como un fragmento de URL válido
+para enlazar.
+
+Como los ID deben ser únicos en el DOM, las etiquetas duplicadas podrían necesitar desambiguación al
+reutilizarlas como ID. Las reglas precisas para esto son las siguientes:
+
+- Si una etiqueta se puede reutilizar y es única en el documento, se usará directamente como ID.
+
+- Si es reutilizable, pero no única, se agregará un sufijo formado por un guion y un entero. Por ejemplo, si
+  la etiqueta `<mylabel>` existe dos veces, se convertiría en `mylabel-1` y `mylabel-2`.
+
+- De lo contrario, se generará un ID único con la forma `loc-` seguido de un entero.
+
+= Enlaces en la exportación a bundle <links-in-bundle-export>
+En la @format.bundle[exportación a bundle], los enlaces siguen funcionando como siempre. Por ejemplo, si le
+adjuntás una etiqueta a un elemento de un documento, los enlaces de otros documentos pueden hacer
+referencia a esa etiqueta. Además, los documentos y los recursos (assets) también se pueden enlazar
+directamente. Para enlazar a un documento o recurso completo, podés adjuntarle una etiqueta o hacer una
+@query[consulta] de él y extraer su @location[ubicación].
+
+```typ
+#document("index.html")[
+  // Link to document.
+  #link(<appendix>)[To appendix]
+
+  // Link into document.
+  See the #link(<glossary>)[Glossary]
+  for more information.
+]
+
+#document("appendix.html")[
+  = Definitions
+  ...
+
+  = Glossary <glossary>
+  ...
+] <appendix>
+```
+
+Los enlaces entre documentos se emiten como rutas relativas (potencialmente con fragmentos). Typst asigna
+automáticamente nombres de anclaje por documento según las mismas reglas que en la exportación a HTML. En los
+documentos HTML y SVG, se emiten como atributos `id` en los elementos. En los documentos PDF, se emiten como
+_destinos con nombre._ Los documentos PNG no admiten enlaces.
+
+Tené en cuenta que los enlaces siempre usan rutas relativas completas. En algunos escenarios (principalmente
+en sitios web de varias páginas), esto puede no ser deseable. Por ejemplo, podrías querer generar un documento
+`/blog/index.html` y a la vez enlazarlo simplemente como `/blog`. Además, tu servidor web podría tratar `/blog`
+y `/blog/` como intercambiables y servir `/blog/index.html` en ambos casos. Si entonces un usuario navega a
+`/blog`, los enlaces relativos a otras páginas generadas por Typst dejarán de funcionar. Actualmente, Typst no
+tiene una forma de engancharse directamente en el manejo de enlaces incorporado. Dicho esto, en la exportación
+a HTML, según tu caso de uso, puede ser posible ajustar el manejo de enlaces incorporado con una regla show
+sobre `{html.elem.where(tag: "a")}`.
+
+@@ LinkElem::body  [src:cf574786]
+El contenido que debe convertirse en un enlace.
+
+Si `dest` es una cadena de URL, el parámetro se puede omitir. En ese caso, la URL se mostrará como enlace.
+
+@@ LinkElem::current  [src:3091d6e8]
+Un estilo de destino que se debe aplicar a los elementos.
+
+@@ LinkElem::dest  [src:9c9908a9]
+El destino al que apunta el enlace.
+
+- Para enlazar a páginas web, `dest` debe ser una cadena de URL válida. Si la URL tiene el esquema `mailto:` o
+  `tel:` y se omite el parámetro `body`, el cuerpo del enlace será la dirección de correo electrónico o el
+  número de teléfono, sin el esquema.
+
+- Para enlazar a otra parte del documento, `dest` puede tomar una de tres formas:
+  - Una @label[etiqueta] adjunta a un elemento. Si además querés texto automático para el enlace basado en el
+    elemento, considerá usar en cambio una @ref[referencia].
+
+  - Una @location (normalmente obtenida de @here, @locate o @query).
+
+  - Un diccionario con una clave `page` de tipo @int[entero] y coordenadas `x` e `y` de tipo @length[longitud].
+    Las páginas se cuentan desde uno y las coordenadas son relativas a la esquina superior izquierda de la
+    página.
+
+```example
+= Introduction <intro>
+#link("mailto:hello@typst.app") \
+#link(<intro>)[Go to intro] \
+#link((page: 1, x: 0pt, y: 0pt))[
+  Go to top
+]
+```
+
+
+@@ LinkMarker  [src:c93cb934]
+Un elemento que envuelve todo el contenido que está @Content::linked a un destino.
+
+@@ LinkMarker::body  [src:63c0f1ae]
+El contenido.

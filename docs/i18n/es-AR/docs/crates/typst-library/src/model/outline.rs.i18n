@@ -1,0 +1,302 @@
+@@ OutlineElem  [src:ed8b9a63]
+Una tabla de contenidos, de figuras u otros elementos.
+
+Esta función genera una lista de todas las apariciones de un elemento en el documento, hasta una
+@outline.depth[`depth`] dada. La numeración y el número de página del elemento se mostrarán en el índice junto
+con su título o epígrafe.
+
+= Ejemplo <example>
+```example
+#set heading(numbering: "1.")
+#outline()
+
+= Introduction
+#lorem(5)
+
+= Methods
+== Setup
+#lorem(10)
+```
+
+= Índices alternativos <alternative-outlines>
+En su configuración por defecto, esta función genera una tabla de contenidos. Al establecer el parámetro
+`target`, el índice se puede usar para generar una lista de otros tipos de elementos distintos de los
+títulos.
+
+En el siguiente ejemplo, listamos todas las figuras que contienen imágenes estableciendo `target` en
+`{figure.where(kind: image)}`. De la misma manera, podríamos haberlo establecido en
+`{figure.where(kind: table)}` para generar una lista de tablas.
+
+También podríamos establecerlo simplemente en `figure`, sin usar un selector @function.where[`where`], pero
+entonces la lista contendría _todas_ las figuras, ya sean las que contienen imágenes, tablas u otro material.
+
+```example
+#outline(
+  title: [List of Figures],
+  target: figure.where(kind: image),
+)
+
+#figure(
+  image("tiger.jpg"),
+  caption: [A nice figure!],
+)
+```
+
+= Dar estilo al índice <styling-the-outline>
+En el nivel más básico, podés dar estilo al índice estableciendo propiedades en él y en sus entradas. De esta
+manera, podés personalizar el @outline.title[título] del índice, cómo se @outline.indent[indentan] las
+entradas del índice y cómo debe @outline.entry.fill[rellenarse] el espacio entre el texto de una entrada y su
+número de página.
+
+Es posible una personalización más rica mediante la configuración de las @outline.entry[entradas] del índice.
+El índice genera una entrada por cada elemento incluido.
+
+== #short-or-long[Espaciado de entradas][Espaciar las entradas] <entry-spacing>
+Las entradas del índice son @block[bloques], así que podés ajustar el espaciado entre ellas con las reglas
+normales de espaciado de bloques:
+
+```example
+#show outline.entry.where(
+  level: 1
+): set block(above: 1.2em)
+
+#outline()
+
+= About ACME Corp.
+== History
+=== Origins
+= Products
+== ACME Tools
+```
+
+== #short-or-long[Armar una entrada][
+  Armar una entrada del índice a partir de sus partes
+] <building-an-entry>
+Para tener control total, también podés escribir una regla show de transformación sobre `outline.entry`. Sin
+embargo, la lógica para dar formato e indentar correctamente las entradas del índice es bastante compleja y la
+entrada del índice en sí solo contiene dos campos: el nivel y el elemento incluido.
+
+Por este motivo, se proporcionan varias funciones auxiliares. Podés combinarlas para componer una entrada solo
+con las partes que te gusten.
+
+La regla show por defecto de una entrada del índice se ve así
+#footnote[El índice de ecuaciones es la excepción a esta regla, ya que no tiene cuerpo y, por lo tanto, no usa
+un diseño con sangría.]:
+
+```typ
+#show outline.entry: it => link(
+  it.element.location(),
+  it.indented(it.prefix(), it.inner()),
+)
+```
+
+- La función @outline.entry.indented[`indented`] toma un prefijo opcional y un contenido interno y les aplica
+  automáticamente la sangría adecuada, de modo que las distintas entradas queden bien alineadas y los títulos
+  largos se ajusten correctamente.
+
+- La función @outline.entry.prefix[`prefix`] da formato a la numeración del elemento (si la hay). También agrega
+  un suplemento para ciertos elementos.
+
+- La función @outline.entry.inner[`inner`] combina el @outline.entry.body[`body`] del elemento, el relleno y el
+  @outline.entry.page[número de `page`].
+
+Podés usar estas funciones individuales para dar formato a la entrada del índice de distintas maneras.
+Supongamos que querés eliminar por completo el relleno y los números de página. Para lograrlo, podrías escribir
+una regla show como esta:
+
+```example
+#show outline.entry: it => link(
+  it.element.location(),
+  // Keep just the body, dropping
+  // the fill and the page.
+  it.indented(it.prefix(), it.body()),
+)
+
+#outline()
+
+= About ACME Corp.
+== History
+```
+
+
+@@ OutlineElem::depth  [src:996ccc23]
+El nivel máximo hasta el cual se incluyen elementos en el índice. Cuando este argumento es `{none}`, se incluyen
+todos los elementos.
+
+```example
+#set heading(numbering: "1.")
+#outline(depth: 2)
+
+= Yes
+Top-level section.
+
+== Still
+Subsection.
+
+=== Nope
+Not included.
+```
+
+
+@@ OutlineElem::indent  [src:d5a6983b]
+Cómo indentar las entradas del índice.
+
+- `{auto}`: Indenta la numeración/prefijo de una entrada anidada con el título de su entrada padre. Si las
+  entradas no están numeradas (por ejemplo, mediante la @heading.numbering[numeración de títulos]), en cambio
+  simplemente inserta una sangría fija de `{1.2em}` por nivel.
+
+- @relative[Longitud relativa]: Indenta la entrada con la longitud especificada por nivel de anidamiento.
+  Especificar `{2em}`, por ejemplo, indentaría los títulos de nivel superior `{0em}` (no anidados), los
+  títulos de segundo nivel `{2em}` (anidados una vez), los de tercer nivel `{4em}` (anidados dos veces), y así
+  sucesivamente.
+
+- @function[Función]: Podés personalizar aún más esta configuración con una función. Esa función recibe el
+  nivel de anidamiento como parámetro (empezando en 0 para los títulos/elementos de nivel superior) y debe
+  devolver una longitud (relativa). Por ejemplo, `{n => n * 2em}` equivaldría a especificar simplemente
+  `{2em}`.
+
+```example
+>>> #show heading: none
+#set heading(numbering: "I-I.")
+#set outline(title: none)
+
+#outline()
+#line(length: 100%)
+#outline(indent: 3em)
+
+= Software engineering technologies
+== Requirements
+== Tools and technologies
+=== Code editors
+== Analyzing alternatives
+= Designing software components
+= Testing and integration
+```
+
+
+@@ OutlineElem::target  [src:b6c6f8a7]
+El tipo de elemento que se incluye en el índice.
+
+Para listar figuras que contienen un tipo específico de elemento, como una imagen o una tabla, podés
+especificar el tipo deseado en un selector @function.where[`where`]. Mirá la sección sobre
+@outline:alternative-outlines[índices alternativos] para más detalles.
+
+```example
+#outline(
+  title: [List of Tables],
+  target: figure.where(kind: table),
+)
+
+#figure(
+  table(
+    columns: 4,
+    [t], [1], [2], [3],
+    [y], [0.3], [0.7], [0.5],
+  ),
+  caption: [Experiment results],
+)
+```
+
+
+@@ OutlineElem::title  [src:d4f0e054]
+El título del índice.
+
+- Cuando se establece en `{auto}`, se usará un título apropiado para el @text.lang[idioma del texto].
+- Cuando se establece en `{none}`, el índice no tendrá título.
+- Se puede establecer un título personalizado pasando contenido.
+
+El título del índice no estará numerado por defecto, pero podés forzarlo con una regla show-set:
+`{show outline: set heading(numbering: "1.")}`
+
+@@ OutlineEntry  [src:0f2edd8e]
+Representa una línea de entrada en un índice.
+
+Con reglas show-set y show sobre las entradas del índice, podés personalizar ampliamente el aspecto del índice.
+Mirá la @outline:styling-the-outline[sección sobre cómo dar estilo al índice] para más detalles.
+
+@@ OutlineEntry::body  [src:b3d94a39]
+El contenido que se muestra en lugar del elemento referido en su entrada del índice. Para un título, es su
+@heading.body[`body`]; para una figura, un epígrafe y, para las ecuaciones, está vacío.
+
+@@ OutlineEntry::element  [src:27810833]
+El elemento al que se refiere esta entrada. Su ubicación estará disponible mediante el método
+@content.location[`location`] del contenido y se puede @link[enlazar].
+
+@@ OutlineEntry::fill  [src:b9e2df97]
+Contenido que llena el espacio entre el título y el número de página. Se puede establecer en `{none}` para
+desactivar el relleno.
+
+El `fill` se colocará en un box de tamaño fraccionario que abarca el espacio entre el cuerpo de la entrada y el
+número de página. Por lo tanto, al usar reglas show para reemplazar entradas del índice, se recomienda envolver
+el relleno en un @box con ancho fraccionario, es decir, `{box(width: 1fr, it.fill)}`.
+
+Al usar @repeat, la propiedad @repeat.gap[`gap`] puede ser útil para ajustar el peso visual del relleno.
+
+```example
+#set outline.entry(fill: line(length: 100%))
+#outline()
+
+= A New Beginning
+```
+
+
+@@ OutlineEntry::indented  [src:1a07e4b0]
+Una función auxiliar para producir un diseño de entrada con sangría: dispone un prefijo y el resto de la entrada
+teniendo en cuenta la sangría.
+
+Si la @outline.indent[`indent`] del índice padre es `{auto}`, el contenido interno de todas las entradas del
+nivel `N` se alinea con el prefijo de todas las entradas del nivel `N + 1`, dejando al menos un espacio `gap`
+entre el prefijo y las partes internas. Además, los contenidos `inner` de todas las entradas del mismo nivel se
+alinean.
+
+Si la sangría del índice es un valor fijo o una función, los prefijos se indentan, pero los contenidos internos
+simplemente se desplazan del prefijo el `gap` especificado, en lugar de alinearse en todo el índice. Para una
+explicación visual, mirá @outline.indent.
+
+@@ OutlineEntry::indented::gap  [src:4cd13164]
+El espacio entre el prefijo y el contenido interno.
+
+@@ OutlineEntry::indented::inner  [src:473c6d03]
+El contenido interno de la entrada, con formato.
+
+En la regla show por defecto, es simplemente `it.inner()`, pero se puede personalizar libremente.
+
+@@ OutlineEntry::indented::prefix  [src:7c9205b2]
+El `prefix` se alinea con el contenido `inner` de las entradas que tienen un nivel menos.
+
+En la regla show por defecto, es simplemente `it.prefix()`, pero se puede personalizar libremente.
+
+@@ OutlineEntry::inner  [src:ef6f23c2]
+Crea el contenido interno por defecto de la entrada.
+
+Esto incluye el cuerpo, el relleno y el número de página.
+
+@@ OutlineEntry::level  [src:e8803f71]
+El nivel de anidamiento de esta entrada del índice. Empieza en `{1}` para las entradas de nivel superior.
+
+@@ OutlineEntry::page  [src:9c9b7a3f]
+El número de página del elemento de esta entrada, con el formato de la numeración establecida para la página
+referida.
+
+@@ OutlineEntry::parent  [src:5083fb28]
+Permite que las entradas del índice accedan al índice del que forman parte. Es un poco un parche y debería
+reemplazarse por un mecanismo de ascendencia adecuado.
+
+@@ OutlineEntry::prefix  [src:4c4bde45]
+Da formato a la numeración del elemento (si la hay).
+
+Esto también agrega el suplemento del elemento en el caso de figuras o ecuaciones. Por ejemplo, produciría `1.1`
+para un título, pero `Figure 1` para una figura, como es habitual en los índices.
+
+@@ PrefixInfo  [src:21201660]
+Tipo auxiliar para la alineación de prefijos basada en introspección.
+
+@@ PrefixInfo::inset  [src:163126f6]
+El ancho del prefijo, incluido el espacio.
+
+@@ PrefixInfo::key  [src:68377387]
+La ubicación del índice del que forma parte este prefijo. Se usa para limitar los cálculos de prefijos a un
+índice específico.
+
+@@ PrefixInfo::level  [src:2ee5ae2b]
+El nivel de la entrada de este prefijo.

@@ -1,0 +1,156 @@
+@@ FootnoteContainer  [src:081c38fa]
+En la exportación a HTML, esto se inserta al final del cuerpo para mostrar las notas al pie. En el futuro,
+podemos exponerlo para permitir personalizar dónde aparecen las notas al pie. También podría exponerse
+para la exportación paginada.
+
+@@ FootnoteElem  [src:5a87669d]
+Una nota al pie.
+
+Incluye observaciones y referencias adicionales en la misma página mediante notas al pie. Una nota al pie
+insertará un número en superíndice que enlaza con la nota al final de la página. Las notas se numeran
+secuencialmente a lo largo de todo el documento y se pueden cortar entre varias páginas.
+
+Para personalizar el aspecto de la entrada en el listado de notas al pie, mirá @footnote.entry. La nota al
+pie en sí se materializa como un superíndice normal, por lo que podés usar una regla set sobre la función
+@super para personalizarla. También podés aplicar una regla show para personalizar solo el marcador de la
+nota al pie (el número en superíndice) en el texto corrido.
+
+= Ejemplo <example>
+```example
+Check the docs for more details.
+#footnote[https://typst.app/docs]
+```
+
+La nota al pie se adjunta automáticamente a la palabra anterior, incluso si hay un espacio antes en el
+marcado. Para forzar un espacio, podés usar la cadena `[#" "]` o un @h[espaciado horizontal] explícito.
+
+Al darle una etiqueta a una nota al pie, podés tener varias referencias a ella.
+
+```example
+You can edit Typst documents online.
+#footnote[https://typst.app/app] <fn>
+Checkout Typst's website. @fn
+And the online app. #footnote(<fn>)
+```
+
+_Nota:_ Es posible que las reglas set y show del ámbito donde se llama a `footnote` no se apliquen al
+contenido de la nota al pie. Mirá
+#link("https://github.com/typst/typst/issues/1467#issuecomment-1588799440")[acá] para más información.
+
+= Accesibilidad <accessibility>
+Las tecnologías de asistencia (TA) leerán las notas al pie inmediatamente después del lugar del texto donde
+se las referencia, tal como aparecen en el marcado.
+
+@@ FootnoteElem::body  [src:3e3c3edd]
+El contenido que se pone en la nota al pie. También puede ser la etiqueta de otra nota al pie a la que esta
+debe apuntar.
+
+@@ FootnoteElem::numbering  [src:e1cfe2e1]
+Cómo numerar las notas al pie. Acepta un @numbering[patrón o función de numeración] que toma un único
+número.
+
+Por defecto, la numeración de las notas al pie continúa a lo largo de todo el documento. Si preferís una
+numeración de notas al pie por página, podés reiniciar el @counter[contador] de notas al pie en el
+@page.header[encabezado] de la página. En el futuro, podría haber una forma más simple de lograrlo.
+
+```example
+#set footnote(numbering: "*")
+
+Footnotes:
+#footnote[Star],
+#footnote[Dagger]
+```
+
+
+@@ FootnoteEntry  [src:44b4f8c4]
+Una entrada en una lista de notas al pie.
+
+Esta función no está pensada para llamarse directamente. En cambio, se usa en reglas set y show para
+personalizar los listados de notas al pie.
+
+```example
+#show footnote.entry: set text(red)
+
+My footnote listing
+#footnote[It's down here]
+has red text!
+```
+
+_Nota:_ Las propiedades de las entradas de notas al pie deben ser uniformes en cada serie de páginas (una
+serie de páginas es una secuencia de páginas sin un salto de página explícito entre ellas). Por este
+motivo, las reglas set y show de las entradas de notas al pie deberían definirse antes de cualquier
+contenido de página, normalmente al comienzo del documento.
+
+@@ FootnoteEntry::clearance  [src:912a2f86]
+La cantidad de espacio libre entre el cuerpo del documento y el separador.
+
+```example
+#set footnote.entry(clearance: 3em)
+
+Footnotes also need ...
+#footnote[
+  ... some space to breathe.
+]
+```
+
+
+@@ FootnoteEntry::gap  [src:9aa14ddd]
+El espacio entre las entradas de notas al pie.
+
+```example
+#set footnote.entry(gap: 0.8em)
+
+Footnotes:
+#footnote[Spaced],
+#footnote[Apart]
+```
+
+
+@@ FootnoteEntry::indent  [src:dc4e3ae2]
+La sangría de cada entrada de nota al pie.
+
+```example
+#set footnote.entry(indent: 0em)
+
+Footnotes:
+#footnote[No],
+#footnote[Indent]
+```
+
+
+@@ FootnoteEntry::note  [src:1c8f2a89]
+La nota al pie de esta entrada. Su ubicación se puede usar para determinar el estado del contador de notas
+al pie.
+
+```example
+#show footnote.entry: it => {
+  let loc = it.note.location()
+  counter(footnote).display(at: loc, "1: ")
+  it.note.body
+}
+
+Customized #footnote[Hello]
+listing #footnote[World! 🌏]
+```
+
+
+@@ FootnoteEntry::separator  [src:31dd4ca1]
+El separador entre el cuerpo del documento y el listado de notas al pie.
+
+```example
+#set footnote.entry(
+  separator: repeat[.]
+)
+
+Testing a different separator.
+#footnote[
+  Unconventional, but maybe
+  not that bad?
+]
+```
+
+
+@@ FootnoteMarker  [src:b3082bf3]
+Este es un elemento vacío que inserta la regla de notas al pie de HTML para indicar la presencia de la regla
+de notas al pie por defecto. Solo lo usa el error en `FootnoteContainer::unsupported_with_custom_dom` y
+podría eliminarse si ya no hace falta.
