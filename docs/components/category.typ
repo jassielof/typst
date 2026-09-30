@@ -134,7 +134,7 @@
         This named parameter can also be specified as a positional argument.
       ])
     } else {
-      modifiers.push(with-tooltip[Positional][
+      modifiers.push(with-tooltip[#stdx.ui("Positional")][
         Positional parameters are specified in order, without names.
       ])
     }
