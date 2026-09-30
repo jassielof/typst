@@ -154,7 +154,7 @@
   raw(param.name)
 
   let default = if not param.required and "default" in param {
-    [Default: ]
+    [#stdx.ui("Default:") ]
     raw(lang: "typc", repr(param.default))
   }
 
