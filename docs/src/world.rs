@@ -63,6 +63,7 @@ impl DocWorld {
     /// Creates a new world for docs compilation, with the given root directory
     /// and entrypoint file.
     pub fn new(config: &Config) -> Self {
+        crate::i18n::init(config.lang.as_deref(), &config.workspace);
         Self {
             library: LazyHash::new(library(config.is_dev_version, &config.sys_inputs)),
             files: FileStore::new(DocsFiles::new(
@@ -160,6 +161,7 @@ impl DocsFiles {
     }
 
     fn resolve(&self, id: FileId) -> FileResult<PathBuf> {
+        if let Some(path) = crate::i18n::overlay_path(id) { return Ok(path); }
         self.root(id)?.resolve(id.vpath())
     }
 
@@ -181,6 +183,7 @@ impl DocsFiles {
 
 impl FileLoader for DocsFiles {
     fn load(&self, id: FileId) -> FileResult<Bytes> {
+        if let Some(bytes) = crate::i18n::overlay(id) { return Ok(bytes); }
         self.root(id)?.load(id.vpath())
     }
 }
@@ -241,6 +244,7 @@ fn stdx_module(is_dev_version: bool) -> Module {
     scope.define_func::<crate::reflect::emoji_ordering>();
     scope.define_func::<crate::reflect::latex_name>();
     scope.define_func::<crate::reflect::is_global_html_attr>();
+    crate::i18n::define(&mut scope);
     scope.define("commit", typst_utils::version().commit());
     scope.define("shorthands", crate::reflect::shorthands());
     scope.define("raw-langs", crate::reflect::raw_langs());
