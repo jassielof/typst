@@ -1,6 +1,8 @@
 {
  "components/preface.typ": "48d86323",
  "content/overview.typ": "446cbed7",
+ "content/reference/language/styling.typ": "864cbd7d",
+ "content/reference/language/syntax.typ": "147e1d11",
  "content/tutorial/1-writing.typ": "6387f5c9",
  "content/tutorial/2-formatting.typ": "fc65e2b7",
  "content/tutorial/3-advanced.typ": "956ef534",
