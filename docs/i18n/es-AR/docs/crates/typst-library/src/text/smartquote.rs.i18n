@@ -1,0 +1,71 @@
+@@ SmartQuoteElem  [src:ba4ff842]
+Una comilla sensible al idioma que reacciona a su contexto.
+
+Se convierte automáticamente en una comilla de apertura o de cierre apropiada según el @text.lang[idioma del texto] activo.
+
+= Ejemplo <example>
+```example
+"This is in quotes."
+
+#set text(lang: "de")
+"Das ist in Anführungszeichen."
+
+#set text(lang: "fr")
+"C'est entre guillemets."
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: los caracteres de comilla normales (`'` y `"`). Typst vuelve inteligentes
+tus comillas automáticamente.
+
+@@ SmartQuoteElem::alternative  [src:470adc32]
+Si se usan comillas alternativas.
+
+No hace nada para los idiomas que no tienen comillas alternativas o si se establecieron comillas explícitas.
+
+```example
+#set text(lang: "de")
+#set smartquote(alternative: true)
+
+"Das ist in anderen Anführungszeichen."
+```
+
+
+@@ SmartQuoteElem::double  [src:f467269e]
+Si debe ser una comilla doble.
+
+@@ SmartQuoteElem::enabled  [src:496a3620]
+Si las comillas inteligentes están habilitadas.
+
+Para desactivar la inteligencia en una sola comilla, también podés escaparla con una barra invertida.
+
+```example
+#set smartquote(enabled: false)
+
+These are "dumb" quotes.
+```
+
+
+@@ SmartQuoteElem::quotes  [src:3f05abc9]
+Las comillas que se usan.
+
+- Cuando se establece en `{auto}`, se usarán las comillas simples apropiadas para el @text.lang[idioma del texto]. Este
+  es el valor por defecto.
+- Se pueden pasar comillas personalizadas como una cadena, un array o un diccionario de cualquiera de ellos
+  - @str[cadena de texto]: una cadena de dos caracteres que contiene las comillas dobles de apertura y de cierre (acá,
+    los caracteres se refieren a grupos de grafemas de Unicode)
+  - @array[array]: un array que contiene las comillas dobles de apertura y de cierre
+  - @dictionary[diccionario]: un diccionario que contiene las comillas dobles y simples, cada una especificada como
+    `{auto}`, cadena o array
+
+```example
+#set text(lang: "de")
+'Das sind normale Anführungszeichen.'
+
+#set smartquote(quotes: "()")
+"Das sind eigene Anführungszeichen."
+
+#set smartquote(quotes: (single: ("[[", "]]"),  double: auto))
+'Das sind eigene Anführungszeichen.'
+```
+

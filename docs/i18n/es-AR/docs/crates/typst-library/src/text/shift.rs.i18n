@@ -1,0 +1,124 @@
+@@ SubElem  [src:b4a336fe]
+Renderiza texto como subíndice.
+
+El texto se renderiza más pequeño y su línea base se baja.
+
+= Ejemplo <example>
+```example
+Revenue#sub[yearly]
+```
+
+
+@@ SubElem::baseline  [src:d165aa5a]
+El desplazamiento hacia abajo de la línea base para los subíndices sintetizados.
+
+Esto solo se aplica a los subíndices sintetizados. En otras palabras, no tiene efecto si `typographic` es `{true}` y la
+fuente proporciona los glifos de subíndice necesarios.
+
+Si se establece en `{auto}`, la línea base se desplaza según las métricas que proporciona la fuente, con un valor de
+respaldo de `{0.2em}` en caso de que la fuente no defina las métricas necesarias.
+
+Al usar varias fuentes, puede ser necesario establecer explícitamente `baseline` y @sub.size[`size`]. Mirá
+@super.baseline[`super`] para ver un ejemplo.
+
+@@ SubElem::body  [src:47c013e6]
+El texto que se muestra como subíndice.
+
+@@ SubElem::size  [src:beadc333]
+El tamaño de fuente de los subíndices sintetizados.
+
+Esto solo se aplica a los subíndices sintetizados. En otras palabras, no tiene efecto si `typographic` es `{true}` y la
+fuente proporciona los glifos de subíndice necesarios.
+
+Si se establece en `{auto}`, el tamaño se escala según las métricas que proporciona la fuente, con un valor de respaldo
+de `{0.6em}` en caso de que la fuente no defina las métricas necesarias.
+
+@@ SubElem::typographic  [src:3ca61895]
+Si se usan los glifos de subíndice de la fuente, si están disponibles.
+
+Idealmente, los glifos de subíndice los proporciona la fuente (mediante la característica OpenType `subs`). De lo
+contrario, Typst puede sintetizar subíndices bajando y reduciendo los glifos normales.
+
+Cuando se establece en `{false}`, se usarán glifos sintetizados sin importar si la fuente ofrece glifos de subíndice
+dedicados. Cuando es `{true}`, igualmente se pueden usar glifos sintetizados en caso de que la fuente no proporcione los
+glifos de subíndice necesarios.
+
+```example
+N#sub(typographic: true)[1]
+N#sub(typographic: false)[1]
+```
+
+
+@@ SuperElem  [src:ce8565fd]
+Renderiza texto como superíndice.
+
+El texto se renderiza más pequeño y su línea base se sube.
+
+= Ejemplo <example>
+```example
+1#super[st] try!
+```
+
+
+@@ SuperElem::baseline  [src:681a2779]
+El desplazamiento hacia abajo de la línea base para los superíndices sintetizados.
+
+Esto solo se aplica a los superíndices sintetizados. En otras palabras, no tiene efecto si `typographic` es `{true}` y la
+fuente proporciona los glifos de superíndice necesarios.
+
+Si se establece en `{auto}`, la línea base se desplaza según las métricas que proporciona la fuente, con un valor de
+respaldo de `{-0.5em}` en caso de que la fuente no defina las métricas necesarias.
+
+Tené en cuenta que, como el desplazamiento de la línea base se aplica hacia abajo, vas a tener que proporcionar un valor
+negativo para que el contenido aparezca elevado por encima de la línea base normal.
+
+A veces es necesario establecer explícitamente `baseline` y @super.size[`size`]. En el siguiente ejemplo, el texto en
+superíndice usa varias fuentes con métricas incompatibles. Para evitar desalineaciones, reemplazamos las métricas de todas
+las fuentes.
+
+```example
+#let tz(timezone) = text(
+  font: "Roboto",
+  smallcaps(timezone, all: true),
+)
+
+/ Per-font metrics:
+  14:00#super[#tz[UTC], not #tz[CET]]
+
+#set super(
+  baseline: -0.4em,
+  size: 0.6em,
+  typographic: false,
+)
+/ Unified metrics:
+  14:00#super[#tz[UTC], not #tz[CET]]
+```
+
+
+@@ SuperElem::body  [src:a26eaae7]
+El texto que se muestra como superíndice.
+
+@@ SuperElem::size  [src:34f19c92]
+El tamaño de fuente de los superíndices sintetizados.
+
+Esto solo se aplica a los superíndices sintetizados. En otras palabras, no tiene efecto si `typographic` es `{true}` y la
+fuente proporciona los glifos de superíndice necesarios.
+
+Si se establece en `{auto}`, el tamaño se escala según las métricas que proporciona la fuente, con un valor de respaldo
+de `{0.6em}` en caso de que la fuente no defina las métricas necesarias.
+
+@@ SuperElem::typographic  [src:b03cd529]
+Si se usan los glifos de superíndice de la fuente, si están disponibles.
+
+Idealmente, los glifos de superíndice los proporciona la fuente (mediante la característica OpenType `sups`). De lo
+contrario, Typst puede sintetizar superíndices subiendo y reduciendo los glifos normales.
+
+Cuando se establece en `{false}`, se usarán glifos sintetizados sin importar si la fuente ofrece glifos de superíndice
+dedicados. Cuando es `{true}`, igualmente se pueden usar glifos sintetizados en caso de que la fuente no proporcione los
+glifos de superíndice necesarios.
+
+```example
+N#super(typographic: true)[1]
+N#super(typographic: false)[1]
+```
+

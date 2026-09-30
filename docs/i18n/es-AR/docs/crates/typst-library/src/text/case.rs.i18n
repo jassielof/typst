@@ -1,0 +1,27 @@
+@@ lower  [src:23ada395]
+Convierte una cadena de texto o contenido a minúsculas.
+
+= Ejemplo <example>
+```example
+#lower("ABC") \
+#lower[*My Text*] \
+#lower[already low]
+```
+
+
+@@ lower::text  [src:e0b6f407]
+El texto que se convierte a minúsculas.
+
+@@ upper  [src:de26f132]
+Convierte una cadena de texto o contenido a mayúsculas.
+
+= Ejemplo <example>
+```example
+#upper("abc") \
+#upper[*my text*] \
+#upper[ALREADY HIGH]
+```
+
+
+@@ upper::text  [src:9c50807d]
+El texto que se convierte a mayúsculas.

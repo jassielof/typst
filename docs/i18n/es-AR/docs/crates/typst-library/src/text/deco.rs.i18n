@@ -1,0 +1,265 @@
+@@ HighlightElem  [src:ae32dc5d]
+Resalta texto con un color de fondo.
+
+= Ejemplo <example>
+```example
+This is #highlight[important].
+```
+
+
+@@ HighlightElem::body  [src:c0a53527]
+El contenido que se debe resaltar.
+
+@@ HighlightElem::bottom_edge  [src:4328091d]
+El extremo inferior del rectángulo de fondo.
+
+```example
+#set highlight(bottom-edge: "descender")
+#highlight[a] #highlight[ap]
+
+#set highlight(bottom-edge: "baseline")
+#highlight[a] #highlight[ap]
+```
+
+
+@@ HighlightElem::extent  [src:31bfdefd]
+La cantidad en que se extiende el fondo hacia los lados más allá del contenido (o hacia adentro, si es negativa).
+
+```example
+A long #highlight(extent: 4pt)[background].
+```
+
+
+@@ HighlightElem::fill  [src:af7d0081]
+El color con el que se resalta el texto.
+
+```example
+This is #highlight(
+  fill: blue
+)[highlighted with blue].
+```
+
+
+@@ HighlightElem::radius  [src:de3b9ccf]
+Cuánto se redondean las esquinas del resaltado. Mirá la @rect.radius[documentación del rectángulo] para más detalles.
+
+```example
+Listen #highlight(
+  radius: 5pt, extent: 2pt
+)[carefully], it will be on the test.
+```
+
+
+@@ HighlightElem::stroke  [src:b96c51fe]
+El color del borde del resaltado. Mirá la @rect.stroke[documentación del rectángulo] para más detalles.
+
+```example
+This is a #highlight(
+  stroke: fuchsia
+)[stroked highlighting].
+```
+
+
+@@ HighlightElem::top_edge  [src:fd55394d]
+El extremo superior del rectángulo de fondo.
+
+```example
+#set highlight(top-edge: "ascender")
+#highlight[a] #highlight[aib]
+
+#set highlight(top-edge: "x-height")
+#highlight[a] #highlight[aib]
+```
+
+
+@@ OverlineElem  [src:3b3bba7d]
+Agrega una línea sobre el texto.
+
+= Ejemplo <example>
+```example
+#overline[A line over text.]
+```
+
+
+@@ OverlineElem::background  [src:a7e1c65d]
+Si la línea se ubica detrás del contenido sobre el que va.
+
+```example
+#set overline(stroke: aqua + 5pt)
+#overline(background: true)[Fully visible.] \
+#overline(background: false)[Partially hidden.]
+```
+
+
+@@ OverlineElem::body  [src:b659931a]
+El contenido sobre el que se agrega una línea.
+
+@@ OverlineElem::evade  [src:cf42c106]
+Si la línea omite las secciones en las que chocaría con los glifos.
+
+```example
+#overline(
+  evade: false,
+  offset: -7.5pt,
+  stroke: 1pt,
+  extent: 3pt,
+  [Temple],
+)
+```
+
+
+@@ OverlineElem::extent  [src:2ded6468]
+La cantidad en que se extiende la línea más allá del contenido (o hacia adentro, si es negativa).
+
+```example
+#set overline(extent: 4pt)
+#set underline(extent: 4pt)
+#overline(underline[Typography Today])
+```
+
+
+@@ OverlineElem::offset  [src:73a55ebe]
+La posición de la línea relativa a la línea base. Se lee de las tablas de la fuente si es `{auto}`.
+
+```example
+#overline(offset: -1.2em)[
+  The Tale Of A Faraway Line II
+]
+```
+
+
+@@ OverlineElem::stroke  [src:bbf569fb]
+Cómo @stroke[trazar] la línea.
+
+Si se establece en `{auto}`, toma el color del texto y un grosor definido en la fuente actual.
+
+```example
+#set text(fill: olive)
+#overline(
+  stroke: green.darken(20%),
+  offset: -12pt,
+  [The Forest Theme],
+)
+```
+
+
+@@ StrikeElem  [src:2923f25c]
+Tacha texto.
+
+= Ejemplo <example>
+```example
+This is #strike[not] relevant.
+```
+
+
+@@ StrikeElem::background  [src:8d0ca071]
+Si la línea se ubica detrás del contenido.
+
+```example
+#set strike(stroke: red + 2pt)
+#strike(background: true)[This is behind.] \
+#strike(background: false)[This is in front.]
+```
+
+
+@@ StrikeElem::body  [src:828d1c20]
+El contenido que se tacha.
+
+@@ StrikeElem::extent  [src:558511ec]
+La cantidad en que se extiende la línea más allá del contenido (o hacia adentro, si es negativa).
+
+```example
+This #strike(extent: -2pt)[skips] parts of the word.
+This #strike(extent: 2pt)[extends] beyond the word.
+```
+
+
+@@ StrikeElem::offset  [src:ca18a203]
+La posición de la línea relativa a la línea base. Se lee de las tablas de la fuente si es `{auto}`.
+
+Es útil si no estás conforme con el desplazamiento que ofrece tu fuente.
+
+```example
+#set text(font: "Inria Serif")
+This is #strike(offset: auto)[low-ish]. \
+This is #strike(offset: -3.5pt)[on-top].
+```
+
+
+@@ StrikeElem::stroke  [src:0cd32bec]
+Cómo @stroke[trazar] la línea.
+
+Si se establece en `{auto}`, toma el color del texto y un grosor definido en la fuente actual.
+
+_Nota:_ Por favor, no uses esto para censurar de verdad, ya que igualmente se puede copiar y pegar el texto.
+
+```example
+This is #strike(stroke: 1.5pt + red)[very stricken through]. \
+This is #strike(stroke: 10pt)[redacted].
+```
+
+
+@@ UnderlineElem  [src:036a7d9d]
+Subraya texto.
+
+= Ejemplo <example>
+```example
+This is #underline[important].
+```
+
+
+@@ UnderlineElem::background  [src:a73ff748]
+Si la línea se ubica detrás del contenido que subraya.
+
+```example
+#set underline(stroke: aqua + 5pt, evade: false)
+#underline(background: true)[Fully visible.] \
+#underline(background: false)[Partially hidden.]
+```
+
+
+@@ UnderlineElem::body  [src:7117ecd2]
+El contenido que se subraya.
+
+@@ UnderlineElem::evade  [src:fbf92413]
+Si la línea omite las secciones en las que chocaría con los glifos.
+
+```example
+This #underline(evade: true)[is great].
+This #underline(evade: false)[is less great].
+```
+
+
+@@ UnderlineElem::extent  [src:e5a26007]
+La cantidad en que se extiende la línea más allá del contenido (o hacia adentro, si es negativa).
+
+```example
+#align(center,
+  underline(extent: 2pt)[Chapter 1]
+)
+```
+
+
+@@ UnderlineElem::offset  [src:3d664ebe]
+La posición de la línea relativa a la línea base, que se lee de las tablas de la fuente si es `{auto}`.
+
+```example
+#underline(offset: 5pt)[
+  The Tale Of A Faraway Line I
+]
+```
+
+
+@@ UnderlineElem::stroke  [src:5fb2a2cf]
+Cómo @stroke[trazar] la línea.
+
+Si se establece en `{auto}`, toma el color del texto y un grosor definido en la fuente actual.
+
+```example
+Take #underline(
+  stroke: 1.5pt + red,
+  offset: 2pt,
+  [care],
+)
+```
+

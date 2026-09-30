@@ -1,0 +1,32 @@
+@@ LinebreakElem  [src:8e06c34d]
+Inserta un salto de línea.
+
+Avanza el párrafo a la línea siguiente. Un único salto de línea al final de un párrafo se ignora, pero más de uno
+crea líneas vacías adicionales.
+
+= Ejemplo <example>
+```example
+*Date:* 26.12.2022 \
+*Topic:* Infrastructure Test \
+*Severity:* High \
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: para insertar un salto de línea, simplemente escribí una barra
+invertida seguida de un espacio en blanco. Esto siempre crea un salto sin justificar.
+
+@@ LinebreakElem::justify  [src:3eebe333]
+Si se justifica la línea antes del salto.
+
+Esto es útil si encontraste una mejor oportunidad de salto de línea en tu texto justificado que la que encontró
+Typst.
+
+```example
+#set par(justify: true)
+#let jb = linebreak(justify: true)
+
+I have manually tuned the #jb
+line breaks in this paragraph #jb
+for an _interesting_ result. #jb
+```
+

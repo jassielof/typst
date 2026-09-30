@@ -1,0 +1,19 @@
+@@ lorem  [src:6aae80bb]
+Crea texto de relleno.
+
+Esta función produce un texto de relleno _Lorem Ipsum_ de apariencia latina con la cantidad de palabras indicada. La
+secuencia de palabras que genera la función siempre es la misma, pero elegida al azar. Como es habitual en los textos
+de relleno, no tiene ningún sentido. Usalo como marcador de posición para probar diseños.
+
+= Ejemplo <example>
+```example
+= Blind Text
+#lorem(30)
+
+= More Blind Text
+#lorem(15)
+```
+
+
+@@ lorem::words  [src:f8b3baee]
+La longitud del texto de relleno en palabras.

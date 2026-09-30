@@ -1,0 +1,53 @@
+@@ SmallcapsElem  [src:a515667b]
+Muestra texto en versalitas.
+
+= Ejemplo <example>
+```example
+Hello \
+#smallcaps[Hello]
+```
+
+= Fuentes con versalitas <smallcaps-fonts>
+Por defecto, esto usa las características OpenType `smcp` y `c2sc` de la fuente. No todas las fuentes admiten estas
+características. A veces, las versalitas forman parte de una fuente dedicada. Este es, por ejemplo, el caso de la familia
+de fuentes _Latin Modern_. En esos casos, podés usar una regla show-set para personalizar el aspecto del texto en
+versalitas:
+
+```typ
+#show smallcaps: set text(font: "Latin Modern Roman Caps")
+```
+
+En el futuro, esta función admitirá sintetizar versalitas a partir de letras normales, pero todavía no está implementado.
+
+= Títulos en versalitas <smallcaps-headings>
+Podés usar una @reference:styling:show-rules[regla show] para aplicar formato de versalitas a todos tus títulos. En el
+siguiente ejemplo, además alineamos al centro nuestros títulos y desactivamos la fuente en negrita estándar.
+
+```example
+#set par(justify: true)
+#set heading(numbering: "I.")
+
+#show heading: smallcaps
+#show heading: set align(center)
+#show heading: set text(
+  weight: "regular"
+)
+
+= Introduction
+#lorem(40)
+```
+
+
+@@ SmallcapsElem::all  [src:3fa8e2c9]
+Si también se convierten las letras mayúsculas en versalitas.
+
+A menos que una regla show lo reemplace, esto habilita la característica OpenType `c2sc`.
+
+```example
+#smallcaps(all: true)[UNICEF] is an
+agency of #smallcaps(all: true)[UN].
+```
+
+
+@@ SmallcapsElem::body  [src:affdf8c1]
+El contenido que se muestra en versalitas.
