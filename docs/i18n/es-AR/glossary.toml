@@ -1,0 +1,18 @@
+# English term -> fixed Spanish (es-AR) translation. Given to the translator in
+# every batch; `tools/i18n check` warns when a source mentions the English term
+# but the translation lacks the Spanish one.
+"show rule" = "regla show"
+"set rule" = "regla set"
+"content" = "contenido"
+"styling" = "estilos"
+"template" = "plantilla"
+"bibliography" = "bibliografía"
+"figure" = "figura"
+"heading" = "título"
+"caption" = "epígrafe"
+"label" = "etiqueta"
+"reference" = "referencia"
+"function" = "función"
+"argument" = "argumento"
+"markup" = "marcado"
+"math" = "matemática"

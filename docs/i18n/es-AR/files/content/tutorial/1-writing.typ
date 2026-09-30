@@ -76,7 +76,7 @@ Ya vimos que ciertos símbolos (llamados _marcado_) tienen un significado espec�
 
 En general, una función produce algún resultado a partir de un conjunto de _argumentos_. Cuando _llamás_ a una función dentro del marcado, le pasás los argumentos y Typst inserta el resultado (el _valor de retorno_ de la función) en el documento. En nuestro caso, la función `image` toma un solo argumento: la ruta del archivo de imagen. Para llamar a una función en el marcado, primero escribimos el carácter `#`, seguido inmediatamente del nombre de la función. Después, encerramos los argumentos entre paréntesis. Typst reconoce muchos tipos de datos distintos en las listas de argumentos. Nuestra ruta de archivo es una @str[cadena de texto] corta, así que tenemos que encerrarla entre comillas dobles.
 
-La imagen insertada ocupa todo el ancho de la página. Para cambiar eso, pasale el argumento `width` a la función `image`. Es un argumento _con nombre_ y, por lo tanto, se especifica como un par `nombre: valor`. Si hay varios argumentos, se separan con comas, así que primero tenemos que poner una coma después de la ruta.
+La imagen insertada ocupa todo el ancho de la página. Para cambiar eso, pasale el argumento `width` a la función `image`. Es un argumento _con nombre_ y, por lo tanto, se especifica como un par `name: value`. Si hay varios argumentos, se separan con comas, así que primero tenemos que poner una coma después de la ruta.
 
 ```example
 #image("glacier.jpg", width: 70%)
