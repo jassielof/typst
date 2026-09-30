@@ -1,0 +1,522 @@
+@@ TableCell  [src:ac513452]
+Una celda de la tabla. Usala para posicionar una celda manualmente o para aplicar estilos. Para lo segundo, podés usar la
+función para reemplazar las propiedades de una celda en particular o usarla en reglas show para aplicar ciertos estilos a
+varias celdas a la vez.
+
+Quizás el caso de uso más importante de `{table.cell}` sea hacer que una celda abarque varias columnas y/o filas con los
+campos `colspan` y `rowspan`.
+
+```example
+>>> #set page(width: auto)
+#show table.cell.where(y: 0): strong
+#set table(
+  stroke: (x, y) => if y == 0 {
+    (bottom: 0.7pt + black)
+  },
+  align: (x, y) => (
+    if x > 0 { center }
+    else { left }
+  )
+)
+
+#table(
+  columns: 3,
+  table.header(
+    [Substance],
+    [Subcritical °C],
+    [Supercritical °C],
+  ),
+  [Hydrochloric Acid],
+  [12.0], [92.1],
+  [Sodium Myreth Sulfate],
+  [16.6], [104],
+  [Potassium Hydroxide],
+  table.cell(colspan: 2)[24.7],
+)
+```
+
+Por ejemplo, podés reemplazar el relleno, la alineación o el inset de una sola celda:
+
+```example
+>>> #set page(width: auto)
+// You can also import those.
+#import table: cell, header
+
+#table(
+  columns: 2,
+  align: center,
+  header(
+    [*Trip progress*],
+    [*Itinerary*],
+  ),
+  cell(
+    align: right,
+    fill: fuchsia.lighten(80%),
+    [🚗],
+  ),
+  [Get in, folks!],
+  [🚗], [Eat curbside hotdog],
+  cell(align: left)[🌴🚗],
+  cell(
+    inset: 0.06em,
+    text(1.62em)[🏝️🌅🌊],
+  ),
+)
+```
+
+También podés aplicar una regla show sobre `table.cell` para dar estilo a todas las celdas a la vez. Combinada con
+selectores, esto te permite aplicar estilos según la posición de una celda:
+
+```example
+#show table.cell.where(x: 0): strong
+
+#table(
+  columns: 3,
+  gutter: 3pt,
+  [Name], [Age], [Strength],
+  [Hannes], [36], [Grace],
+  [Irma], [50], [Resourcefulness],
+  [Vikram], [49], [Perseverance],
+)
+```
+
+
+@@ TableCell::align  [src:63cd433b]
+El reemplazo de @table.align[alineación] de la celda.
+
+@@ TableCell::body  [src:39b6000b]
+El cuerpo de la celda.
+
+@@ TableCell::breakable  [src:31c12eb4]
+Si las filas que abarca esta celda se pueden ubicar en páginas distintas. Cuando es igual a `{auto}`, una celda que abarca
+solo filas de tamaño fijo no se puede cortar, mientras que una celda que abarca al menos una fila de tamaño `{auto}` sí se
+puede cortar.
+
+@@ TableCell::colspan  [src:4fd19b75]
+La cantidad de columnas que abarca esta celda.
+
+@@ TableCell::fill  [src:70ec9aa7]
+El reemplazo de @table.fill[relleno] de la celda.
+
+@@ TableCell::inset  [src:dce894a4]
+El reemplazo de @table.inset[inset] de la celda.
+
+@@ TableCell::rowspan  [src:90c06137]
+La cantidad de filas que abarca esta celda.
+
+@@ TableCell::stroke  [src:5aa72010]
+El reemplazo de @table.stroke[trazo] de la celda.
+
+@@ TableCell::x  [src:42da8eb5]
+La columna de la celda (con índice desde cero). Funciona igual que el campo `x` de @grid.cell.
+
+@@ TableCell::y  [src:62f482a7]
+La fila de la celda (con índice desde cero). Funciona igual que el campo `y` de @grid.cell.
+
+@@ TableElem  [src:87407b5a]
+Una tabla de elementos.
+
+Las tablas se usan para disponer contenido en celdas. Las celdas pueden contener contenido arbitrario, incluidos varios
+párrafos, y se especifican por filas. Para una explicación práctica de todas las formas en que podés usar y personalizar
+tablas en Typst, consultá la @guides:tables[guía de tablas].
+
+Como las tablas son simplemente grillas con distintos valores por defecto para algunas propiedades de las celdas
+(notablemente `stroke` e `inset`), consultá la @grid:track-size[documentación de grid] para más información sobre cómo dar
+tamaño a las pistas de la tabla y especificar las propiedades de aspecto de las celdas.
+
+Si no estás seguro de si deberías usar una tabla o una grilla, considerá si el contenido que estás disponiendo pertenece
+semánticamente junto como un conjunto de datos relacionados o similares, o si simplemente querés mejorar tu presentación
+disponiendo contenido no relacionado en una grilla. En el primer caso, una tabla es la elección correcta; en el segundo,
+una grilla es más apropiada. Además, las tecnologías de asistencia (TA), como los lectores de pantalla, anunciarán el
+contenido de una `table` como tabular, mientras que el contenido de una grilla se anunciará igual que varios bloques de
+contenido en el flujo del documento. Los usuarios de TA podrán navegar las tablas bidimensionalmente por celda.
+
+Tené en cuenta que, para reemplazar las propiedades de una celda en particular o aplicar reglas show sobre las celdas de
+una tabla, podés usar el elemento @table.cell. Consultá su documentación para más información.
+
+Aunque `table` y `grid` comparten la mayoría de las propiedades, las reglas set y show sobre una de ellas no afectan a la
+otra. Se recomienda ubicar la mayor parte de tus estilos en reglas set y show, ya que mantiene limpios y fáciles de leer
+los usos reales de la tabla. También te permite cambiar fácilmente el aspecto de todas las tablas en un solo lugar.
+
+Para darle un epígrafe a una tabla y hacerla @ref[referenciable], ponela en una @figure[figura].
+
+= Ejemplo <example>
+El siguiente ejemplo demuestra algunas de las opciones de tabla más comunes.
+
+```example
+#table(
+  columns: (1fr, auto, auto),
+  inset: 10pt,
+  align: horizon,
+  table.header(
+    [], [*Volume*], [*Parameters*],
+  ),
+  image("cylinder.svg"),
+  $ pi h (D^2 - d^2) / 4 $,
+  [
+    $h$: height \
+    $D$: outer radius \
+    $d$: inner radius
+  ],
+  image("tetrahedron.svg"),
+  $ sqrt(2) / 12 a^3 $,
+  [$a$: edge length]
+)
+```
+
+Igual que con las grillas, podés usar @table.cell para personalizar el aspecto y la posición de cada celda.
+
+```example
+>>> #set page(width: auto)
+>>> #set text(font: "IBM Plex Sans")
+>>> #let gray = rgb("#565565")
+>>>
+#set table(
+  stroke: none,
+  gutter: 0.2em,
+  fill: (x, y) =>
+    if x == 0 or y == 0 { gray },
+  inset: (right: 1.5em),
+)
+
+#show table.cell: it => {
+  if it.x == 0 or it.y == 0 {
+    set text(white)
+    strong(it)
+  } else if it.body == [] {
+    // Replace empty cells with 'N/A'
+    pad(..it.inset)[_N/A_]
+  } else {
+    it
+  }
+}
+
+#let a = table.cell(
+  fill: green.lighten(60%),
+)[A]
+#let b = table.cell(
+  fill: aqua.lighten(60%),
+)[B]
+
+#table(
+  columns: 4,
+  [], [Exam 1], [Exam 2], [Exam 3],
+
+  [John], [], a, [],
+  [Mary], [], a, a,
+  [Robert], b, a, b,
+)
+```
+
+= Accesibilidad <accessibility>
+Las tablas son difíciles de consumir para los usuarios de tecnologías de asistencia (TA). Para hacerles la vida más fácil a
+los usuarios de TA, te recomendamos enfáticamente que uses @table.header y @table.footer para marcar las secciones de
+encabezado y pie de tu tabla. Esto permitirá que las TA anuncien las etiquetas de columna de cada celda.
+
+Como navegar una tabla por celdas es más engorroso que leerla visualmente, deberías considerar hacer que la información
+central de tu tabla también esté disponible como texto. Podés hacerlo envolviendo tu tabla en una @figure[figura] y usando
+su epígrafe para resumir el contenido de la tabla.
+
+@@ TableElem::align  [src:e614957a]
+Cómo alinear el contenido de las celdas.
+
+Si se establece en `{auto}`, se usa la alineación exterior.
+
+Podés especificar la alineación de cualquiera de las siguientes maneras:
+- usar una única alineación para todas las celdas
+- usar un array de alineaciones correspondientes a cada columna
+- usar una función que asigne la posición X/Y de una celda (ambas desde cero) a su alineación
+
+Mirá la @guides:tables:alignment[guía de tablas] para más detalles.
+
+```example
+#table(
+  columns: 3,
+  align: (left, center, right),
+  [Hello], [Hello], [Hello],
+  [A], [B], [C],
+)
+```
+
+
+@@ TableElem::children  [src:92690f00]
+El contenido de las celdas de la tabla, más las líneas de tabla adicionales especificadas con los elementos @table.hline y
+@table.vline.
+
+@@ TableElem::column_gutter  [src:ca579844]
+Los espacios entre columnas. Tiene precedencia sobre `gutter`. Mirá la @grid.gutter[documentación de grid] para más
+información sobre los gutters.
+
+@@ TableElem::columns  [src:f84de665]
+Los tamaños de las columnas. Mirá la @grid:track-size[documentación de grid] para más información sobre el
+dimensionamiento de pistas.
+
+@@ TableElem::fill  [src:bc6e2af8]
+Cómo rellenar las celdas.
+
+Puede ser:
+- un único relleno para todas las celdas
+- un array de rellenos correspondientes a cada columna
+- una función que asigne la posición de una celda a su relleno
+
+Sobre todo, los arrays y las funciones son útiles para crear tablas con rayas. Mirá la @guides:tables:fills[guía de tablas]
+para más detalles.
+
+```example
+#table(
+  fill: (x, _) =>
+    if calc.odd(x) { luma(240) }
+    else { white },
+  align: (x, y) =>
+    if y == 0 { center }
+    else if x == 0 { left }
+    else { right },
+  columns: 4,
+  [], [*Q1*], [*Q2*], [*Q3*],
+  [Revenue:], [1000 €], [2000 €], [3000 €],
+  [Expenses:], [500 €], [1000 €], [1500 €],
+  [Profit:], [500 €], [1000 €], [1500 €],
+)
+```
+
+
+@@ TableElem::gutter  [src:c4af0b13]
+Los espacios entre filas y columnas. Es un atajo para establecer `column-gutter` y `row-gutter` en el mismo valor. Mirá la
+@grid.gutter[documentación de grid] para más información sobre los gutters.
+
+@@ TableElem::inset  [src:5948823f]
+Cuánto relleno se agrega al contenido de las celdas.
+
+Para especificar el mismo inset para todas las celdas, usá una única longitud para todos los lados o un diccionario de
+longitudes para lados individuales. Mirá la @box.inset[documentación de box] para más detalles.
+
+Para especificar un inset distinto para distintas celdas, podés:
+- usar un único inset uniforme para todas las celdas
+- usar un array de insets para cada columna
+- usar una función que asigne la posición X/Y de una celda (ambas desde cero) a su inset
+
+Mirá la @grid:styling[documentación de grid] para más detalles.
+
+```example
+#table(
+  columns: 2,
+  inset: 10pt,
+  [Hello],
+  [World],
+)
+
+#table(
+  columns: 2,
+  inset: (x: 20pt, y: 10pt),
+  [Hello],
+  [World],
+)
+```
+
+
+@@ TableElem::row_gutter  [src:f87c2f64]
+Los espacios entre filas. Tiene precedencia sobre `gutter`. Mirá la @grid.gutter[documentación de grid] para más información
+sobre los gutters.
+
+@@ TableElem::rows  [src:516be933]
+Los tamaños de las filas. Mirá la @grid:track-size[documentación de grid] para más información sobre el dimensionamiento de
+pistas.
+
+@@ TableElem::stroke  [src:5908b507]
+Cómo @stroke[trazar] las celdas.
+
+Los trazos se pueden desactivar estableciendo esto en `{none}`.
+
+Si hace falta ubicar líneas que puedan cruzar el espacio entre celdas producido por la opción @table.gutter[`gutter`], o
+reemplazar el trazo entre varias celdas específicas, considerá especificar uno o más de @table.hline y @table.vline junto
+con las celdas de tu tabla.
+
+Para especificar el mismo trazo para todas las celdas, usá un único @stroke[trazo] para todos los lados o un diccionario de
+@stroke[trazos] para lados individuales. Mirá la @rect.stroke[documentación del rectángulo] para más detalles.
+
+Para especificar trazos distintos para distintas celdas, podés:
+- usar un único trazo para todas las celdas
+- usar un array de trazos correspondientes a cada columna
+- usar una función que asigne la posición de una celda a su trazo
+
+Mirá la @guides:tables:strokes[guía de tablas] para más detalles.
+
+@@ TableElem::summary  [src:d8d042f9]
+Un resumen del propósito y la estructura de las tablas complejas.
+
+Mirá la función @crate::pdf::accessibility::table_summary para más información.
+
+@@ TableFooter  [src:3bd1c3e9]
+Un pie de tabla repetible.
+
+Igual que el elemento @table.header, el pie puede repetirse en cada página de la tabla. Esto es útil para mejorar la
+legibilidad agregando las etiquetas de columna tanto en el encabezado como en el pie de una tabla grande, totales u otra
+información que deba ser visible en cada página.
+
+No se pueden ubicar otras celdas de la tabla después del pie.
+
+@@ TableFooter::children  [src:0f57ec1a]
+Las celdas y líneas dentro del pie.
+
+@@ TableFooter::repeat  [src:2d0e72a9]
+Si este pie se debe repetir en todas las páginas.
+
+@@ TableHLine  [src:3b01d01e]
+Una línea horizontal en la tabla.
+
+Reemplaza cualquier trazo por celda, incluido el trazo especificado mediante el campo `stroke` de la tabla. Puede cruzar el
+espacio entre celdas creado mediante la opción @table.column-gutter[`column-gutter`] de la tabla.
+
+Usá esta función en lugar del campo `stroke` de la tabla si querés ubicar manualmente una línea horizontal en una posición
+específica de una sola tabla. Considerá usar en cambio el campo @table.stroke[`stroke` de la tabla] o el campo
+@table.cell.stroke[`stroke` de `table.cell`] si la línea que querés ubicar es parte del diseño de todas tus tablas.
+
+```example
+#set table.hline(stroke: .6pt)
+
+#table(
+  stroke: none,
+  columns: (auto, 1fr),
+  [09:00], [Badge pick up],
+  [09:45], [Opening Keynote],
+  [10:30], [Talk: Typst's Future],
+  [11:15], [Session: Good PRs],
+  table.hline(start: 1),
+  [Noon], [_Lunch break_],
+  table.hline(start: 1),
+  [14:00], [Talk: Tracked Layout],
+  [15:00], [Talk: Automations],
+  [16:00], [Workshop: Tables],
+  table.hline(),
+  [19:00], [Day 1 Attendee Mixer],
+)
+```
+
+
+@@ TableHLine::end  [src:b98dba46]
+La columna antes de la cual termina la línea horizontal (con índice desde cero, exclusivo).
+
+@@ TableHLine::position  [src:bac2438d]
+La posición en la que se ubica la línea, dada su fila (`y`): `{top}` para dibujarla por encima o `{bottom}` para dibujarla
+por debajo.
+
+Esta configuración solo es relevante cuando el gutter de filas está habilitado (y no se debe usar de otro modo; conviene
+simplemente aumentar en uno el campo `y`), ya que en ese caso la posición debajo de una fila pasa a ser distinta de la
+posición encima de la fila siguiente, debido al espacio entre ambas.
+
+@@ TableHLine::start  [src:32a56b51]
+La columna en la que empieza la línea horizontal (con índice desde cero, inclusivo).
+
+@@ TableHLine::stroke  [src:ee551cf6]
+El trazo de la línea.
+
+Especificar `{none}` elimina cualquier línea ubicada previamente a lo largo del rango de esta línea, incluidas las hlines o el
+trazo por celda que estén debajo.
+
+@@ TableHLine::y  [src:d6180cec]
+La fila encima de la cual se ubica la línea horizontal (con índice desde cero). Funciona igual que el campo `y` de
+@grid.hline.y[`grid.hline`].
+
+@@ TableHeader  [src:b9398151]
+Un encabezado de tabla repetible.
+
+Deberías envolver las filas de encabezado de tus tablas en esta función, incluso si no pensás que tu tabla se corte entre
+páginas, porque Typst usa esta función para adjuntar metadatos de accesibilidad a las tablas y asegurar el
+@guides:accessibility:basics[acceso universal] a tu documento.
+
+Podés usar el parámetro `repeat` para controlar si el encabezado de tu tabla se repetirá en todas las páginas.
+
+Actualmente, esta función no es adecuada para crear una columna de encabezado o celdas de encabezado individuales. Usá
+celdas normales o, si estás exportando un PDF, también podés usar la función @pdf.header-cell para marcar una celda como
+celda de encabezado. Del mismo modo, podés usar @pdf.data-cell para marcar celdas de esta función como celdas de datos.
+Tené en cuenta que estas funciones no son definitivas y, por lo tanto, solo están disponibles cuando habilitás la
+característica `a11y-extras` (mirá la @pdf[documentación del formato PDF] para más detalles).
+
+```example
+#set page(height: 11.5em)
+#set table(
+  fill: (x, y) =>
+    if x == 0 or y == 0 {
+      gray.lighten(40%)
+    },
+  align: right,
+)
+
+#show table.cell.where(x: 0): strong
+#show table.cell.where(y: 0): strong
+
+#table(
+  columns: 4,
+  table.header(
+    [], [Blue chip],
+    [Fresh IPO], [Penny st'k],
+  ),
+  table.cell(
+    rowspan: 6,
+    align: horizon,
+    rotate(-90deg, reflow: true)[
+      *USD / day*
+    ],
+  ),
+  [0.20], [104], [5],
+  [3.17], [108], [4],
+  [1.59], [84],  [1],
+  [0.26], [98],  [15],
+  [0.01], [195], [4],
+  [7.34], [57],  [2],
+)
+```
+
+
+@@ TableHeader::children  [src:4cf56705]
+Las celdas y líneas dentro del encabezado.
+
+@@ TableHeader::level  [src:717c8446]
+El nivel del encabezado. No debe ser cero.
+
+Esto permite repetir varios encabezados a la vez. Los encabezados con distintos niveles pueden repetirse juntos, siempre que
+tengan niveles ascendentes.
+
+En particular, cuando un encabezado de nivel más bajo empieza a repetirse, todos los encabezados de nivel más alto o igual
+dejan de repetirse (son "reemplazados" por el nuevo encabezado).
+
+@@ TableHeader::repeat  [src:f35bc3c0]
+Si este encabezado se debe repetir en todas las páginas.
+
+@@ TableVLine  [src:61cf26cf]
+Una línea vertical en la tabla. Mirá la documentación de @grid.vline para más información sobre cómo usar los campos de este
+elemento.
+
+Reemplaza cualquier trazo por celda, incluido el trazo especificado mediante el campo `stroke` de la tabla. Puede cruzar el
+espacio entre celdas creado mediante la opción @table.row-gutter[`row-gutter`] de la tabla.
+
+De manera similar a @table.hline, usá esta función si querés ubicar manualmente una línea vertical en una posición específica
+de una sola tabla y usá en cambio el campo @table.stroke[`stroke` de la tabla] o el campo @table.cell.stroke[`stroke` de
+`table.cell`] si la línea que querés ubicar es parte del diseño de todas tus tablas.
+
+@@ TableVLine::end  [src:404d0aa3]
+La fila encima de la cual termina la línea vertical (con índice desde cero, exclusivo).
+
+@@ TableVLine::position  [src:6d1ea484]
+La posición en la que se ubica la línea, dada su columna (`x`): `{start}` para dibujarla antes o `{end}` para dibujarla
+después.
+
+También se aceptan los valores `{left}` y `{right}`, pero no se recomiendan, ya que hacen que tu tabla sea inconsistente
+entre documentos de izquierda a derecha y de derecha a izquierda.
+
+Esta configuración solo es relevante cuando el gutter de columnas está habilitado (y no se debe usar de otro modo; conviene
+simplemente aumentar en uno el campo `x`), ya que en ese caso la posición después de una columna pasa a ser distinta de la
+posición antes de la columna siguiente, debido al espacio entre ambas.
+
+@@ TableVLine::start  [src:520803e1]
+La fila en la que empieza la línea vertical (con índice desde cero, inclusivo).
+
+@@ TableVLine::stroke  [src:d3a5fb14]
+El trazo de la línea.
+
+Especificar `{none}` elimina cualquier línea ubicada previamente a lo largo del rango de esta línea, incluidas las vlines o el
+trazo por celda que estén debajo.
+
+@@ TableVLine::x  [src:7ba8dbf2]
+La columna antes de la cual se ubica la línea vertical (con índice desde cero). Funciona igual que el campo `x` de
+@grid.vline.
