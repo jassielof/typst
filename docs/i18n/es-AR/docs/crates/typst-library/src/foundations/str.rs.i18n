@@ -1,0 +1,355 @@
+@@ Regex  [src:66036a05]
+Una expresión regular.
+
+Se puede usar como @reference:styling:show-rules[selector de reglas show] o con
+@str[métodos de cadenas de texto].
+
+Visitá #link("https://docs.rs/regex/latest/regex/#syntax")[este sitio web] para
+ver la especificación completa de la sintaxis admitida.
+
+= Con métodos de cadenas de texto <string-methods>
+Las expresiones regulares se pueden usar con métodos de cadenas de texto como
+@str.find[`find`], @str.split[`split`], @str.replace[`replace`], @str.match[`match`]
+o @str.matches[`matches`]. Mirá la documentación de estos métodos para más
+detalles.
+
+```example
+#"a,b;c".split(regex("[,;]"))
+```
+
+= Con reglas show <show-rules>
+Las expresiones regulares también se pueden usar con
+@reference:styling:show-rules[reglas show] para encontrar y transformar texto del
+documento. Por ejemplo, a continuación pintamos de rojo todos los números.
+
+```example
+#show regex("\\d+"): set text(red)
+
+The numbers 1 to 10.
+```
+
+A veces también puede convenir combinar ambos usos: primero buscar texto con una
+regla show y luego volver a aplicar la expresión sobre ese texto para extraer un
+#link("https://docs.rs/regex/latest/regex/#grouping-and-flags")[grupo de captura]
+específico. En ese caso, puede ser cómodo guardar la expresión regular en una
+variable en lugar de repetirla dos veces.
+
+```example
+#let pattern = regex("\|([^|]*)\|")
+#show pattern: it => {
+  let m = it.text.match(pattern)
+  let inner = m.captures.first()
+  highlight(inner)
+}
+
+A |handy-dandy| highlighter!
+```
+
+@@ Regex::construct  [src:1823eba3]
+Crea una expresión regular a partir de una cadena de texto.
+
+@@ Regex::construct::regex  [src:b336ad53]
+La expresión regular como cadena de texto.
+
+Tanto las cadenas de texto de Typst como las expresiones regulares usan barras
+invertidas para el escape. Para producir una secuencia de escape de regex que
+también sea válida en Typst, tenés que escapar la propia barra invertida (por
+ejemplo, escribir `{regex("\\\\")}` para la regex `\\`). Las secuencias de escape
+de regex que no son secuencias de escape válidas de Typst (por ejemplo, `\d` y
+`\b`) se pueden ingresar directamente en las cadenas, pero es buena práctica
+escaparlas igualmente para evitar ambigüedades (es decir, `{regex("\\b\\d")}`).
+Mirá la @str:escapes[lista de secuencias de escape válidas en cadenas de texto].
+
+Si necesitás muchas secuencias de escape, también podés crear un elemento raw y
+extraer su texto para usarlo en tus expresiones regulares:
+``` {regex(`\d+\.\d+\.\d+`.text)}```.
+
+@@ Str  [src:6b1ff53f]
+Una secuencia de puntos de código Unicode.
+
+Podés iterar sobre los grupos de grafemas de la cadena con un
+@reference:scripting:loops[bucle for]. Los grupos de grafemas son básicamente
+caracteres, pero mantienen juntas las cosas que van juntas, por ejemplo, varios
+puntos de código que en conjunto forman un emoji de bandera. Las cadenas de texto
+se pueden sumar con el operador `+`, @reference:scripting:blocks[unir] y
+multiplicar por enteros.
+
+Typst ofrece métodos de utilidad para manipular cadenas de texto. Muchos de estos
+métodos (por ejemplo, @str.split[`split`], @str.trim[`trim`] y
+@str.replace[`replace`]) operan sobre _patrones:_ un patrón puede ser una cadena de
+texto o una @regex[expresión regular]. Esto hace que los métodos sean muy
+versátiles.
+
+Todas las longitudes e índices se expresan en bytes UTF-8. Los índices empiezan en
+cero y los índices negativos dan la vuelta hasta el final de la cadena.
+
+Podés convertir un valor en cadena de texto con el constructor `str`.
+
+= Ejemplo <example>
+```example
+#"hello world!" \
+#"\"hello\n  world\"!" \
+#"1 2 3".split() \
+#"1,2;3".split(regex("[,;]")) \
+#(regex("\\d+") in "ten euros") \
+#(regex("\\d+") in "10 euros")
+```
+
+= #short-or-long[Escapes][Secuencias de escape] <escapes>
+Igual que en el marcado, en las cadenas de texto podés escapar algunos símbolos:
+- `[\\]` para una barra invertida
+- `[\"]` para una comilla
+- `[\n]` para un salto de línea
+- `[\r]` para un retorno de carro
+- `[\t]` para una tabulación
+- `[\u{1f600}]` para una secuencia de escape Unicode hexadecimal
+
+@@ Str::at  [src:afda8f5e]
+Extrae el primer grupo de grafemas después del índice especificado. Devuelve el
+valor por defecto si el índice está fuera de rango, o falla con un error si no se
+especificó ningún valor por defecto.
+
+@@ Str::at::default  [src:08dc430d]
+Un valor por defecto para devolver si el índice está fuera de rango.
+
+@@ Str::at::index  [src:42fda809]
+El índice de bytes. Si es negativo, se indexa desde el final.
+
+@@ Str::clusters  [src:c2a7219c]
+Devuelve los grupos de grafemas de la cadena como un array de subcadenas.
+
+@@ Str::codepoints  [src:2c221460]
+Devuelve los puntos de código Unicode de la cadena como un array de subcadenas.
+
+@@ Str::construct  [src:722355d7]
+Convierte un valor en una cadena de texto.
+
+- Los enteros se formatean en base 10. Esto se puede cambiar con el parámetro
+  opcional `base`.
+- Los flotantes se formatean en base 10 y nunca en notación exponencial.
+- Los enteros y flotantes negativos se formatean con el signo menos de Unicode
+  ("−" U+2212) en lugar del signo menos ASCII ("-" U+002D).
+- De las etiquetas se extrae el nombre.
+- Los bytes se decodifican como UTF-8.
+
+Si querés convertir desde y hacia puntos de código Unicode, mirá las funciones
+@str.to-unicode[`to-unicode`] y @str.from-unicode[`from-unicode`].
+
+```example
+#str(10) \
+#str(4000, base: 16) \
+#str(2.7) \
+#str(1e8) \
+#str(<intro>)
+```
+
+@@ Str::construct::base  [src:8bcfa5dd]
+La base (raíz) en la que se muestran los enteros, entre 2 y 36.
+
+@@ Str::construct::value  [src:0d4eab82]
+El valor que se debe convertir en cadena de texto.
+
+@@ Str::contains  [src:d9dd4171]
+Si la cadena contiene el patrón especificado.
+
+Este método también tiene una sintaxis dedicada: podés escribir
+`{"bc" in "abcd"}` en lugar de `{"abcd".contains("bc")}`.
+
+@@ Str::contains::pattern  [src:a662a16e]
+El patrón que se busca.
+
+@@ Str::ends_with  [src:ac80de08]
+Si la cadena termina con el patrón especificado.
+
+@@ Str::ends_with::pattern  [src:49438f03]
+El patrón con el que podría terminar la cadena.
+
+@@ Str::find  [src:ed22dac2]
+Busca el patrón especificado en la cadena y devuelve la primera coincidencia como
+cadena de texto, o `{none}` si no hay ninguna.
+
+@@ Str::find::pattern  [src:a662a16e]
+El patrón que se busca.
+
+@@ Str::first  [src:f7453a6c]
+Extrae el primer grupo de grafemas de la cadena.
+
+Devuelve el valor por defecto indicado si la cadena está vacía, o falla con un
+error si no se especificó ningún valor por defecto.
+
+@@ Str::first::default  [src:28224830]
+Un valor por defecto para devolver si la cadena está vacía.
+
+@@ Str::from_unicode  [src:4a97dec6]
+Convierte un punto de código Unicode en su cadena correspondiente.
+
+```example
+#str.from-unicode(97)
+```
+
+@@ Str::from_unicode::value  [src:41264469]
+El punto de código que se debe convertir.
+
+@@ Str::last  [src:9046bd19]
+Extrae el último grupo de grafemas de la cadena.
+
+Devuelve el valor por defecto indicado si la cadena está vacía, o falla con un
+error si no se especificó ningún valor por defecto.
+
+@@ Str::last::default  [src:28224830]
+Un valor por defecto para devolver si la cadena está vacía.
+
+@@ Str::len  [src:cbc3d370]
+La longitud de la cadena en bytes codificados en UTF-8.
+
+@@ Str::match_  [src:1793dee8]
+Busca el patrón especificado en la cadena y devuelve un diccionario con detalles
+sobre la primera coincidencia, o `{none}` si no hay ninguna.
+
+El diccionario devuelto tiene las siguientes claves:
+- `start`: El desplazamiento de inicio de la coincidencia
+- `end`: El desplazamiento de fin de la coincidencia
+- `text`: El texto que coincidió.
+- `captures`: Un array con una cadena de texto por cada grupo de captura que
+  coincidió. ¡El primer elemento del array contiene la primera captura, no la
+  coincidencia completa! Está vacío, salvo que el `pattern` sea una regex con
+  grupos de captura.
+
+#example(
+  title: "Forma del diccionario devuelto",
+  ```
+  #let pat = regex("not (a|an) (apple|cat)")
+  #"I'm a doctor, not an apple.".match(pat) \
+  #"I am not a cat!".match(pat)
+  ```
+)
+
+#example(
+  title: "Distintos tipos de patrones",
+  ```
+  #assert.eq("Is there a".match("for this?"), none)
+  #"The time of my life.".match(regex("[mit]+e"))
+  ```
+)
+
+@@ Str::match_::pattern  [src:a662a16e]
+El patrón que se busca.
+
+@@ Str::matches  [src:4b443882]
+Busca el patrón especificado en la cadena y devuelve un array de diccionarios con
+detalles sobre todas las coincidencias. Para más detalles sobre los diccionarios
+devueltos, mirá @str.match[arriba].
+
+```example
+#"Day by Day.".matches("Day")
+```
+
+@@ Str::matches::pattern  [src:a662a16e]
+El patrón que se busca.
+
+@@ Str::normalize  [src:143b0703]
+Normaliza la cadena a la forma normal Unicode indicada.
+
+Esto es útil al manipular cadenas que contienen caracteres combinados de Unicode.
+
+```typ
+#assert.eq("é".normalize(form: "nfd"), "e\u{0301}")
+#assert.eq("ſ́".normalize(form: "nfkc"), "ś")
+```
+
+@@ Str::position  [src:5e53377b]
+Busca el patrón especificado en la cadena y devuelve el índice de la primera
+coincidencia como entero, o `{none}` si no hay ninguna.
+
+@@ Str::position::pattern  [src:a662a16e]
+El patrón que se busca.
+
+@@ Str::replace  [src:9974a512]
+Reemplaza como máximo `count` apariciones del patrón indicado por una cadena o
+función de reemplazo (empezando desde el principio). Si no se indica una cantidad,
+se reemplazan todas las apariciones.
+
+@@ Str::replace::count  [src:7c830f81]
+Si se indica, solo se reemplazan las primeras `count` coincidencias del patrón.
+
+@@ Str::replace::pattern  [src:a662a16e]
+El patrón que se busca.
+
+@@ Str::replace::replacement  [src:27ff4089]
+La cadena por la que se reemplazan las coincidencias, o una función que recibe un
+diccionario por cada coincidencia y puede devolver cadenas de reemplazo
+individuales.
+
+El diccionario que se le pasa a la función tiene la misma forma que el diccionario
+devuelto por @str.match[`match`].
+
+@@ Str::rev  [src:7b49a0bc]
+Invierte la cadena.
+
+Más específicamente, devuelve una cadena con los mismos grupos de grafemas, en
+orden inverso.
+
+```example
+#"Pirate flag: 🏴‍☠️".rev()
+```
+
+@@ Str::slice  [src:04f31d55]
+Extrae una subcadena de la cadena. Falla con un error si el índice de inicio o de
+fin está fuera de rango.
+
+@@ Str::slice::count  [src:acd1a0b4]
+La cantidad de bytes que se extraen. Equivale a pasar `start + count` como
+posición `end`. Es mutuamente excluyente con `end`.
+
+@@ Str::slice::end  [src:64019c6a]
+El índice de bytes final (exclusivo). Si se omite, se extrae toda la porción hasta
+el final de la cadena. Si es negativo, se indexa desde el final.
+
+@@ Str::slice::start  [src:ea24b5cc]
+El índice de bytes inicial (inclusivo). Si es negativo, se indexa desde el final.
+
+@@ Str::split  [src:2fb1458b]
+Divide una cadena en las coincidencias de un patrón especificado y devuelve un
+array con las partes resultantes.
+
+Cuando se usa la cadena vacía como separador, se separa cada carácter (es decir,
+cada punto de código Unicode) de la cadena, junto con el principio y el final. En
+la práctica, esto significa que la lista de partes resultante contendrá la cadena
+vacía al principio y al final.
+
+@@ Str::split::pattern  [src:b6d00bc6]
+El patrón por el que se divide. Por defecto son los espacios en blanco.
+
+@@ Str::starts_with  [src:1dc4f8c0]
+Si la cadena empieza con el patrón especificado.
+
+@@ Str::starts_with::pattern  [src:061b3ea2]
+El patrón con el que podría empezar la cadena.
+
+@@ Str::to_unicode  [src:08907b8d]
+Convierte un carácter en su punto de código correspondiente.
+
+```example
+#"a".to-unicode() \
+#("a\u{0300}"
+   .codepoints()
+   .map(str.to-unicode))
+```
+
+@@ Str::to_unicode::character  [src:262920d3]
+El carácter que se debe convertir.
+
+@@ Str::trim  [src:0c8c777e]
+Elimina las coincidencias de un patrón de uno o ambos lados de la cadena, una vez
+o repetidamente, y devuelve la cadena resultante.
+
+@@ Str::trim::at  [src:c367c6d8]
+Puede ser `{start}` o `{end}` para recortar solo el inicio o el final de la
+cadena. Si se omite, se recortan ambos lados.
+
+@@ Str::trim::pattern  [src:b5500b55]
+El patrón que se busca. Si es `{none}`, recorta los espacios en blanco.
+
+@@ Str::trim::repeat  [src:064b0630]
+Si se eliminan repetidamente las coincidencias del patrón o solo una vez. Por
+defecto es `{true}`.

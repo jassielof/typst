@@ -1,0 +1,137 @@
+@@ Func  [src:c6f03950]
+Una correspondencia de valores de argumentos a un valor de retorno.
+
+Podés llamar a una función escribiendo, directamente después del nombre de la
+función, una lista de _argumentos_ separados por comas entre paréntesis. Además,
+podés pasarle a una función cualquier cantidad de argumentos finales de bloque de
+contenido _después_ de la lista normal de argumentos. Si la lista normal de
+argumentos quedara vacía, se puede omitir. Typst admite argumentos posicionales y
+con nombre. Los primeros se identifican por posición y tipo, mientras que los
+segundos se escriben como `name: value`.
+
+En modo matemático, las llamadas a funciones tienen un comportamiento especial.
+Mirá la @math[documentación de matemática] para más detalles.
+
+= Ejemplo <example>
+```example
+// Call a function.
+#list([A], [B])
+
+// Named arguments and trailing
+// content blocks.
+#enum(start: 2)[A][B]
+
+// Version without parentheses.
+#list[A][B]
+```
+
+Las funciones son un bloque de construcción fundamental de Typst. Typst ofrece
+funciones para una variedad de tareas de composición. Además, el marcado que
+escribís está respaldado por funciones y todo el estilo se aplica a través de
+funciones. Esta referencia enumera todas las funciones disponibles y cómo podés
+usarlas. Mirá también la documentación sobre las reglas
+@reference:styling:set-rules[set] y @reference:styling:show-rules[show] para conocer
+otras formas de trabajar con funciones en Typst.
+
+= Funciones de elemento <element-functions>
+Algunas funciones están asociadas a _elementos_ como los @heading[títulos] o las
+@table[tablas]. Cuando se las llama, crean un elemento de su tipo respectivo. A
+diferencia de las funciones normales, además se pueden usar en
+@reference:styling:set-rules[reglas set], @reference:styling:show-rules[reglas show]
+y @selector[selectores].
+
+= Ámbitos de funciones <function-scopes>
+Las funciones pueden contener definiciones relacionadas en su propio ámbito, de
+forma similar a un @reference:scripting:modules[módulo]. Ejemplos de esto son
+@assert.eq o @list.item. Sin embargo, esta característica actualmente solo está
+disponible para funciones incorporadas.
+
+= Definir funciones <defining-functions>
+Podés definir tu propia función con un @reference:scripting:bindings[enlace let]
+que tenga una lista de parámetros después del nombre del enlace. La lista de
+parámetros puede contener parámetros posicionales obligatorios, parámetros con
+nombre con valores por defecto y @arguments[sumideros de argumentos].
+
+El lado derecho de un enlace de función es el cuerpo de la función, que puede ser
+un bloque o cualquier otra expresión. Define el valor de retorno de la función y
+puede depender de los parámetros. Si el cuerpo de la función es un
+@reference:scripting:blocks[bloque de código], el valor de retorno es el resultado
+de unir los valores de cada expresión del bloque.
+
+Dentro del cuerpo de una función, se puede usar la palabra clave `return` para
+salir anticipadamente y, opcionalmente, especificar un valor de retorno. Si no se da
+un valor de retorno explícito, el cuerpo se evalúa al resultado de unir todas las
+expresiones que preceden a `return`.
+
+Las funciones que no devuelven ningún valor significativo devuelven @none. El tipo
+de retorno de esas funciones no se especifica explícitamente en la documentación.
+(Un ejemplo de esto es @array.push).
+
+```example
+#let alert(body, fill: red) = {
+  set text(white)
+  set align(center)
+  rect(
+    fill: fill,
+    inset: 8pt,
+    radius: 4pt,
+    [*Warning:\ #body*],
+  )
+}
+
+#alert[
+  Danger is imminent!
+]
+
+#alert(fill: blue)[
+  KEEP OFF TRACKS
+]
+```
+
+= Importar funciones <importing-functions>
+Las funciones se pueden importar de un archivo (@reference:scripting:modules[`module`])
+a otro con `{import}`. Por ejemplo, supongamos que definimos la función `alert` del
+ejemplo anterior en un archivo llamado `foo.typ`. Podemos importarla en otro archivo
+escribiendo `{import "foo.typ": alert}`.
+
+= #short-or-long[Sin nombre][Funciones sin nombre] <unnamed>
+También podés crear una función sin nombre, sin crear un enlace, especificando una
+lista de parámetros seguida de `=>` y el cuerpo de la función. Si tu función tiene un
+solo parámetro, los paréntesis alrededor de la lista de parámetros son opcionales.
+Las funciones sin nombre son útiles principalmente para las reglas show, pero
+también como argumentos de otras funciones, como @array.position.
+
+```example
+#show "once?": it => [#it #it]
+once?
+```
+
+= Nota sobre la pureza de las funciones <note-on-function-purity>
+En Typst, todas las funciones son _puras._ Esto significa que, para los mismos
+argumentos, siempre devuelven el mismo resultado. No pueden "recordar" cosas para
+producir otro valor cuando se las llama por segunda vez.
+
+La única excepción son los métodos incorporados como @array.push[`array.push(value)`].
+Estos pueden modificar los valores sobre los que se los llama.
+
+@@ Func::where_  [src:a050d0c1]
+Devuelve un selector que filtra los elementos que pertenecen a esta función y cuyos
+campos tienen los valores de los argumentos dados.
+
+```example
+#show heading.where(level: 2): set text(blue)
+= Section
+== Subsection
+=== Sub-subsection
+```
+
+
+@@ Func::where_::fields  [src:eb1fa758]
+Los campos por los que se filtra.
+
+@@ Func::with  [src:8a54df43]
+Devuelve una función nueva a la que se le aplicaron previamente los argumentos
+dados.
+
+@@ Func::with::arguments  [src:aaabe763]
+Los argumentos que se aplican a la función.

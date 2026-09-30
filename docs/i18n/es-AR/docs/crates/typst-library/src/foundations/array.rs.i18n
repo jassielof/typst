@@ -1,5 +1,154 @@
-@@ Array::len  [src:854c23d0]
-La cantidad de valores del array.
+@@ Array  [src:e0b02938]
+Una secuencia de valores.
+
+Podés construir un array encerrando entre paréntesis una secuencia de valores
+separados por comas. Los valores no tienen por qué ser del mismo tipo.
+
+Podés acceder a los elementos de un array y actualizarlos con el método `.at()`.
+Los índices empiezan en cero y los índices negativos dan la vuelta hasta el final
+del array. Podés iterar sobre un array con un @reference:scripting:loops[bucle
+for]. Los arrays se pueden sumar con el operador `+`,
+@reference:scripting:blocks[unir] y multiplicar por enteros.
+
+*Nota:* Un array de longitud uno necesita una coma final, como en `{(1,)}`. Esto
+es para distinguirlo de una simple expresión entre paréntesis como
+`{(1 + 2) * 3}`. Un array vacío se escribe `{()}`.
+
+= Ejemplo <example>
+```example
+#let values = (1, 7, 4, -3, 2)
+
+#values.at(0) \
+#(values.at(0) = 3)
+#values.at(-1) \
+#values.find(calc.even) \
+#values.filter(calc.odd) \
+#values.map(calc.abs) \
+#values.rev() \
+#(1, (2, 3)).flatten() \
+#(("A", "B", "C")
+    .join(", ", last: " and "))
+```
+
+@@ Array::all  [src:a4b3875d]
+Si la función indicada devuelve `{true}` para todos los elementos del array.
+
+@@ Array::all::test  [src:b0ac2bb2]
+La función que se aplica a cada elemento. Debe devolver un booleano.
+
+@@ Array::any  [src:9598953b]
+Si la función indicada devuelve `{true}` para algún elemento del array.
+
+@@ Array::any::test  [src:b0ac2bb2]
+La función que se aplica a cada elemento. Debe devolver un booleano.
+
+@@ Array::at  [src:3297d0db]
+Devuelve el elemento del índice especificado en el array. Se puede usar en el lado
+izquierdo de una asignación. Devuelve el valor por defecto si el índice está fuera
+de rango, o falla con un error si no se especificó ningún valor por defecto.
+
+@@ Array::at::default  [src:08dc430d]
+Un valor por defecto para devolver si el índice está fuera de rango.
+
+@@ Array::at::index  [src:a7e22f7f]
+El índice del elemento que se quiere obtener. Si es negativo, se indexa desde el
+final.
+
+@@ Array::chunks  [src:9a676f39]
+Divide un array en fragmentos que no se superponen, empezando por el principio y
+terminando con un único fragmento restante.
+
+Todos los fragmentos menos el último tienen `chunk-size` elementos. Si `exact` es
+`{true}`, el fragmento restante se descarta si contiene menos de `chunk-size`
+elementos.
+
+```example
+#let array = (1, 2, 3, 4, 5, 6, 7, 8)
+#array.chunks(3) \
+#array.chunks(3, exact: true)
+```
+
+@@ Array::chunks::chunk_size  [src:c59f5a2e]
+Cuántos elementos puede contener como máximo cada fragmento.
+
+@@ Array::chunks::exact  [src:88619e1b]
+Si se descarta el fragmento restante cuando su tamaño es menor que `chunk-size`.
+
+@@ Array::construct  [src:0ea997d7]
+Convierte un valor en un array.
+
+Tené en cuenta que esta función solo está pensada para convertir en array un valor
+similar a una colección, no para crear un array a partir de elementos individuales.
+Para eso, usá la sintaxis de array `(1, 2, 3)` (o `(1,)` para un array de un solo
+elemento).
+
+```example
+#let hi = "Hello 😃"
+#array(bytes(hi))
+```
+
+@@ Array::construct::value  [src:956688de]
+El valor que se debe convertir en array.
+
+@@ Array::contains  [src:eedc03a1]
+Si el array contiene el valor especificado.
+
+Este método también tiene una sintaxis dedicada: podés escribir
+`{2 in (1, 2, 3)}` en lugar de `{(1, 2, 3).contains(2)}`.
+
+@@ Array::contains::value  [src:0e6df47f]
+El valor que se busca.
+
+@@ Array::dedup  [src:1a9c9de0]
+Elimina los elementos duplicados del array.
+
+Devuelve un array nuevo sin los elementos duplicados. Solo se conserva el primer
+elemento de cada duplicado.
+
+```example
+#(3, 3, 1, 2, 3).dedup()
+```
+
+@@ Array::dedup::key  [src:7a2593d0]
+Si se indica, aplica esta función a cada elemento del array para determinar las
+claves por las que se elimina la duplicación.
+
+```example
+#("apple", "banana", " apple ").dedup(key: s => s.trim())
+```
+
+@@ Array::enumerate  [src:de2e475a]
+Devuelve un array nuevo con los valores junto a sus índices.
+
+El array devuelto consiste en pares `(index, value)` en forma de arrays de
+longitud 2. Estos se pueden @reference:scripting:bindings[desestructurar] con un
+enlace let o un bucle for.
+
+```example
+#for (i, value) in ("A", "B", "C").enumerate() {
+  [#i: #value \ ]
+}
+
+#("A", "B", "C").enumerate(start: 1)
+```
+
+
+@@ Array::enumerate::start  [src:880903df]
+El índice que se devuelve para el primer par de la lista resultante.
+
+@@ Array::filter  [src:b488314b]
+Produce un array nuevo solo con los elementos del original para los cuales la
+función indicada devuelve `{true}`.
+
+@@ Array::filter::test  [src:b0ac2bb2]
+La función que se aplica a cada elemento. Debe devolver un booleano.
+
+@@ Array::find  [src:470b4703]
+Busca un elemento para el cual la función indicada devuelva `{true}` y devuelve la
+primera coincidencia, o `{none}` si no hay ninguna.
+
+@@ Array::find::searcher  [src:b0ac2bb2]
+La función que se aplica a cada elemento. Debe devolver un booleano.
 
 @@ Array::first  [src:77a04e05]
 Devuelve el primer ítem del array. Se puede usar en el lado izquierdo de una asignación. Devuelve el valor por defecto si el array está vacío, o falla con un error si no se especificó ningún valor por defecto.
@@ -7,5 +156,308 @@ Devuelve el primer ítem del array. Se puede usar en el lado izquierdo de una as
 @@ Array::first::default  [src:c9f4e3b5]
 Un valor por defecto para devolver si el array está vacío.
 
+@@ Array::flatten  [src:6fd25ed5]
+Combina todos los arrays anidados en un único array plano.
+
+@@ Array::fold  [src:c6bba1c5]
+Pliega todos los elementos en un único valor usando una función acumuladora.
+
+```example
+#let array = (1, 2, 3, 4)
+#array.fold(0, (acc, x) => acc + x)
+```
+
+@@ Array::fold::folder  [src:a0642937]
+La función de plegado. Debe tener dos parámetros: uno para el valor acumulado y
+otro para un elemento.
+
+@@ Array::fold::init  [src:f6708af2]
+El valor inicial con el que se empieza.
+
+@@ Array::insert  [src:38aa3b03]
+Inserta un valor en el array en el índice especificado y desplaza a la derecha
+todos los elementos siguientes. Falla con un error si el índice está fuera de
+rango.
+
+Para reemplazar un elemento de un array, usá @array.at[`at`].
+
+@@ Array::insert::index  [src:abdeab9e]
+El índice en el que se inserta el elemento. Si es negativo, se indexa desde el
+final.
+
+@@ Array::insert::value  [src:ded26a9e]
+El valor que se inserta en el array.
+
+@@ Array::intersperse  [src:601ba92f]
+Devuelve un array con una copia del valor separador colocada entre los elementos
+adyacentes.
+
+```example
+#("A", "B", "C").intersperse("-")
+```
+
+@@ Array::intersperse::separator  [src:47aeee0a]
+El valor que se coloca entre cada par de elementos adyacentes.
+
+@@ Array::join  [src:716c80dc]
+Combina todos los elementos del array en uno solo.
+
+@@ Array::join::default  [src:a2db93c4]
+Qué devolver si el array está vacío.
+
+@@ Array::join::last  [src:943b7136]
+Un separador alternativo entre los dos últimos elementos.
+
+@@ Array::join::separator  [src:34fb8755]
+Un valor que se inserta entre cada elemento del array.
+
 @@ Array::last  [src:73925ef3]
 Devuelve el último ítem del array. Se puede usar en el lado izquierdo de una asignación. Devuelve el valor por defecto si el array está vacío, o falla con un error si no se especificó ningún valor por defecto.
+
+@@ Array::last::default  [src:c9f4e3b5]
+Un valor por defecto para devolver si el array está vacío.
+
+@@ Array::len  [src:854c23d0]
+La cantidad de valores del array.
+
+@@ Array::map  [src:792c8641]
+Produce un array nuevo en el que todos los elementos del original se transformaron
+con la función indicada.
+
+@@ Array::map::mapper  [src:6933e61b]
+La función que se aplica a cada elemento.
+
+@@ Array::pop  [src:b02c5428]
+Elimina el último elemento del array y lo devuelve. Falla con un error si el array
+está vacío.
+
+@@ Array::position  [src:e61c85bc]
+Busca un elemento para el cual la función indicada devuelva `{true}` y devuelve el
+índice de la primera coincidencia, o `{none}` si no hay ninguna.
+
+@@ Array::position::searcher  [src:ebbc61e4]
+La función que se aplica a cada elemento. Debe devolver un booleano.
+
+```example
+#let values = (1, 7, 4, 6, 9)
+#values.position(x => calc.even(x)) \
+// Or equivalently:
+#values.position(calc.even)
+```
+
+@@ Array::product  [src:7c6bc5a3]
+Calcula el producto de todos los elementos (funciona con todos los tipos que se
+pueden multiplicar).
+
+@@ Array::product::default  [src:c4248483]
+Qué devolver si el array está vacío. Hay que establecerlo si el array puede estar
+vacío.
+
+@@ Array::push  [src:b7597e22]
+Agrega un valor al final del array.
+
+@@ Array::push::value  [src:d32a3740]
+El valor que se inserta al final del array.
+
+@@ Array::range  [src:634c1c9d]
+Crea un array formado por una secuencia de números.
+
+Si pasás un solo parámetro posicional, se interpreta como el `end` del rango. Si
+pasás dos, describen el `start` y el `end` del rango.
+
+Esta función está disponible tanto en el ámbito de la función array como de forma
+global.
+
+```example
+#range(5) \
+#range(2, 5) \
+#range(20, step: 4) \
+#range(21, step: 4) \
+#range(5, 2, step: -1)
+```
+
+@@ Array::range::end  [src:fa713e96]
+El final del rango.
+
+@@ Array::range::inclusive  [src:468104cf]
+Si `end` es inclusivo.
+
+```example
+#range(0, inclusive: true) \
+#range(7, 10, inclusive: true) \
+#range(-8, -4, inclusive: true) \
+#range(-6, step: -2, inclusive: true)
+```
+
+@@ Array::range::start  [src:4d874dfb]
+El inicio del rango (inclusivo).
+
+@@ Array::range::step  [src:617a3b25]
+La distancia entre los números generados.
+
+@@ Array::reduce  [src:1413662d]
+Reduce los elementos a uno solo, aplicando repetidamente una operación de
+reducción.
+
+Si el array está vacío, devuelve `{none}`; de lo contrario, devuelve el resultado
+de la reducción.
+
+La función de reducción es una clausura con dos argumentos: un "acumulador" y un
+elemento.
+
+Para arrays con al menos un elemento, esto equivale a @array.fold con el primer
+elemento del array como valor inicial del acumulador, plegando en él cada
+elemento siguiente.
+
+```example
+#let array = (2, 1, 4, 3)
+#array.reduce((acc, x) => calc.max(acc, x))
+```
+
+@@ Array::reduce::reducer  [src:c20623e0]
+La función de reducción. Debe tener dos parámetros: uno para el valor acumulado y
+otro para un elemento.
+
+@@ Array::remove  [src:66be9df5]
+Elimina del array el valor del índice especificado y lo devuelve.
+
+@@ Array::remove::default  [src:08dc430d]
+Un valor por defecto para devolver si el índice está fuera de rango.
+
+@@ Array::remove::index  [src:36a51b99]
+El índice del elemento que se quiere eliminar. Si es negativo, se indexa desde el
+final.
+
+@@ Array::rev  [src:871b3ec6]
+Devuelve un array nuevo con los mismos elementos, pero en orden inverso.
+
+@@ Array::slice  [src:15af7b1d]
+Extrae una subsecuencia del array. Falla con un error si el índice de inicio o de
+fin está fuera de rango.
+
+@@ Array::slice::count  [src:6faf4498]
+La cantidad de elementos que se extraen. Equivale a pasar `start + count` como
+posición `end`. Es mutuamente excluyente con `end`.
+
+@@ Array::slice::end  [src:cad810a7]
+El índice final (exclusivo). Si se omite, se extrae toda la porción hasta el final
+del array. Si es negativo, se indexa desde el final.
+
+@@ Array::slice::start  [src:3e9df734]
+El índice inicial (inclusivo). Si es negativo, se indexa desde el final.
+
+@@ Array::sorted  [src:1a71e6c9]
+Devuelve una versión ordenada de este array, opcionalmente según una función de
+clave. El algoritmo de ordenamiento usado es estable.
+
+Devuelve un error si no se pudo comparar un par de valores seleccionados para la
+comparación, o si la función de clave o de comparación (si se indica) produce un
+error.
+
+Para ordenar según varios criterios a la vez, por ejemplo en caso de igualdad
+entre algunos criterios, la función de clave puede devolver un array. Los
+resultados se ordenan lexicográficamente.
+
+```example
+#let array = (
+  (a: 2, b: 4),
+  (a: 1, b: 5),
+  (a: 2, b: 3),
+)
+#array.sorted(key: it => (it.a, it.b))
+```
+
+@@ Array::sorted::by  [src:ec020657]
+Si se indica, usa esta función para comparar cada par de elementos del array.
+
+La función recibirá dos elementos del array para compararlos y debería devolver un
+booleano que indique su orden: `{true}` indica que los elementos están en orden,
+mientras que `{false}` indica que hay que intercambiarlos. Para mantener la
+estabilidad del ordenamiento, si los dos elementos son iguales, la función debería
+devolver `{true}`.
+
+Si esta función no ordena correctamente los elementos (por ejemplo, al devolver
+`{false}` tanto para `{(x, y)}` como para `{(y, x)}`, o para `{(x, x)}`), el array
+resultante tendrá un orden no especificado.
+
+Cuando se usa junto con `key`, a `by` se le pasan las claves en lugar de los
+elementos.
+
+```example
+#(
+  "sorted",
+  "by",
+  "decreasing",
+  "length",
+).sorted(
+  key: s => s.len(),
+  by: (l, r) => l >= r,
+)
+```
+
+@@ Array::sorted::key  [src:3ac1fcc0]
+Si se indica, aplica esta función a cada elemento del array para determinar las
+claves por las que se ordena.
+
+@@ Array::split  [src:12360f6c]
+Divide el array en las apariciones del valor especificado.
+
+```example
+#(1, 1, 2, 3, 2, 4, 5).split(2)
+```
+
+@@ Array::split::at  [src:b8547979]
+El valor por el que se divide.
+
+@@ Array::sum  [src:5f845d89]
+Suma todos los elementos (funciona con todos los tipos que se pueden sumar).
+
+@@ Array::sum::default  [src:c4248483]
+Qué devolver si el array está vacío. Hay que establecerlo si el array puede estar
+vacío.
+
+@@ Array::to_dict  [src:cbb20f8e]
+Convierte un array de pares en un diccionario. El primer valor de cada par es la
+clave y el segundo, el valor.
+
+Si la misma clave aparece varias veces, se selecciona el último valor.
+
+```example
+#(
+  ("apples", 2),
+  ("peaches", 3),
+  ("apples", 5),
+).to-dict()
+```
+
+@@ Array::windows  [src:7e84fbac]
+Devuelve ventanas deslizantes de `window-size` elementos sobre un array.
+
+Si la longitud del array es menor que `window-size`, devuelve un array vacío.
+
+```example
+#let array = (1, 2, 3, 4, 5, 6, 7, 8)
+#array.windows(5)
+```
+
+@@ Array::windows::window_size  [src:14ff957e]
+Cuántos elementos contendrá cada ventana.
+
+@@ Array::zip  [src:f6d68ad0]
+Combina el array con otros arrays elemento a elemento.
+
+Devuelve un array de arrays, donde el `i`-ésimo array interno contiene todos los
+`i`-ésimos elementos de cada array original.
+
+Si los arrays que se combinan tienen longitudes distintas, se combinan hasta el
+último elemento del array más corto y se ignoran todos los elementos restantes.
+
+Esta función es variádica, es decir, podés combinar varios arrays a la vez:
+`{(1, 2).zip(("A", "B"), (10, 20))}` da `{((1, "A", 10), (2, "B", 20))}`.
+
+@@ Array::zip::exact  [src:9faeec67]
+Si todos los arrays deben tener la misma longitud. Por ejemplo,
+`{(1, 2).zip((1, 2, 3), exact: true)}` produce un error.
+
+@@ Array::zip::others  [src:69ee18a6]
+Los arrays con los que se combina.

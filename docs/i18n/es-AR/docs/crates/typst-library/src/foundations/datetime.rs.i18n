@@ -1,0 +1,224 @@
+@@ Datetime  [src:cf292cc0]
+Representa una fecha, una hora o una combinación de ambas.
+
+Se puede crear especificando una fecha y hora personalizadas con la función
+constructora de este tipo u obteniendo la fecha actual con @datetime.today.
+
+= Ejemplo <example>
+```example
+#let date = datetime(
+  year: 2020,
+  month: 10,
+  day: 4,
+)
+
+#date.display() \
+#date.display(
+  "y:[year repr:last_two]"
+)
+
+#let time = datetime(
+  hour: 18,
+  minute: 2,
+  second: 23,
+)
+
+#time.display() \
+#time.display(
+  "h:[hour repr:12][period]"
+)
+```
+
+= Datetime y Duration <datetime-and-duration>
+Podés obtener una @duration[duración] restando dos datetime:
+
+```example
+#let first-of-march = datetime(day: 1, month: 3, year: 2024)
+#let first-of-jan = datetime(day: 1, month: 1, year: 2024)
+#let distance = first-of-march - first-of-jan
+#distance.hours()
+```
+
+También podés sumar o restar una duración a un datetime para obtener un nuevo
+datetime desplazado:
+
+```example
+#let date = datetime(day: 1, month: 3, year: 2024)
+#let two-days = duration(days: 2)
+#let two-days-earlier = date - two-days
+#let two-days-later = date + two-days
+
+#date.display() \
+#two-days-earlier.display() \
+#two-days-later.display()
+```
+
+= Formato <format>
+Podés especificar un formato personalizado con el método
+@datetime.display[`display`]. El formato de un datetime se especifica proporcionando
+_componentes_ con una cantidad determinada de _modificadores_. Un componente
+representa una cierta parte del datetime que querés mostrar y, con la ayuda de los
+modificadores, podés definir cómo querés mostrar ese componente. Para mostrar un
+componente, encerrás el nombre del componente entre corchetes (por ejemplo,
+`[[year]]` mostrará el año). Para agregar modificadores, agregás un espacio después
+del nombre del componente seguido del nombre del modificador, dos puntos y el valor
+del modificador (por ejemplo, `[[month repr:short]]` mostrará la representación
+corta del mes).
+
+La combinación posible de componentes y sus respectivos modificadores es la
+siguiente:
+
+- `year`: Muestra el año del datetime.
+  - `base`: Puede ser `calendar` o `iso_week`. Especifica si el año se basa en el
+    calendario gregoriano o en el número de semana ISO.
+  - `padding`: Puede ser `zero`, `space` o `none`. Especifica cómo se rellena el
+    año.
+  - `repr` Puede ser `full`, en cuyo caso se muestra el año completo, o `last_two`,
+    en cuyo caso solo se muestran los dos últimos dígitos.
+  - `sign`: Puede ser `automatic` o `mandatory`. Especifica cuándo se debe mostrar
+    el signo.
+- `month`: Muestra el mes del datetime.
+  - `padding`: Puede ser `zero`, `space` o `none`. Especifica cómo se rellena el
+    mes.
+  - `repr`: Puede ser `numerical`, `long` o `short`. Especifica si el mes se debe
+    mostrar como número o como palabra. Lamentablemente, al elegir la representación
+    con palabras, actualmente solo puede mostrar la versión en inglés. Está previsto
+    admitir la localización en el futuro.
+- `day`: Muestra el día del datetime.
+  - `padding`: Puede ser `zero`, `space` o `none`. Especifica cómo se rellena el
+    día.
+- `week_number`: Muestra el número de semana del datetime.
+  - `padding`: Puede ser `zero`, `space` o `none`. Especifica cómo se rellena el
+    número de semana.
+  - `repr`: Puede ser `ISO`, `sunday` o `monday`. En el caso de `ISO`, los números
+    de semana van de 1 a 53, mientras que los otros van de 0 a 53.
+- `weekday`: Muestra el día de la semana de la fecha.
+  - `repr` Puede ser `long`, `short`, `sunday` o `monday`. En el caso de `long` y
+    `short`, se mostrará el nombre correspondiente en inglés (igual que para el mes;
+    por ahora no se admiten otros idiomas). En el caso de `sunday` y `monday`, se
+    mostrará el valor numérico (suponiendo el domingo y el lunes, respectivamente,
+    como primer día de la semana).
+  - `one_indexed`: Puede ser `true` o `false`. Define si la representación numérica
+    de la semana empieza en 0 o en 1.
+- `hour`: Muestra la hora de la fecha.
+  - `padding`: Puede ser `zero`, `space` o `none`. Especifica cómo se rellena la
+    hora.
+  - `repr`: Puede ser `24` o `12`. Cambia si la hora se muestra en formato de 24 o
+    de 12 horas.
+- `period`: La parte AM/PM de la hora
+  - `case`: Puede ser `lower` para mostrarla en minúsculas y `upper` para mostrarla
+    en mayúsculas.
+- `minute`: Muestra el minuto de la fecha.
+  - `padding`: Puede ser `zero`, `space` o `none`. Especifica cómo se rellena el
+    minuto.
+- `second`: Muestra el segundo de la fecha.
+  - `padding`: Puede ser `zero`, `space` o `none`. Especifica cómo se rellena el
+    segundo.
+
+#link("https://time-rs.github.io/book/api/format-description.html#components")[Mirá acá]
+para más detalles sobre la sintaxis admitida.
+
+Tené en cuenta que no siempre se pueden usar todos los componentes. Por ejemplo, si
+creás un nuevo datetime con `{datetime(year: 2023, month: 10, day: 13)}`, se
+almacenará internamente como una fecha simple, lo que significa que no podés usar
+componentes como `hour` o `minute`, que solo funcionarían en datetimes que tienen
+una hora especificada.
+
+@@ Datetime::construct  [src:713c21cd]
+Crea un datetime nuevo.
+
+Podés especificar el @datetime[datetime] con año, mes, día, hora, minuto y segundo.
+
+_Nota_: Según qué componentes del datetime especifiques, Typst lo almacenará de una
+de las tres maneras siguientes:
+- Si especificás año, mes y día, Typst almacenará solo una fecha.
+- Si especificás hora, minuto y segundo, Typst almacenará solo una hora.
+- Si especificás todos los componentes (año, mes, día, hora, minuto y segundo), Typst
+  almacenará un datetime completo.
+
+Según cómo se almacene, el método @datetime.display[`display`] elegirá por defecto un
+formato distinto.
+
+```example
+#datetime(
+  year: 2012,
+  month: 8,
+  day: 3,
+).display()
+```
+
+
+@@ Datetime::construct::day  [src:837f53d6]
+El día del datetime.
+
+@@ Datetime::construct::hour  [src:8021c1b3]
+La hora del datetime.
+
+@@ Datetime::construct::minute  [src:41fe7821]
+El minuto del datetime.
+
+@@ Datetime::construct::month  [src:96ac42a7]
+El mes del datetime.
+
+@@ Datetime::construct::second  [src:32aae88c]
+El segundo del datetime.
+
+@@ Datetime::construct::year  [src:66582438]
+El año del datetime.
+
+@@ Datetime::day  [src:a738ba32]
+El día si se especificó, o `{none}` para horas sin fecha.
+
+@@ Datetime::display  [src:8e771210]
+Muestra el datetime en un formato especificado.
+
+Según hayas definido solo una fecha, solo una hora o ambas, el formato por defecto
+será distinto. Si especificaste una fecha, será `[[year]-[month]-[day]]`. Si
+especificaste una hora, será `[[hour]:[minute]:[second]]`. En el caso de un datetime,
+será `[[year]-[month]-[day] [hour]:[minute]:[second]]`.
+
+Mirá la @datetime:format[sintaxis de formato] para más información.
+
+@@ Datetime::display::pattern  [src:569f4c24]
+El formato que se usa para mostrar el datetime.
+
+@@ Datetime::hour  [src:1d192e90]
+La hora si se especificó, o `{none}` para fechas sin hora.
+
+@@ Datetime::minute  [src:400afcda]
+El minuto si se especificó, o `{none}` para fechas sin hora.
+
+@@ Datetime::month  [src:60285164]
+El mes si se especificó, o `{none}` para horas sin fecha.
+
+@@ Datetime::ordinal  [src:4b2d75af]
+El ordinal (día del año), o `{none}` para horas sin fecha.
+
+@@ Datetime::second  [src:9db017c2]
+El segundo si se especificó, o `{none}` para fechas sin hora.
+
+@@ Datetime::today  [src:02014e71]
+Devuelve la fecha actual.
+
+En la CLI, esto se puede reemplazar con el argumento `--creation-timestamp` o
+estableciendo la variable de entorno
+#link("https://reproducible-builds.org/specs/source-date-epoch/")[`SOURCE_DATE_EPOCH`].
+En ambos casos, el valor debe darse como una marca de tiempo UNIX.
+
+```example
+Today's date is
+#datetime.today().display().
+```
+
+
+@@ Datetime::today::offset  [src:c9886d9e]
+Un desfase que se aplica a la fecha UTC actual. Si se establece en `{auto}`, el
+desfase será el local.
+
+Cuando se da un desfase entero, se trata como una duración en horas.
+
+@@ Datetime::weekday  [src:10cf8f6e]
+El día de la semana (contando el lunes como 1) o `{none}` para horas sin fecha.
+
+@@ Datetime::year  [src:cf5222be]
+El año si se especificó, o `{none}` para horas sin fecha.

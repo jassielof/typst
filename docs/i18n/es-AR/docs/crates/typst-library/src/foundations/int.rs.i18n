@@ -1,0 +1,265 @@
+@@ i64  [src:d6856302]
+Un entero: un número entero positivo, un número entero negativo o cero.
+
+#let wiki(name, body) = link("https://en.wikipedia.org/wiki/" + name, body)
+
+Typst almacena los enteros con signo con la representación de
+#wiki("Two%27s_complement")[complemento a dos] en 64 bits. Esto permite almacenar
+números hasta $2^63-1$ (@int.max) y hasta $-2^63$ (@int.min).
+
+Los enteros también se pueden especificar en hexadecimal, octal o binario
+empezando con los prefijos: `0x`, `0o` o `0b`.
+
+Podés convertir un valor en entero con el constructor de este tipo.
+
+= Ejemplo <example>
+```example
+#(1 + 2) \
+#(2 - 5) \
+#(3 + 4 < 8)
+
+#0xff \
+#0o10 \
+#0b1001
+
+#(int(3.8) + int("26"))
+
+/ Max: #int.max
+/ Min: #int.min
+```
+
+= Sintaxis <syntax>
+Los enteros de Typst se pueden ingresar en modo código con los dígitos decimales
+0--9. Además, si un 0 solitario va seguido de `x`, `o` o `b` (`0x`, `0o`, `0b`),
+Typst tratará los dígitos siguientes como un número
+#wiki("Hexadecimal")[hexadecimal] (base 16), #wiki("Octal")[octal] (base 8) o
+#wiki("Binary_number")[binario] (base 2).
+
+Los números hexadecimales usan las letras a--f o A--F para los valores 10--15.
+
+Typst dará un error si se escribe un entero mayor que @int.max. Si esto pasa,
+quizás quieras usar en su lugar un @float[número de punto flotante], agregando un
+punto al final del número.
+
+Typst se diferencia de otros lenguajes de programación en que no trata los enteros
+negativos como tokens individuales en su sintaxis. En cambio, una entrada como
+`{-6}` se trata como el operador de negación aplicado al entero positivo `6`. Esto
+puede causar un problema al intentar escribir el entero negativo mínimo
+`{-9223372036854775808}`, ya que `{9223372036854775808}` es mayor que @int.max.
+Para escribir el entero negativo mínimo, usá en su lugar @int.min.
+
+Esto también significa que, si querés incrustar un entero negativo en el marcado,
+vas a tener que usar paréntesis para agrupar el operador de negación: `[#(-6)]`.
+
+@@ i64::MAX  [src:49597289]
+El valor máximo que se puede representar como entero de Typst: $2^63-1$.
+
+```example
+#int.max \
+// In hexadecimal:
+#0x7FFFFFFFFFFFFFFF
+```
+
+
+@@ i64::MIN  [src:ebc74d77]
+El valor mínimo que se puede representar como entero de Typst: $-2^63$.
+
+Intentar escribir este entero explícitamente como `{-9223372036854775808}` en lugar
+de usar `{int.min}` producirá un error. Para más información, leé la sección
+@int:syntax.
+
+```example
+#int.min
+```
+
+
+@@ i64::bit_and  [src:44af43a0]
+Calcula el AND bit a bit entre dos enteros.
+
+A los fines de esta función, los operandos se tratan como enteros con signo de 64
+bits.
+
+```example
+#128.bit-and(192)
+```
+
+
+@@ i64::bit_and::rhs  [src:d97d997c]
+El operando derecho del AND bit a bit.
+
+@@ i64::bit_lshift  [src:2252decb]
+Desplaza los bits del operando a la izquierda la cantidad especificada.
+
+A los fines de esta función, el operando se trata como un entero con signo de 64
+bits. Se producirá un error si el resultado es demasiado grande para entrar en un
+entero de 64 bits.
+
+```example
+#33.bit-lshift(2) \
+#(-1).bit-lshift(3)
+```
+
+
+@@ i64::bit_lshift::shift  [src:03243a3d]
+La cantidad de bits que se desplazan. No debe ser negativa.
+
+@@ i64::bit_not  [src:af27a254]
+Calcula el NOT bit a bit de un entero.
+
+A los fines de esta función, el operando se trata como un entero con signo de 64
+bits.
+
+```example
+#4.bit-not() \
+#(-1).bit-not()
+```
+
+
+@@ i64::bit_or  [src:6b51dc51]
+Calcula el OR bit a bit entre dos enteros.
+
+A los fines de esta función, los operandos se tratan como enteros con signo de 64
+bits.
+
+```example
+#64.bit-or(32)
+```
+
+
+@@ i64::bit_or::rhs  [src:8589f58e]
+El operando derecho del OR bit a bit.
+
+@@ i64::bit_rshift  [src:90e38b21]
+Desplaza los bits del operando a la derecha la cantidad especificada. Por defecto
+realiza un desplazamiento aritmético (extiende el bit de signo hacia la izquierda,
+de modo que los números negativos siguen siendo negativos), pero esto se puede
+cambiar con el parámetro `logical`.
+
+A los fines de esta función, el operando se trata como un entero con signo de 64
+bits.
+
+```example
+#64.bit-rshift(2) \
+#(-8).bit-rshift(2) \
+#(-8).bit-rshift(2, logical: true)
+```
+
+
+@@ i64::bit_rshift::logical  [src:d030d64c]
+Activa o desactiva que se realice un desplazamiento lógico (sin signo) a la
+derecha en lugar de uno aritmético. Si es `{true}`, los operandos negativos no
+conservarán su bit de signo y los bits que aparezcan a la izquierda después del
+desplazamiento serán `{0}`. Este parámetro no tiene efecto en operandos no
+negativos.
+
+@@ i64::bit_rshift::shift  [src:e6576a23]
+La cantidad de bits que se desplazan. No debe ser negativa.
+
+Se permiten desplazamientos mayores que 63 y harán que el valor de retorno se
+sature. Para números no negativos, el valor de retorno se satura en `{0}`,
+mientras que, para números negativos, se satura en `{-1}` si `logical` es
+`{false}`, o en `{0}` si es `{true}`. Este comportamiento es coherente con aplicar
+esta operación varias veces. Por lo tanto, el desplazamiento siempre tendrá éxito.
+
+@@ i64::bit_xor  [src:2c1eb0a1]
+Calcula el XOR bit a bit entre dos enteros.
+
+A los fines de esta función, los operandos se tratan como enteros con signo de 64
+bits.
+
+```example
+#64.bit-xor(96)
+```
+
+
+@@ i64::bit_xor::rhs  [src:21ef6ea4]
+El operando derecho del XOR bit a bit.
+
+@@ i64::construct  [src:58f70221]
+Convierte un valor en un entero. Produce un error si se intenta analizar una
+cadena de texto no válida o producir un entero que no entra en un entero con signo
+de 64 bits.
+
+- Los booleanos se convierten en `0` o `1`.
+- Los flotantes y decimales se redondean hacia cero al siguiente entero de 64 bits.
+- Las cadenas de texto se analizan por defecto en base 10.
+
+```example
+#int(false) \
+#int(true) \
+#int(2.7) \
+#int(decimal("3.8")) \
+#(int("27") + int("4")) \
+#int("beef", base: 16)
+```
+
+
+@@ i64::construct::base  [src:1b48774e]
+La base (raíz) para analizar cadenas de texto, entre 2 y 36.
+
+Por encima de la base 10, Typst acepta las letras a--z o A--Z para los valores
+10--35.
+
+@@ i64::construct::value  [src:6a9766f4]
+El valor que se debe convertir en entero.
+
+@@ i64::from_bytes  [src:6ee6daf6]
+Convierte bytes en un entero.
+
+```example
+#int.from-bytes(bytes((0, 0, 0, 0, 0, 0, 0, 1))) \
+#int.from-bytes(bytes((1, 0, 0, 0, 0, 0, 0, 0)), endian: "big")
+```
+
+
+@@ i64::from_bytes::bytes  [src:15fc871f]
+Los bytes que se deben convertir en entero.
+
+Deben tener una longitud máxima de 8 para que el resultado entre en un entero con
+signo de 64 bits.
+
+@@ i64::from_bytes::endian  [src:f3aba7af]
+El orden de bytes (endianness) de la conversión.
+
+@@ i64::from_bytes::signed  [src:9fc76d07]
+Si los bytes se deben tratar como un entero con signo. Si es `{true}` y el bit más
+significativo está activado, el número resultante será negativo.
+
+@@ i64::signum  [src:561e963c]
+Calcula el signo de un entero.
+
+- Si el número es positivo, devuelve `{1}`.
+- Si el número es negativo, devuelve `{-1}`.
+- Si el número es cero, devuelve `{0}`.
+
+```example
+#(5).signum() \
+#(-5).signum() \
+#(0).signum()
+```
+
+
+@@ i64::to_bytes  [src:e9882285]
+Convierte un entero en bytes.
+
+```example
+#array(10000.to-bytes(endian: "big")) \
+#array(10000.to-bytes(size: 4))
+```
+
+
+@@ i64::to_bytes::endian  [src:f3aba7af]
+El orden de bytes (endianness) de la conversión.
+
+@@ i64::to_bytes::size  [src:f58d8c11]
+El tamaño en bytes de los bytes resultantes (debe ser al menos cero). Si el entero
+es demasiado grande para entrar en el tamaño especificado, la conversión truncará
+los bytes restantes según el orden de bytes. Para mantener el mismo valor
+resultante, si el orden es big-endian, el truncamiento se hará en los bytes de más
+a la derecha. En cambio, si el orden es little-endian, el truncamiento se hará en
+los bytes de más a la izquierda.
+
+Tené en cuenta que, si el entero es negativo y el tamaño no alcanza para que el
+número entre, al pasar los bytes resultantes a `int.from-bytes`, el número
+resultante podría ser positivo, ya que el bit más significativo podría no estar en
+1.

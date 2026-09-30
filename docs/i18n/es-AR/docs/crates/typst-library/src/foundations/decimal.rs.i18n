@@ -1,0 +1,106 @@
+@@ Decimal  [src:22ef009d]
+Un tipo de número decimal de punto fijo.
+
+Este tipo debe usarse para operaciones aritméticas precisas con números
+representados en base 10. Un caso de uso típico es representar moneda.
+
+= Ejemplo <example>
+```example
+Decimal: #(decimal("0.1") + decimal("0.2")) \
+Float: #(0.1 + 0.2)
+```
+
+= Construcción y conversiones <construction-and-casts>
+Para crear un número decimal, usá el constructor `{decimal(string)}`, como en
+`{decimal("3.141592653")}` _(fijate en las comillas dobles)._ Este constructor
+conserva todos los dígitos fraccionarios dados, siempre que sean representables
+según los límites que se especifican más abajo (de lo contrario, se produce un
+error).
+
+También podés convertir cualquier @int[entero] en decimal con el constructor
+`{decimal(int)}`, por ejemplo `{decimal(59)}`. Sin embargo, tené en cuenta que
+construir un decimal a partir de un @float[número de punto flotante], si bien se
+admite, *es una conversión imprecisa y, por lo tanto, no se recomienda.* Se
+producirá una advertencia si Typst detecta que hubo una conversión accidental de
+`float` a `decimal` mediante su constructor, por ejemplo al escribir
+`{decimal(3.14)}` (fijate en la ausencia de comillas dobles, que indica que es una
+conversión accidental desde `float` y, por lo tanto, imprecisa). Se recomienda usar
+cadenas de texto para los valores decimales constantes (por ejemplo,
+`{decimal("3.14")}`).
+
+La precisión de una conversión de `float` a `decimal` se puede mejorar un poco
+redondeando el resultado a 15 dígitos con @calc.round, pero aun así no hay
+garantías de precisión para ese tipo de conversión.
+
+= Operaciones <operations>
+Se admiten las operaciones aritméticas básicas entre dos decimales y entre pares
+de decimales y enteros.
+
+Las operaciones incorporadas entre `float` y `decimal` no se admiten, para evitar
+pérdidas accidentales de precisión. En su lugar, producirán un error.
+
+Ciertas funciones de `calc`, como las trigonométricas y la potencia entre dos
+números reales, también se admiten solo para `float` (aunque se admite elevar un
+`decimal` a exponentes enteros). Podés optar por operaciones potencialmente
+imprecisas con el constructor `{float(decimal)}`, que convierte el número `decimal`
+en un `float` y permite realizar operaciones sin garantías de precisión.
+
+= Mostrar decimales <displaying-decimals>
+Para mostrar un decimal, simplemente insertá el valor en el documento. Para mostrar
+solo una cierta cantidad de dígitos, primero @calc.round[redondeá] el decimal. El
+formato localizado de decimales y otros números todavía no se admite, pero está
+previsto para el futuro.
+
+Podés convertir decimales en cadenas de texto con el constructor de @str. De esta
+manera, podés posprocesar la representación mostrada, por ejemplo, para reemplazar
+el punto por una coma (como sustituto de una localización incorporada adecuada
+para los idiomas que usan la coma).
+
+= Precisión y límites <precision-and-limits>
+Un número `decimal` tiene un límite de 28 a 29 dígitos significativos en base 10.
+Esto incluye la suma de los dígitos antes y después del punto decimal. Por lo
+tanto, los números con más dígitos fraccionarios tienen un rango menor. Los números
+`decimal` máximo y mínimo tienen un valor de `{79228162514264337593543950335}` y
+`{-79228162514264337593543950335}`, respectivamente. A diferencia de @float, este
+tipo no admite infinito ni NaN, así que las operaciones que desbordan por exceso o
+por defecto producirán un error.
+
+Las operaciones típicas entre números `decimal`, como la suma, la multiplicación y
+la @calc.pow[potencia] con exponente entero, serán muy precisas gracias a su
+representación de punto fijo. Sin embargo, tené en cuenta que la multiplicación y
+la división podrían no conservar todos los dígitos en algunos casos extremos: si
+bien se consideran precisas, los dígitos que superan los límites especificados
+arriba se redondean y se pierden, por lo que es posible cierta pérdida de precisión
+más allá de la cantidad máxima de dígitos representables. Tené en cuenta que este
+comportamiento se puede observar no solo al dividir, sino también al multiplicar
+por números entre 0 y 1, ya que ambas operaciones pueden llevar los dígitos
+fraccionarios de un número más allá de los límites descritos arriba, lo que produce
+redondeo. Cuando esas dos operaciones no superan los límites de dígitos, son
+totalmente precisas.
+
+@@ Decimal::construct  [src:65d0b11e]
+Convierte un valor en un `decimal`.
+
+Se recomienda usar una cadena de texto para construir el número decimal, o un
+@int[entero] (si se desea). La cadena debe contener un número con el formato
+`{"3.14159"}` (o `{"-3.141519"}` para números negativos). Los dígitos fraccionarios
+se conservan por completo; si eso no es posible porque se alcanzó el límite de
+dígitos significativos (alrededor de 28 a 29), se produce un error, ya que el
+número decimal dado no sería representable.
+
+Si bien este constructor se puede usar con @float[números de punto flotante] para
+convertirlos en `decimal`, hacerlo *no se recomienda*, porque *esta conversión es
+intrínsecamente imprecisa.* Es fácil realizar esta conversión por accidente al
+escribir `{decimal(1.234)}` (fijate en la ausencia de comillas dobles), por lo que
+Typst emitirá una advertencia en ese caso. Escribí en su lugar `{decimal("1.234")}`
+para ese caso particular (inicialización de un decimal constante). Tené en cuenta
+también que los flotantes que son NaN o infinitos no se pueden convertir en
+decimales y producirán un error.
+
+```example
+#decimal("1.222222222222222")
+```
+
+
+@@ Decimal::construct::value  [src:a9172a74]
+El valor que se debe convertir en decimal.
