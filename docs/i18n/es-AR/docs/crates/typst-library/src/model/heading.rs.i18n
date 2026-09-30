@@ -1,0 +1,199 @@
+@@ HeadingElem  [src:5a1a9404]
+Un título de sección.
+
+Con los títulos, podés estructurar tu documento en secciones. Cada título tiene un _nivel,_ que
+empieza en uno y no tiene límite superior. Este nivel indica el rol lógico del contenido que sigue
+(sección, subsección, etcétera). Un título de nivel superior indica una sección de nivel superior
+del documento (no el título del documento). Para insertar un título de documento, usá en su lugar
+el elemento @title.
+
+Typst puede numerar tus títulos automáticamente. Para habilitar la numeración, especificá cómo
+querés que se numeren tus títulos con un @numbering[patrón o función de numeración].
+
+Independientemente de la numeración, Typst también puede generar automáticamente un
+@outline[índice] de todos los títulos. Para excluir uno o más títulos de este índice, podés
+establecer el parámetro `outlined` en `{false}`.
+
+Al escribir una @reference:styling:show-rules[regla show] que accede al @heading.body[campo `body`]
+para crear un aspecto completamente personalizado de los títulos, asegurate de envolver el contenido
+en un @block (que es implícitamente @block.sticky[sticky] para los títulos mediante una regla
+show-set incorporada). Esto evita que los títulos queden "huérfanos", es decir, que queden al final
+de la página con el contenido siguiente en la página próxima.
+
+= Ejemplo <example>
+```example
+#set heading(numbering: "1.a)")
+
+= Introduction
+In recent years, ...
+
+== Preliminaries
+To start, ...
+```
+
+= Sintaxis <syntax>
+Los títulos tienen una sintaxis dedicada: se pueden crear empezando una línea con uno o varios
+signos igual, seguidos de un espacio. La cantidad de signos igual determina la profundidad lógica de
+anidamiento del título. El campo `{offset}` se puede establecer para configurar la profundidad
+inicial.
+
+= Accesibilidad <accessibility>
+Los títulos son importantes para la accesibilidad, ya que ayudan a los usuarios de tecnologías de
+asistencia (TA), como los lectores de pantalla, a navegar por tu documento. Los usuarios de lectores
+de pantalla podrán saltar de título en título u obtener un panorama de todos los títulos del
+documento.
+
+Para que tus títulos sean accesibles, no deberías saltear niveles de títulos. Esto significa que
+deberías empezar con un título de primer nivel. Además, cuando el título anterior era de nivel 3, el
+siguiente debería ser de nivel 3 (manteniendo la misma profundidad), de nivel 4 (bajando exactamente
+un nivel) o de nivel 1 o 2 (nuevos títulos jerárquicamente superiores).
+
+= Exportación a HTML <html-export>
+Como se mencionó arriba, un título de nivel superior indica una sección de nivel superior del
+documento y no su título. Esto contrasta con el elemento HTML `<h1>`, del cual debería haber solo
+uno por documento.
+
+Por este motivo, en la exportación a HTML, un elemento @title se convierte en un `<h1>` y los títulos
+se convierten en `<h2>` y menores (un título de nivel 1 pasa a ser `<h2>`, un título de nivel 2, `<h3>`,
+etcétera).
+
+@@ HeadingElem::body  [src:b74d10da]
+El título del encabezado.
+
+@@ HeadingElem::bookmarked  [src:aa095fa7]
+Si el título debe aparecer como marcador en el esquema del PDF exportado. No afecta a otros formatos
+de exportación, como PNG.
+
+El valor por defecto `{auto}` indica que el título solo aparecerá en el esquema del PDF exportado si
+su propiedad `outlined` está establecida en `{true}`, es decir, si también aparecería en el
+@outline[índice] de Typst. Establecer esta propiedad en `{true}` (con marcador) o en `{false}` (sin
+marcador) omite ese comportamiento.
+
+```example
+#heading[Normal heading]
+This heading will be shown in
+the PDF's bookmark outline.
+
+#heading(bookmarked: false)[Not bookmarked]
+This heading won't be
+bookmarked in the resulting
+PDF.
+```
+
+
+@@ HeadingElem::depth  [src:6c6ccf9c]
+La profundidad de anidamiento relativa del título, empezando desde uno. Se combina con `{offset}` para
+calcular el `{level}` real.
+
+Esto lo establece la sintaxis de títulos, de modo que `[== Heading]` crea un título con profundidad
+lógica 2, pero nivel real `{offset + 2}`. Si construís un título manualmente, normalmente conviene
+preferir esto en lugar de establecer el nivel absoluto.
+
+@@ HeadingElem::hanging_indent  [src:e39afb25]
+La sangría que deben tener todas las líneas de un título excepto la primera.
+
+El valor por defecto `{auto}` usa el ancho de la numeración como sangría si el título está alineado al
+@direction.start[inicio] de la @text.dir[dirección del texto], y ninguna sangría para la alineación
+centrada y otras alineaciones.
+
+```example
+#set heading(numbering: "1.")
+= A very, very, very, very, very, very long heading
+
+#show heading: set align(center)
+== A very long heading\ with center alignment
+```
+
+
+@@ HeadingElem::level  [src:cfa447d6]
+La profundidad de anidamiento absoluta del título, empezando desde uno. Si se establece en `{auto}`,
+se calcula a partir de `{offset + depth}`.
+
+Esto es útil principalmente para usar en @reference:styling:show-rules[reglas show] (ya sea con
+selectores @function.where[`where`] o accediendo directamente al nivel de un título mostrado).
+
+```example
+#show heading.where(level: 2): set text(red)
+
+= Level 1
+== Level 2
+
+#set heading(offset: 1)
+= Also level 2
+== Level 3
+```
+
+
+@@ HeadingElem::numbering  [src:0993d1f9]
+Cómo numerar el título. Acepta un @numbering[patrón o función de numeración] que toma varios números.
+
+```example
+#set heading(numbering: "1.a.")
+
+= A section
+== A subsection
+=== A sub-subsection
+```
+
+
+@@ HeadingElem::numbers  [src:609ae240]
+Los números resueltos en texto plano.
+
+Este campo es interno y solo se usa para crear marcadores de PDF. Actualmente no tenemos acceso a
+`World`, `Engine` ni `styles` en la exportación, que hacen falta para resolver el contador y el patrón
+de numeración en una cadena concreta.
+
+Permanece sin establecer si `numbering` es `None`.
+
+@@ HeadingElem::offset  [src:b60608ed]
+El desplazamiento inicial del `{level}` de cada título, que se usa para convertir su `{depth}` relativo
+en su `{level}` absoluto.
+
+```example
+= Level 1
+
+#set heading(offset: 1, numbering: "1.1")
+= Level 2
+
+#heading(offset: 2, depth: 2)[
+  I'm level 4
+]
+```
+
+
+@@ HeadingElem::outlined  [src:8651021a]
+Si el título debe aparecer en el @outline[índice].
+
+Tené en cuenta que esta propiedad, si se establece en `{true}`, asegura que el título también se muestre
+como marcador en el esquema del PDF exportado (al exportar a PDF). Para cambiar ese comportamiento, usá
+la propiedad `bookmarked`.
+
+```example
+#outline()
+
+#heading[Normal]
+This is a normal heading.
+
+#heading(outlined: false)[Hidden]
+This heading does not appear
+in the outline.
+```
+
+
+@@ HeadingElem::supplement  [src:bcccf416]
+Un suplemento para el título.
+
+En las referencias a títulos, se agrega antes del número referenciado.
+
+Si se especifica una función, se le pasa el título referenciado y debe devolver contenido.
+
+```example
+#set heading(numbering: "1.", supplement: [Chapter])
+
+= Introduction <intro>
+In @intro, we see how to turn
+Sections into Chapters. And
+in @intro[Part], it is done
+manually.
+```
+

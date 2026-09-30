@@ -1,0 +1,31 @@
+@@ StrongElem  [src:2308519d]
+Enfatiza fuertemente el contenido aumentando el peso de la fuente.
+
+Aumenta el peso de fuente actual en un `delta` dado.
+
+= Ejemplo <example>
+```example
+This is *strong.* \
+This is #strong[too.] \
+
+#show strong: set text(red)
+And this is *evermore.*
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: para enfatizar fuertemente contenido,
+simplemente encerralo entre estrellas/asteriscos (`*`). Tené en cuenta que esto solo funciona en
+los límites de las palabras. Para enfatizar fuertemente una parte de una palabra, tenés que usar
+la función.
+
+@@ StrongElem::body  [src:8456e8b6]
+El contenido que se enfatiza fuertemente.
+
+@@ StrongElem::delta  [src:07200d96]
+El delta que se aplica al peso de la fuente.
+
+```example
+#set strong(delta: 0)
+No *effect!*
+```
+

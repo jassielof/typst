@@ -1,0 +1,135 @@
+@@ ListElem  [src:c778683a]
+Una lista con viñetas.
+
+Muestra verticalmente una secuencia de elementos, cada uno introducido por un marcador.
+
+= Ejemplo <example>
+```example
+Normal list.
+- Text
+- Math
+- Layout
+- ...
+
+Multiple lines.
+- This list item spans multiple
+  lines because it is indented.
+
+Function call.
+#list(
+  [Foundations],
+  [Calculate],
+  [Construct],
+  [Data Loading],
+)
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: empezá una línea con un guion seguido de un
+espacio para crear un elemento de lista. Un elemento de lista puede contener varios párrafos y
+otro contenido a nivel de bloque. Todo el contenido que tenga más sangría que el marcador de un
+elemento pasa a formar parte de ese elemento.
+
+@@ ListElem::body_indent  [src:26203ea7]
+El espaciado entre el marcador y el cuerpo de cada elemento.
+
+@@ ListElem::children  [src:fefb757a]
+Los hijos de la lista con viñetas.
+
+Al usar la sintaxis de lista, los elementos adyacentes se reúnen automáticamente en listas,
+incluso a través de construcciones como los bucles for.
+
+```example
+#for letter in "ABC" [
+  - Letter #letter
+]
+```
+
+
+@@ ListElem::depth  [src:43d5c04f]
+La profundidad de anidamiento.
+
+@@ ListElem::indent  [src:05615649]
+La sangría de cada elemento.
+
+@@ ListElem::marker  [src:1c604025]
+El marcador que introduce cada elemento.
+
+En lugar de contenido simple, también podés pasar un array con varios marcadores que se usarán
+para las listas anidadas. Si la profundidad de anidamiento de la lista supera la cantidad de
+marcadores, los marcadores se repiten cíclicamente. Para tener control total, podés pasar una
+función que asigne la profundidad de anidamiento de la lista (empezando desde `{0}`) al marcador
+deseado.
+
+```example
+#set list(marker: [--])
+- A more classic list
+- With en-dashes
+
+#set list(marker: ([•], [--]))
+- Top-level
+  - Nested
+  - Items
+- Items
+```
+
+
+@@ ListElem::marker_align  [src:3fc97f30]
+Alineación que se usa para los marcadores de lista.
+
+La alineación vertical siempre es relativa a la altura de los elementos de la lista a los que
+están unidos. Por defecto no está especificada, lo que significa que cada marcador se alineará
+verticalmente con la línea base del elemento al que está unido (que suele ser su primera línea de
+texto o, si no, su parte superior).
+
+La alineación horizontal, en cambio, es relativa a los otros marcadores del mismo nivel de la
+lista. Por defecto se establece en `{end}`, lo que significa que los marcadores se alinean hacia
+el final de la dirección de texto actual (`{right}` para texto LTR, `{left}` para RTL). Sin
+embargo, como los marcadores de cada nivel suelen ser idénticos, se espera que la alineación
+horizontal no tenga un efecto real la mayoría de las veces. De todos modos, todavía es posible
+que marque una diferencia en algunos casos, en particular si los marcadores usan contadores u
+otras formas de estado para mostrar contenido distinto en cada elemento.
+
+```example
+- Baseline \
+  aligned
+
+#set list(marker-align: horizon)
+
+- Horizon \
+  aligned
+```
+
+
+@@ ListElem::spacing  [src:0135df0f]
+El espaciado entre los elementos de la lista.
+
+Si se establece en `{auto}`, usa el @par.leading[`leading`] del párrafo para las listas compactas
+y el @par.spacing[`spacing`] del párrafo para las listas amplias (no compactas).
+
+@@ ListElem::tight  [src:0bb7f7d6]
+Define el @list.spacing[espaciado] por defecto de la lista. Si es `{false}`, los elementos se
+separan con el @par.spacing[espaciado de párrafo]. Si es `{true}`, en cambio usan el
+@par.leading[interlineado de párrafo]. Esto hace que la lista sea más compacta, lo que puede
+verse mejor si los elementos son cortos.
+
+En modo marcado, el valor de este parámetro se determina según si los elementos están separados
+por una línea en blanco. Si los elementos se siguen directamente, se establece en `{true}`; si
+los elementos están separados por una línea en blanco, se establece en `{false}`. La compacidad
+definida en el marcado no se puede reemplazar con reglas set.
+
+```example
+- If a list has a lot of text, and
+  maybe other inline content, it
+  should not be tight anymore.
+
+- To make a list wide, simply insert
+  a blank line between the items.
+```
+
+
+@@ ListItem  [src:22cda075]
+Un elemento de una lista con viñetas.
+
+@@ ListItem::body  [src:87eda979]
+El cuerpo del elemento.

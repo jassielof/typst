@@ -1,0 +1,40 @@
+@@ ArtifactElem  [src:dbd3cd4b]
+Marca contenido como artefacto de PDF.
+
+Los artefactos son partes del documento que no están pensadas para ser leídas por
+tecnologías de asistencia (TA), como los lectores de pantalla. Algunos ejemplos típicos son
+las imágenes puramente decorativas que no contribuyen al significado del documento, las
+marcas de agua o el contenido repetido, como los números de página.
+
+Typst marcará automáticamente cierto contenido, como los encabezados, pies de página, fondos
+y primeros planos de las páginas, como artefactos. Del mismo modo, las rutas y las formas se
+marcan automáticamente como artefactos, pero su contenido no. Los números de línea creados con
+@par.line se marcan automáticamente como artefactos, al igual que las repeticiones de
+encabezados y pies de tabla.
+
+Una vez que algo se marca como artefacto, no podés volver a hacer accesible ninguna parte de
+su contenido. Si necesitás marcar como artefacto solo una parte de algo, quizás tengas que
+usar esta función varias veces.
+
+Si no estás seguro de qué constituye un artefacto, consultá la
+@guides:accessibility:artifacts[guía de accesibilidad].
+
+En el futuro, esta función podría moverse fuera del módulo `pdf`, lo que permitiría ocultar
+contenido a las TA en la exportación a HTML.
+
+@@ ArtifactElem::body  [src:00784090]
+El contenido que es un artefacto.
+
+@@ ArtifactElem::kind  [src:bc43f4fd]
+El tipo de artefacto.
+
+Podés mejorar la accesibilidad usando el tipo de artefacto más específico disponible. Tu
+elección determinará cómo trata el lector de PDF al artefacto durante el reflujo y la
+extracción de contenido (por ejemplo, copiar y pegar).
+
+Los tipos de artefacto se introdujeron en varias especificaciones de PDF distintas. Según la
+versión de PDF que apuntes, Typst seleccionará el tipo de artefacto más apropiado a partir de
+tu selección acá.
+
+@@ PdfMarkerTag  [src:f3c9731c]
+Se usa para delimitar contenido en PDF etiquetado.

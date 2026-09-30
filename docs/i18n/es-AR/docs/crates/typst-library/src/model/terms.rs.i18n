@@ -1,0 +1,101 @@
+@@ TermItem  [src:86dbec30]
+Un elemento de una lista de términos.
+
+@@ TermItem::description  [src:3c773c5c]
+La descripción del término.
+
+@@ TermItem::term  [src:6d7c5ff0]
+El término que describe el elemento de la lista.
+
+@@ TermsElem  [src:3486b1e9]
+Una lista de términos y sus descripciones.
+
+Muestra verticalmente una secuencia de términos y sus descripciones. Cuando las descripciones
+ocupan varias líneas, usan sangría francesa para comunicar la jerarquía visual.
+
+= Ejemplo <example>
+```example
+/ Ligature: A merged glyph.
+/ Kerning: A spacing adjustment
+  between two adjacent letters.
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: empezar una línea con una barra, seguida de un
+término, dos puntos y una descripción crea un elemento de lista de términos.
+
+@@ TermsElem::children  [src:afa0410d]
+Los hijos de la lista de términos.
+
+Al usar la sintaxis de lista de términos, los elementos adyacentes se reúnen automáticamente en
+listas de términos, incluso a través de construcciones como los bucles for.
+
+```example
+#for (year, product) in (
+  "1978": "TeX",
+  "1984": "LaTeX",
+  "2019": "Typst",
+) [/ #product: Born in #year.]
+```
+
+
+@@ TermsElem::hanging_indent  [src:4143a0e3]
+La sangría francesa de la descripción.
+
+Se suma a la `indent` de todo el elemento.
+
+```example
+#set terms(hanging-indent: 0pt)
+/ Term: This term list does not
+  make use of hanging indents.
+```
+
+
+@@ TermsElem::indent  [src:d25f8160]
+La sangría de cada elemento.
+
+@@ TermsElem::separator  [src:a20c0c45]
+El separador entre el elemento y la descripción.
+
+Si querés separarlos simplemente con una cierta cantidad de espacio, usá `{h(2cm, weak: true)}`
+como separador y reemplazá `{2cm}` por la cantidad de espacio que desees.
+
+```example
+#set terms(separator: [: ])
+
+/ Colon: A nice separator symbol.
+```
+
+
+@@ TermsElem::spacing  [src:19c0ead6]
+El espaciado entre los elementos de la lista de términos.
+
+Si se establece en `{auto}`, usa el @par.leading[`leading`] del párrafo para las listas de
+términos compactas y el @par.spacing[`spacing`] del párrafo para las listas de términos amplias
+(no compactas).
+
+@@ TermsElem::tight  [src:27a40484]
+Define el @terms.spacing[espaciado] por defecto de la lista de términos. Si es `{false}`, los
+elementos se separan con el @par.spacing[espaciado de párrafo]. Si es `{true}`, en cambio usan el
+@par.leading[interlineado de párrafo]. Esto hace que la lista sea más compacta, lo que puede
+verse mejor si los elementos son cortos.
+
+En modo marcado, el valor de este parámetro se determina según si los elementos están separados
+por una línea en blanco. Si los elementos se siguen directamente, se establece en `{true}`; si
+los elementos están separados por una línea en blanco, se establece en `{false}`. La compacidad
+definida en el marcado no se puede reemplazar con reglas set.
+
+```example
+/ Fact: If a term list has a lot
+  of text, and maybe other inline
+  content, it should not be tight
+  anymore.
+
+/ Tip: To make it wide, simply
+  insert a blank line between the
+  items.
+```
+
+
+@@ TermsElem::within  [src:870603ab]
+Si actualmente estamos dentro de una lista de términos.

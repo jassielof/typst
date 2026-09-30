@@ -188,7 +188,7 @@ def diff_ms(name, a, b, out):
 
 
 # Accepted phrasings that cover several glossary entries at once.
-GLOSSARY_ALT = {"regla show": r"reglas set y show", "regla set": r"reglas set y show"}
+GLOSSARY_ALT = {"regla show": r"reglas set y show", "regla set": r"reglas set y show|show-set"}
 VOSEO_BAD = re.compile(r"\b(tú|puedes|tienes|quieres|escribe tu|recuerda que)\b", re.I)
 
 

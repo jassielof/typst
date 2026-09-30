@@ -1,0 +1,122 @@
+@@ QuoteElem  [src:0d41a305]
+Muestra una cita junto con una atribución opcional.
+
+= Ejemplo <example>
+```example
+Plato is often misquoted as the author of #quote[I know that I know
+nothing], however, this is a derivation form his original quote:
+
+#set quote(block: true)
+
+#quote(attribution: [Plato])[
+  ... ἔοικα γοῦν τούτου γε σμικρῷ τινι αὐτῷ τούτῳ σοφώτερος εἶναι, ὅτι
+  ἃ μὴ οἶδα οὐδὲ οἴομαι εἰδέναι.
+]
+#quote(attribution: [from the Henry Cary literal translation of 1897])[
+  ... I seem, then, in just this little thing to be wiser than this man at
+  any rate, that what I do not know I do not think I know either.
+]
+```
+
+Por defecto, las citas en bloque tienen un relleno de `{1em}` a izquierda y derecha; la
+alineación y el relleno se pueden controlar con reglas show:
+
+```example
+#set quote(block: true)
+#show quote: set align(center)
+#show quote: set pad(x: 5em)
+
+#quote[
+  You cannot pass... I am a servant of the Secret Fire, wielder of the
+  flame of Anor. You cannot pass. The dark fire will not avail you,
+  flame of Udûn. Go back to the Shadow! You cannot pass.
+]
+```
+
+
+@@ QuoteElem::attribution  [src:3ea66aed]
+La atribución de esta cita, generalmente el autor o la fuente. Puede ser una etiqueta que apunte
+a una entrada de bibliografía o cualquier contenido. Por defecto solo se muestra para las citas
+en bloque, pero se puede cambiar con una regla `{show}`.
+
+```example
+#quote(attribution: [René Descartes])[
+  cogito, ergo sum
+]
+
+#show quote.where(block: false): it => {
+  ["] + h(0pt, weak: true) + it.body + h(0pt, weak: true) + ["]
+  if it.attribution != none [ (#it.attribution)]
+}
+
+#quote(
+  attribution: link("https://typst.app/home")[typst.app]
+)[
+  Compose papers faster
+]
+
+#set quote(block: true)
+
+#quote(attribution: <tolkien54>)[
+  You cannot pass... I am a servant
+  of the Secret Fire, wielder of the
+  flame of Anor. You cannot pass. The
+  dark fire will not avail you, flame
+  of Udûn. Go back to the Shadow! You
+  cannot pass.
+]
+
+#bibliography("works.bib", style: "apa")
+```
+
+
+@@ QuoteElem::block  [src:6d5ce8a0]
+Si esta es una cita en bloque.
+
+```example
+An inline citation would look like
+this: #quote(
+  attribution: [René Descartes]
+)[
+  cogito, ergo sum
+], and a block equation like this:
+#quote(
+  block: true,
+  attribution: [JFK]
+)[
+  Ich bin ein Berliner.
+]
+```
+
+
+@@ QuoteElem::body  [src:5f9b76fb]
+La cita.
+
+@@ QuoteElem::depth  [src:43d5c04f]
+La profundidad de anidamiento.
+
+@@ QuoteElem::quotes  [src:4d0641a3]
+Si se deben agregar comillas dobles alrededor de esta cita.
+
+Las comillas dobles que se usan se infieren de la propiedad `quotes` de
+@smartquote[smartquote], que se ve afectada por la propiedad `lang` de @text[text].
+
+- `{true}`: Envuelve esta cita entre comillas dobles.
+- `{false}`: No envuelve esta cita entre comillas dobles.
+- `{auto}`: Infiere si se debe envolver esta cita entre comillas dobles según la propiedad
+  `block`. Si `block` es `{false}`, se agregan comillas dobles automáticamente.
+
+```example
+#set text(lang: "de")
+
+Ein deutsch-sprechender Author
+zitiert unter umständen JFK:
+#quote[Ich bin ein Berliner.]
+
+#set text(lang: "en")
+
+And an english speaking one may
+translate the quote:
+#quote[I am a Berliner.]
+```
+

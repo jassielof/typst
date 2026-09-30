@@ -1,0 +1,71 @@
+@@ numbering  [src:1339a823]
+Aplica una numeración a una secuencia de números.
+
+Una numeración define cómo se debe mostrar como contenido una secuencia de números. Se define
+mediante una cadena de patrón o una función arbitraria.
+
+Un patrón de numeración consiste en símbolos de conteo, en los que se sustituye el número real,
+sus prefijos y un sufijo. Los prefijos y el sufijo se muestran tal cual.
+
+= Ejemplo <example>
+```example
+#numbering("1.1)", 1, 2, 3) \
+#numbering("1.a.i", 1, 2) \
+#numbering("I – 1", 12, 2) \
+#numbering(
+  (..nums) => nums
+    .pos()
+    .map(str)
+    .join(".") + ")",
+  1, 2, 3,
+)
+```
+
+= Patrones de numeración y funciones de numeración <patterns-and-functions>
+Hay varias situaciones en las que podés proporcionar un patrón o una función de numeración en
+Typst. Por ejemplo, al definir cómo numerar los @heading[títulos] o las @figure[figuras]. Cada
+vez, el formato esperado es el mismo que se describe abajo para el parámetro
+@numbering.numbering[`numbering`].
+
+El siguiente ejemplo ilustra que una función de numeración es simplemente una @function[función]
+normal que acepta números y devuelve @content.
+
+```example
+#let unary(.., last) = "|" * last
+#set heading(numbering: unary)
+= First heading
+= Second heading
+= Third heading
+```
+
+
+@@ numbering::numbering  [src:ec3c7614]
+Define cómo funciona la numeración.
+
+Los *símbolos de conteo* son `1`, `a`, `A`, `i`, `I`, `α`, `Α`, `一`, `壹`, `あ`, `い`, `ア`, `イ`,
+`א`, `가`, `ㄱ`, `*`, `١`, `۱`, `१`, `১`, `ক`, `①` y `⓵`. Se reemplazan por el número de la
+secuencia, conservando las mayúsculas y minúsculas originales.
+
+El carácter `*` significa que se deben usar símbolos para contar, en el orden `*`, `†`, `‡`, `§`,
+`¶`, `‖`. Si hay más de seis elementos, el número se representa con símbolos repetidos.
+
+Los *sufijos* son todos los caracteres posteriores al último símbolo de conteo. Se muestran tal
+cual al final de cualquier número renderizado.
+
+Los *prefijos* son todos los caracteres que no son ni símbolos de conteo ni sufijos. Se muestran
+tal cual delante del equivalente renderizado de su símbolo de conteo.
+
+Este parámetro también puede ser una función arbitraria que reciba cada número como un argumento
+individual. Cuando se le da una función, la función `numbering` simplemente le reenvía los
+argumentos. Si bien esto no es particularmente útil en sí mismo, significa que podés darle
+numeraciones arbitrarias a la función `numbering` sin preocuparte de si están definidas como
+patrón o como función.
+
+@@ numbering::numbers  [src:2981e3c8]
+Los números a los que se aplica la numeración. Deben ser no negativos.
+
+En general, los números se cuentan desde uno. Un número cero indica que el primer elemento todavía
+no apareció.
+
+Si `numbering` es un patrón y se dan más números que símbolos de conteo, se repite el último
+símbolo de conteo con su prefijo.

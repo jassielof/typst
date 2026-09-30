@@ -1,0 +1,39 @@
+@@ TitleElem  [src:e6ae43e4]
+Un título de documento.
+
+Debe usarse para mostrar el título principal de todo el documento y debería aparecer una sola
+vez por documento. En cambio, los @heading[títulos] de nivel 1 están pensados para usarse en las
+secciones de nivel superior del documento.
+
+Tené en cuenta que el material preliminar adicional (como una lista de autores) que debe aparecer
+junto con el título no pertenece a su cuerpo.
+
+En la exportación a HTML, se muestra como un elemento `h1`, mientras que los títulos de nivel 1
+se muestran como elementos `h2`.
+
+= Ejemplo <example>
+```example
+#set document(
+  title: [Interstellar Mail Delivery]
+)
+
+#title()
+
+= Introduction
+In recent years, ...
+```
+
+
+@@ TitleElem::body  [src:9426a208]
+El contenido del título.
+
+Cuando se omite (o es `{auto}`), por defecto será @document.title. En ese caso, se debe haber
+establecido previamente un título de documento con `{set document(title: [..])}`.
+
+```example
+#set document(title: [Course ABC, Homework 1])
+#title[Homework 1]
+
+...
+```
+

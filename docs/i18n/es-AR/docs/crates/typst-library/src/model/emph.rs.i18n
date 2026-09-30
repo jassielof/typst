@@ -1,0 +1,25 @@
+@@ EmphElem  [src:a25a4c22]
+Enfatiza contenido alternando la cursiva.
+
+- Si el @text.style[estilo de texto] actual es `{"normal"}`, lo convierte en `{"italic"}`.
+- Si ya es `{"italic"}` u `{"oblique"}`, lo vuelve a convertir en `{"normal"}`.
+
+= Ejemplo <example>
+```example
+This is _emphasized._ \
+This is #emph[too.]
+
+#show emph: it => {
+  text(blue, it.body)
+}
+
+This is _emphasized_ differently.
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada: para enfatizar contenido, simplemente
+encerralo entre guiones bajos (`_`). Tené en cuenta que esto solo funciona en los límites de
+las palabras. Para enfatizar una parte de una palabra, tenés que usar la función.
+
+@@ EmphElem::body  [src:119f095a]
+El contenido que se enfatiza.

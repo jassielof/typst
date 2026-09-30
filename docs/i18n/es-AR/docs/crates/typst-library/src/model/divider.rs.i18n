@@ -1,0 +1,38 @@
+@@ DividerElem  [src:33e42288]
+Una pausa temática que separa secciones de contenido.
+
+Por defecto, se renderiza como una línea horizontal, pero se puede personalizar mediante reglas
+show.
+
+= Ejemplo <example>
+```example
+She left without a word.
+#divider()
+Three days later, she returned.
+```
+
+= Estilos <styling>
+El divisor se puede estilizar mediante reglas show.
+
+Como el divisor se muestra por defecto como una línea, podés usar una regla set para ajustar el
+trazo de la línea:
+
+```example
+#show divider: set line(stroke: 2pt + red)
+First part
+#divider()
+Second part
+```
+
+También podés reemplazar por completo el divisor con contenido personalizado, como un adorno
+floral o asteriscos, pero en ese caso conviene envolverlo en un bloque para conservar el
+espaciado:
+
+```example
+#show divider: set align(center)
+#show divider: block[∗ ∗ ∗]
+Chapter 1
+#divider()
+Chapter 2
+```
+

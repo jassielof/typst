@@ -1,0 +1,209 @@
+@@ EnumElem  [src:dcd2d8f0]
+Una lista numerada.
+
+Muestra verticalmente una secuencia de elementos y los numera consecutivamente.
+
+= Ejemplo <example>
+```example
+Automatically numbered:
++ Preparations
++ Analysis
++ Conclusions
+
+Manually numbered:
+2. What is the first step?
+5. I am confused.
++  Moving on ...
+
+Multiple lines:
++ This enum item has multiple
+  lines because the next line
+  is indented.
+
+Function call.
+#enum[First][Second]
+```
+
+Podés cambiar fácilmente todas tus enumeraciones a otro estilo de numeración con una regla set.
+
+```example
+#set enum(numbering: "a)")
+
++ Starting off ...
++ Don't forget step two
+```
+
+También podés usar @enum.item para personalizar programáticamente el número de cada elemento de
+la enumeración:
+
+```example
+#enum(
+  enum.item(1)[First step],
+  enum.item(5)[Fifth step],
+  enum.item(10)[Tenth step]
+)
+```
+
+= Sintaxis <syntax>
+Esta función también tiene una sintaxis dedicada:
+
+- Empezar una línea con un signo más crea un elemento de enumeración numerado automáticamente.
+- Empezar una línea con un número seguido de un punto crea un elemento de enumeración numerado
+  explícitamente.
+
+Los elementos de una enumeración pueden contener varios párrafos y otro contenido a nivel de
+bloque. Todo el contenido que tenga más sangría que el marcador de un elemento pasa a formar
+parte de ese elemento.
+
+@@ EnumElem::body_indent  [src:5edcc709]
+El espacio entre la numeración y el cuerpo de cada elemento.
+
+@@ EnumElem::children  [src:dfe126ed]
+Los elementos de la lista numerada.
+
+Al usar la sintaxis de enum, los elementos adyacentes se reúnen automáticamente en
+enumeraciones, incluso a través de construcciones como los bucles for.
+
+```example
+#for phase in (
+   "Launch",
+   "Orbit",
+   "Descent",
+) [+ #phase]
+```
+
+
+@@ EnumElem::full  [src:502ed466]
+Si se muestra la numeración completa, incluidos los números de todas las enumeraciones padre.
+
+```example
+#set enum(numbering: "1.a)", full: true)
++ Cook
+  + Heat water
+  + Add ingredients
++ Eat
+```
+
+
+@@ EnumElem::indent  [src:d25f8160]
+La sangría de cada elemento.
+
+@@ EnumElem::number_align  [src:41375b35]
+La alineación que deben tener los números de la enumeración.
+
+Por defecto se establece en `{end}`, lo que alinea los números de la enumeración
+horizontalmente hacia el final de la dirección de texto actual (en una escritura de izquierda a
+derecha, por ejemplo, equivale a `{right}`). Además, la ausencia de una alineación vertical
+ubica cada número verticalmente justo encima de la línea base del elemento, como si fuera parte
+de su primera línea de texto.
+
+La elección de `{end}` para la alineación horizontal de los números de la enumeración suele
+preferirse a `{start}`, ya que así los números crecen alejándose del texto en lugar de hacia él.
+Sin embargo, esta opción te permite reemplazar ese comportamiento.
+
+En cuanto a la alineación vertical, se puede reemplazar si no se desea la alineación con la línea
+base. Por ejemplo, una alineación de `{end + top}` siempre ubicaría el marcador verticalmente
+cerca de la parte superior del elemento, mientras que `{end +
+bottom}` lo movería cerca de la parte inferior.
+
+También hay que notar que la @list[lista sin orden] tiene una opción similar, llamada en cambio
+`marker-align`, que también controla ambos ejes de la alineación del marcador exactamente de la
+misma manera que los números de `enum`.
+
+```example
+#set enum(number-align: start + bottom)
+
+Here are some powers of two:
+1. One
+2. Two
+4. Four
+8. Eight
+16. Sixteen
+32. Thirty two
+```
+
+
+@@ EnumElem::numbering  [src:308028f9]
+Cómo numerar la enumeración. Acepta un @numbering[patrón o función de numeración].
+
+Si el patrón de numeración contiene varios símbolos de conteo, se aplican a las enumeraciones
+anidadas. Si se da una función, la función recibe un argumento si `full` es `{false}` y varios
+argumentos si `full` es `{true}`.
+
+```example
+#set enum(numbering: "1.a)")
++ Different
++ Numbering
+  + Nested
+  + Items
++ Style
+
+#set enum(numbering: n => super[#n])
++ Superscript
++ Numbering!
+```
+
+
+@@ EnumElem::parents  [src:b77f4b8a]
+Los números de los elementos padre.
+
+@@ EnumElem::reversed  [src:f76138d5]
+Si se invierte la numeración de esta enumeración.
+
+```example
+#set enum(reversed: true)
++ Coffee
++ Tea
++ Milk
+```
+
+
+@@ EnumElem::spacing  [src:95a062cd]
+El espaciado entre los elementos de la enumeración.
+
+Si se establece en `{auto}`, usa el @par.leading[`leading`] del párrafo para las enumeraciones
+compactas y el @par.spacing[`spacing`] del párrafo para las enumeraciones amplias (no
+compactas).
+
+@@ EnumElem::start  [src:df3364bd]
+Con qué número empieza la enumeración.
+
+```example
+#enum(
+  start: 3,
+  [Skipping],
+  [Ahead],
+)
+```
+
+
+@@ EnumElem::tight  [src:bed0dfe6]
+Define el @enum.spacing[espaciado] por defecto de la enumeración. Si es `{false}`, los elementos
+se separan con el @par.spacing[espaciado de párrafo]. Si es `{true}`, en cambio usan el
+@par.leading[interlineado de párrafo]. Esto hace que la lista sea más compacta, lo que puede
+verse mejor si los elementos son cortos.
+
+En modo marcado, el valor de este parámetro se determina según si los elementos están separados
+por una línea en blanco. Si los elementos se siguen directamente, se establece en `{true}`; si
+los elementos están separados por una línea en blanco, se establece en `{false}`. La compacidad
+definida en el marcado no se puede reemplazar con reglas set.
+
+```example
++ If an enum has a lot of text, and
+  maybe other inline content, it
+  should not be tight anymore.
+
++ To make an enum wide, simply
+  insert a blank line between the
+  items.
+```
+
+
+@@ EnumItem  [src:22296e8c]
+Un elemento de enumeración.
+
+@@ EnumItem::body  [src:87eda979]
+El cuerpo del elemento.
+
+@@ EnumItem::number  [src:b1a70dec]
+El número del elemento.
