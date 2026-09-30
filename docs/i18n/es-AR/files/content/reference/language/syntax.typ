@@ -83,7 +83,7 @@ Typst ofrece marcado incorporado para los elementos de documento más comunes. L
 
   [Matemática],
   [`[$x^2$]`],
-  [@math[[Matemática]],
+  [@math[Matemática]],
 
   [Salto de línea],
   [`[\]`],
@@ -95,19 +95,19 @@ Typst ofrece marcado incorporado para los elementos de documento más comunes. L
 
   [Atajo de símbolo],
   [`[~]`, `[---]`],
-  [@reference:symbols:shorthands[[Símbolos]],
+  [@reference:symbols:shorthands[Símbolos]],
 
   [Expresión de código],
   [`[#rect(width: 1cm)]`],
-  [@reference:scripting:expressions[[Scripting]],
+  [@reference:scripting:expressions[Scripting]],
 
   [Escape de carácter],
   [`[Tweet at us \#ad]`],
-  [@reference:syntax:escapes[[Más abajo]],
+  [@reference:syntax:escapes[Más abajo]],
 
   [Comentario],
   [`[/* block */]`, `[// line]`],
-  [@reference:syntax:comments[[Más abajo]],
+  [@reference:syntax:comments[Más abajo]],
 )
 
 = #short-or-long[Matemática][Modo matemático] <math>
@@ -118,11 +118,11 @@ El modo matemático es un modo de marcado especial que se usa para componer fór
 
   [Matemática en línea],
   [`[$x^2$]`],
-  [@math[[Matemática]],
+  [@math[Matemática]],
 
   [Matemática en bloque],
   [`[$ x^2 $]`],
-  [@math[[Matemática]],
+  [@math[Matemática]],
 
   [Adjunto inferior],
   [`[$x_1$]`],
@@ -142,43 +142,43 @@ El modo matemático es un modo de marcado especial que se usa para componer fór
 
   [Punto de alineación],
   [`[$x &= 2 \ &= 3$]`],
-  [@math[[Matemática]],
+  [@math[Matemática]],
 
   [Acceso a variable],
   [`[$#x$, $pi$]`],
-  [@math[[Matemática]],
+  [@math[Matemática]],
 
   [Acceso a campo],
   [`[$arrow.r.long$]`],
-  [@reference:scripting:fields[[Scripting]],
+  [@reference:scripting:fields[Scripting]],
 
   [Multiplicación implícita],
   [`[$x y$]`],
-  [@math[[Matemática]],
+  [@math[Matemática]],
 
   [Atajo de símbolo],
   [`[$->$]`, `[$!=$]`],
-  [@reference:symbols:shorthands[[Símbolos]],
+  [@reference:symbols:shorthands[Símbolos]],
 
   [Texto/cadena en matemática],
   [`[$a "is natural"$]`],
-  [@math[[Matemática]],
+  [@math[Matemática]],
 
   [Llamada a función matemática],
   [`[$floor(x)$]`],
-  [@math[[Matemática]],
+  [@math[Matemática]],
 
   [Expresión de código],
   [`[$#rect(width: 1cm)$]`],
-  [@reference:scripting:expressions[[Scripting]],
+  [@reference:scripting:expressions[Scripting]],
 
   [Escape de carácter],
   [`[$x\^2$]`],
-  [@reference:syntax:escapes[[Más abajo]],
+  [@reference:syntax:escapes[Más abajo]],
 
   [Comentario],
   [`[$/* comment */$]`],
-  [@reference:syntax:comments[[Más abajo]],
+  [@reference:syntax:comments[Más abajo]],
 )
 
 = #short-or-long[Código][Modo código] <code>
@@ -233,7 +233,7 @@ Dentro de los bloques y las expresiones de código, se pueden iniciar expresione
 
   [Matemática],
   [`[$x^2$]`],
-  [@math[[Matemática]],
+  [@math[Matemática]],
 
   [Texto sin formato (raw)],
   [``` [`print(1)`]```],
@@ -241,127 +241,127 @@ Dentro de los bloques y las expresiones de código, se pueden iniciar expresione
 
   [Acceso a variable],
   [`{x}`],
-  [@reference:scripting:blocks[[Scripting]],
+  [@reference:scripting:blocks[Scripting]],
 
   [Bloque de código],
   [`{{ let x = 1; x + 2 }}`],
-  [@reference:scripting:blocks[[Scripting]],
+  [@reference:scripting:blocks[Scripting]],
 
   [Bloque de contenido],
   [`{[*Hello*]}`],
-  [@reference:scripting:blocks[[Scripting]],
+  [@reference:scripting:blocks[Scripting]],
 
   [Expresión entre paréntesis],
   [`{(1 + 2)}`],
-  [@reference:scripting:blocks[[Scripting]],
+  [@reference:scripting:blocks[Scripting]],
 
   [Array],
   [`{(1, 2, 3)}`],
-  [@array[[Array]],
+  [@array[Array]],
 
   [Diccionario],
   [`{(a: "hi", b: 2)}`],
-  [@dictionary[[Diccionario]],
+  [@dictionary[Diccionario]],
 
   [Operador unario],
   [`{-x}`],
-  [@reference:scripting:operators[[Scripting]],
+  [@reference:scripting:operators[Scripting]],
 
   [Operador binario],
   [`{x + y}`],
-  [@reference:scripting:operators[[Scripting]],
+  [@reference:scripting:operators[Scripting]],
 
   [Asignación],
   [`{x = 1}`],
-  [@reference:scripting:operators[[Scripting]],
+  [@reference:scripting:operators[Scripting]],
 
   [Acceso a campo],
   [`{x.y}`],
-  [@reference:scripting:fields[[Scripting]],
+  [@reference:scripting:fields[Scripting]],
 
   [Llamada a método],
   [`{x.flatten()}`],
-  [@reference:scripting:methods[[Scripting]],
+  [@reference:scripting:methods[Scripting]],
 
   [Llamada a función],
   [`{min(x, y)}`],
-  [@function[[Función]],
+  [@function[Función]],
 
   [Expansión de argumentos],
   [`{min(..nums)}`],
-  [@arguments[[Argumentos]],
+  [@arguments[Argumentos]],
 
   [Función sin nombre],
   [`{(x, y) => x + y}`],
-  [@function:unnamed[[Función]],
+  [@function:unnamed[Función]],
 
   [Enlace let],
   [`{let x = 1}`],
-  [@reference:scripting:bindings[[Scripting]],
+  [@reference:scripting:bindings[Scripting]],
 
   [Función con nombre],
   [`{let f(x) = 2 * x}`],
-  [@function[[Función]],
+  [@function[Función]],
 
   [Regla set],
   [`{set text(14pt)}`],
-  [@reference:styling:set-rules[[Estilos]],
+  [@reference:styling:set-rules[Estilos]],
 
   [Regla set-if],
   [`{set text(..) if .. }`],
-  [@reference:styling:set-rules[[Estilos]],
+  [@reference:styling:set-rules[Estilos]],
 
   [Regla show-set],
   [`{show heading: set block(..)}`],
-  [@reference:styling:show-rules[[Estilos]],
+  [@reference:styling:show-rules[Estilos]],
 
   [Regla show con función],
   [`{show raw: it => {..}}`],
-  [@reference:styling:show-rules[[Estilos]],
+  [@reference:styling:show-rules[Estilos]],
 
   [Regla show de todo],
   [`{show: template}`],
-  [@reference:styling:show-rules[[Estilos]],
+  [@reference:styling:show-rules[Estilos]],
 
   [Expresión de contexto],
   [`{context text.lang}`],
-  [@reference:context[[Contexto]],
+  [@reference:context[Contexto]],
 
   [Condicional],
   [`{if x == 1 {..} else {..}}`],
-  [@reference:scripting:conditionals[[Scripting]],
+  [@reference:scripting:conditionals[Scripting]],
 
   [Bucle for],
   [`{for x in (1, 2, 3) {..}}`],
-  [@reference:scripting:loops[[Scripting]],
+  [@reference:scripting:loops[Scripting]],
 
   [Bucle while],
   [`{while x < 10 {..}}`],
-  [@reference:scripting:loops[[Scripting]],
+  [@reference:scripting:loops[Scripting]],
 
   [Control de flujo del bucle],
   [`{break, continue}`],
-  [@reference:scripting:loops[[Scripting]],
+  [@reference:scripting:loops[Scripting]],
 
   [Retorno de una función],
   [`{return x}`],
-  [@function[[Función]],
+  [@function[Función]],
 
   [Incluir un módulo],
   [`{include "bar.typ"}`],
-  [@reference:scripting:modules[[Scripting]],
+  [@reference:scripting:modules[Scripting]],
 
   [Importar un módulo],
   [`{import "bar.typ"}`],
-  [@reference:scripting:modules[[Scripting]],
+  [@reference:scripting:modules[Scripting]],
 
   [Importar elementos de un módulo],
   [`{import "bar.typ": a, b, c}`],
-  [@reference:scripting:modules[[Scripting]],
+  [@reference:scripting:modules[Scripting]],
 
   [Comentario],
   [`{/* block */}`, `{// line}`],
-  [@reference:syntax:comments[[Más abajo]],
+  [@reference:syntax:comments[Más abajo]],
 )
 
 = Comentarios <comments>

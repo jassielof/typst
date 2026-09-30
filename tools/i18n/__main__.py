@@ -216,6 +216,9 @@ def check_pair(src, tr, lang, is_tutorial=False):
         t = re.sub(r"`[^`\n]*`|@[\w:.-]+|#[\w.-]+|https?://\S+|<[\w:.-]+>", " ", t)
         return t.lower()
     wps, wpt = words(ps), words(pt)
+    for a, b in (("[", "]"), ("{", "}")):
+        if len(ps) and (ps.count(a) != pt.count(a) or ps.count(b) != pt.count(b)):
+            out.append(f"bracket count {a}{b}: {ps.count(a)}/{ps.count(b)} vs {pt.count(a)}/{pt.count(b)}")
     for en, es in lang.glossary.items():
         w = es.lower().split()
         pat = r"\s+".join([re.escape(w[0][: max(3, len(w[0]) - 2)]) + r"\w*"] + [re.escape(x) + r"\w*" for x in w[1:]])
