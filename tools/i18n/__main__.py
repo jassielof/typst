@@ -187,6 +187,8 @@ def diff_ms(name, a, b, out):
         out.append(f"{name}: missing {miss[:5]} extra {extra[:5]}")
 
 
+# Accepted phrasings that cover several glossary entries at once.
+GLOSSARY_ALT = {"regla show": r"reglas set y show", "regla set": r"reglas set y show"}
 VOSEO_BAD = re.compile(r"\b(tú|puedes|tienes|quieres|escribe tu|recuerda que)\b", re.I)
 
 
@@ -223,7 +225,7 @@ def check_pair(src, tr, lang, is_tutorial=False):
     for en, es in lang.glossary.items():
         w = es.lower().split()
         pat = r"\s+".join([re.escape(w[0][: max(3, len(w[0]) - 2)]) + r"\w*"] + [re.escape(x) + r"\w*" for x in w[1:]])
-        if re.search(rf"\b{re.escape(en)}s?\b", wps) and not re.search(pat, wpt):
+        if re.search(rf"\b{re.escape(en)}s?\b", wps) and not re.search(pat, wpt) and not re.search(GLOSSARY_ALT.get(es, "$^"), wpt):
             out.append(f"glossary: '{en}' should be '{es}'")
     if VOSEO_BAD.search(pt):
         out.append(f"voseo: {VOSEO_BAD.search(pt).group(0)!r}")

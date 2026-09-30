@@ -1,0 +1,632 @@
+@@ GridCell  [src:c5fba988]
+Una celda de la grilla. Podés usar esta función en la lista de argumentos de una grilla
+para reemplazar las propiedades de estilo de la grilla en una celda individual o para
+posicionarla manualmente dentro de la grilla. También podés usar esta función en reglas
+show para aplicar ciertos estilos a varias celdas a la vez.
+
+Por ejemplo, podés reemplazar la posición y el trazo de una sola celda:
+
+```example
+>>> #set page(width: auto)
+>>> #set text(15pt, font: "Noto Sans Symbols 2", bottom-edge: -.2em)
+<<< #set text(15pt, font: "Noto Sans Symbols 2")
+#show regex("[♚-♟︎]"): set text(fill: rgb("21212A"))
+#show regex("[♔-♙]"): set text(fill: rgb("111015"))
+
+#grid(
+  fill: (x, y) => rgb(
+    if calc.odd(x + y) { "7F8396" }
+    else { "EFF0F3" }
+  ),
+  columns: (1em,) * 8,
+  rows: 1em,
+  align: center + horizon,
+
+  [♖], [♘], [♗], [♕], [♔], [♗], [♘], [♖],
+  [♙], [♙], [♙], [♙], [],  [♙], [♙], [♙],
+  grid.cell(
+    x: 4, y: 3,
+    stroke: blue.transparentize(60%)
+  )[♙],
+
+  ..(grid.cell(y: 6)[♟],) * 8,
+  ..([♜], [♞], [♝], [♛], [♚], [♝], [♞], [♜])
+    .map(grid.cell.with(y: 7)),
+)
+```
+
+También podés aplicar una regla show sobre `grid.cell` para dar estilo a todas las celdas a
+la vez, lo que te permite, por ejemplo, aplicar estilos según la posición de una celda.
+Consultá los ejemplos del elemento @table.cell para aprender más sobre esto.
+
+@@ GridCell::align  [src:65f7ec0e]
+El reemplazo de @grid.align[alineación] de la celda.
+
+@@ GridCell::body  [src:39b6000b]
+El cuerpo de la celda.
+
+@@ GridCell::breakable  [src:31c12eb4]
+Si las filas que abarca esta celda se pueden ubicar en páginas distintas. Cuando es igual
+a `{auto}`, una celda que abarca solo filas de tamaño fijo no se puede cortar, mientras
+que una celda que abarca al menos una fila de tamaño `{auto}` sí se puede cortar.
+
+@@ GridCell::colspan  [src:4fd19b75]
+La cantidad de columnas que abarca esta celda.
+
+@@ GridCell::fill  [src:a341ff67]
+El reemplazo de @grid.fill[relleno] de la celda.
+
+@@ GridCell::inset  [src:ec6de9a3]
+El reemplazo de @grid.inset[inset] de la celda.
+
+@@ GridCell::rowspan  [src:90c06137]
+La cantidad de filas que abarca esta celda.
+
+@@ GridCell::stroke  [src:099433d3]
+El reemplazo de @grid.stroke[trazo] de la celda.
+
+@@ GridCell::x  [src:3644525c]
+La columna de la celda (con índice desde cero). Este campo se puede usar en reglas show
+para dar estilo a una celda según su columna.
+
+Podés reemplazar este campo para elegir en qué columna se debe ubicar la celda. Si no se
+elige una fila (`y`), la celda se ubicará en la primera fila (empezando por la fila 0) en
+la que esa columna esté disponible (o en una fila nueva, si no hay ninguna). En cambio, si
+se eligen tanto `x` como `y`, la celda se ubicará exactamente en esa posición. Se produce
+un error si esa posición no está disponible (por eso, suele ser prudente especificar las
+celdas con posición personalizada antes que las celdas con posición automática).
+
+```example
+#let circ(c) = circle(
+  fill: c,
+  width: 5mm,
+)
+
+#grid(
+  columns: 4,
+  rows: 7mm,
+  stroke: .5pt + blue,
+  align: center + horizon,
+  inset: 1mm,
+
+  grid.cell(x: 2, y: 2, circ(aqua)),
+  circ(yellow),
+  grid.cell(x: 3, circ(green)),
+  circ(black),
+)
+```
+
+
+@@ GridCell::y  [src:5eba59df]
+La fila de la celda (con índice desde cero). Este campo se puede usar en reglas show para
+dar estilo a una celda según su fila.
+
+Podés reemplazar este campo para elegir en qué fila se debe ubicar la celda. Si no se
+elige una columna (`x`), la celda se ubicará en la primera columna disponible (empezando
+por la columna 0) de la fila elegida. Si todas las columnas de la fila elegida ya están
+ocupadas, se produce un error.
+
+```example
+#let tri(c) = polygon.regular(
+  fill: c,
+  size: 5mm,
+  vertices: 3,
+)
+
+#grid(
+  columns: 2,
+  stroke: blue,
+  inset: 1mm,
+
+  tri(black),
+  grid.cell(y: 1, tri(teal)),
+  grid.cell(y: 1, tri(red)),
+  grid.cell(y: 2, tri(orange))
+)
+```
+
+
+@@ GridElem  [src:5804e245]
+Dispone contenido en una grilla.
+
+El elemento grid te permite disponer contenido en una grilla. Podés definir la cantidad de
+filas y columnas, así como el tamaño de los espacios (gutters) entre ellas. Hay varios
+modos de dimensionamiento para columnas y filas que se pueden usar para crear diseños
+complejos.
+
+Si bien los elementos grid y table funcionan de manera muy similar, están pensados para
+distintos casos de uso y tienen distinta semántica. El elemento grid está pensado para
+fines de presentación y de diseño, mientras que el elemento @table está pensado, en
+términos generales, para presentar varios datos relacionados. Las reglas set y show sobre
+uno de estos elementos no afectan al otro. Consultá la
+@grid:accessibility[sección de accesibilidad] para saber cómo se presentan las grillas y
+las tablas a los usuarios de tecnologías de asistencia (TA), como los lectores de pantalla.
+
+= #short-or-long[Tamaño de pistas][Dimensionar las pistas] <track-size>
+El dimensionamiento de una grilla se determina por los tamaños de pista especificados en
+los argumentos. Hay varios parámetros de dimensionamiento: @grid.columns[`columns`],
+@grid.rows[`rows`] y @grid.gutter[`gutter`]. Como cada uno de los parámetros de
+dimensionamiento acepta los mismos valores, los vamos a explicar una sola vez, acá. Cada
+argumento de dimensionamiento acepta un array de tamaños de pista individuales. Un tamaño
+de pista es uno de los siguientes:
+
+- `{auto}`: La pista se dimensionará para ajustarse a su contenido. Será, como máximo, tan
+  grande como el espacio restante. Si hay más de un ancho de pista `{auto}` y, en conjunto,
+  reclaman más que el espacio disponible, las pistas `{auto}` se repartirán el espacio
+  disponible de forma equitativa.
+
+- Una longitud fija o relativa (por ejemplo, `{10pt}` o `{20% - 1cm}`): La pista tendrá
+  exactamente ese tamaño.
+
+- Una longitud fraccionaria (por ejemplo, `{1fr}`): Una vez dimensionadas todas las demás
+  pistas, el espacio restante se dividirá entre las pistas fraccionarias según sus
+  fracciones. Por ejemplo, si hay dos pistas fraccionarias, cada una con una fracción de
+  `{1fr}`, cada una ocupará la mitad del espacio restante.
+
+Para especificar una sola pista, se puede omitir el array y usar un único valor. Para
+especificar varias pistas `{auto}`, ingresá la cantidad de pistas en lugar de un array. Por
+ejemplo, `columns:` `{3}` equivale a `columns:` `{(auto, auto, auto)}`.
+
+= Ejemplos <examples>
+El siguiente ejemplo demuestra las distintas opciones de dimensionamiento de pistas.
+También muestra cómo podés usar @grid.cell para que una celda individual abarque dos pistas
+de la grilla.
+
+```example
+// We use `rect` to emphasize the
+// area of cells.
+#set rect(
+  inset: 8pt,
+  fill: rgb("e4e5ea"),
+  width: 100%,
+)
+
+#grid(
+  columns: (60pt, 1fr, 2fr),
+  rows: (auto, 60pt),
+  gutter: 3pt,
+  rect[Fixed width, auto height],
+  rect[1/3 of the remains],
+  rect[2/3 of the remains],
+  rect(height: 100%)[Fixed height],
+  grid.cell(
+    colspan: 2,
+    image("tiger.jpg", width: 100%),
+  ),
+)
+```
+
+También podés @arguments:spreading[expandir] un array de cadenas de texto o de contenido en
+una grilla para completar sus celdas.
+
+```example
+#grid(
+  columns: 5,
+  gutter: 5pt,
+  ..range(25).map(str)
+)
+```
+
+= #short-or-long[Estilos][Dar estilo a la grilla] <styling>
+Los elementos grid y table funcionan de manera similar. Para una explicación práctica,
+consultá la @guides:tables:fills[guía de tablas]; para un panorama rápido, seguí leyendo.
+
+El aspecto de la grilla se puede personalizar mediante distintos parámetros. Estos son los
+más importantes:
+
+- @grid.align[`align`] para cambiar cómo se alinean las celdas
+- @grid.inset[`inset`] para agregar opcionalmente relleno interno a las celdas
+- @grid.fill[`fill`] para darles un fondo a las celdas
+- @grid.stroke[`stroke`] para habilitar opcionalmente líneas de grilla con cierto trazo
+
+Para cubrir distintas necesidades, hay varias maneras de establecerlos.
+
+Si necesitás reemplazar las opciones anteriores en celdas individuales, podés usar el
+elemento @grid.cell. Del mismo modo, podés reemplazar líneas individuales de la grilla con
+los elementos @grid.hline y @grid.vline.
+
+Para configurar un estilo general para una grilla, en cambio, podés especificar la opción de
+cualquiera de las siguientes maneras:
+
+- Como un único valor que se aplica a todas las celdas.
+- Como un array de valores correspondientes a cada columna. El array se recorrerá
+  cíclicamente si hay más columnas que elementos en el array.
+- Como una función de la forma `(x, y) => value`. Recibe los índices de columna y fila de la
+  celda (ambos desde cero) y debe devolver el valor que se aplica a esa celda.
+
+```example
+#grid(
+  columns: 5,
+
+  // By a single value
+  align: center,
+  // By a single but more complicated value
+  inset: (x: 2pt, y: 3pt),
+  // By an array of values (cycling)
+  fill: (rgb("#239dad50"), none),
+  // By a function that returns a value
+  stroke: (x, y) => if calc.rem(x + y, 3) == 0 { 0.5pt },
+
+  ..range(5 * 3).map(n => numbering("A", n + 1))
+)
+```
+
+Además, podés @reference:styling[aplicar reglas de estilo] a @grid y a @grid.cell.
+Especialmente, los campos @grid.cell.x[`x`] y @grid.cell.y[`y`] de `grid.cell` se pueden
+usar en un selector @function.where[`where`], lo que permite dar estilo a celdas de columnas
+o filas específicas, o de posiciones individuales.
+
+== Precedencia del estilo de trazo <stroke-styling-precedence>
+Como se explicó arriba, hay tres maneras de establecer el trazo de una celda de la grilla:
+mediante el @grid.cell.stroke[campo `stroke` de `{grid.cell}`], con @grid.hline[`{grid.hline}`]
+y @grid.vline[`{grid.vline}`], o estableciendo el @grid.stroke[campo `stroke` de `{grid}`].
+Cuando varias de estas configuraciones están presentes y entran en conflicto, las de `hline`
+y `vline` tienen la precedencia más alta, seguidas de las de `cell` y, por último, las de
+`grid`.
+
+Además, los trazos de un encabezado o pie de grilla repetido tendrán precedencia sobre los
+trazos de las celdas normales.
+
+= Accesibilidad <accessibility>
+Las grillas no tienen ninguna semántica especial. Las tecnologías de asistencia (TA) no
+ofrecen la posibilidad de navegar bidimensionalmente por celdas en las grillas. Si querés
+presentar datos tabulares, usá en su lugar el elemento @table.
+
+Las TA leerán las celdas de la grilla en su orden semántico. Normalmente, es el orden en que
+se las pasaste a la grilla. Sin embargo, si las posicionaste manualmente con los
+@grid.cell.x[argumentos `x` e `y` de `grid.cell`], las celdas se leerán fila por fila, de
+izquierda a derecha (en documentos de izquierda a derecha). Una celda se leerá cuando se
+llegue por primera vez a su posición.
+
+@@ GridElem::align  [src:0c218d01]
+Cómo alinear el contenido de las celdas.
+
+Si se establece en `{auto}`, se usa la alineación exterior.
+
+Podés especificar la alineación de cualquiera de las siguientes maneras:
+- usar una única alineación para todas las celdas
+- usar un array de alineaciones correspondientes a cada columna
+- usar una función que asigne la posición de una celda a su alineación
+
+Mirá la @grid:styling[sección de estilos] de arriba para más detalles.
+
+Además, podés encontrar un ejemplo en el parámetro @table.align.
+
+@@ GridElem::children  [src:fb778fc9]
+El contenido de las celdas de la grilla, más las líneas de grilla adicionales especificadas
+con los elementos @grid.hline y @grid.vline.
+
+Las celdas se completan por filas.
+
+@@ GridElem::column_gutter  [src:6427cb6f]
+Los espacios entre columnas.
+
+@@ GridElem::columns  [src:69bee780]
+Los tamaños de las columnas.
+
+Especificá un array de tamaños de pista o proporcioná un entero para crear una grilla con esa
+cantidad de columnas de tamaño `{auto}`. Tené en cuenta que, a diferencia de las filas y los
+gutters, proporcionar un único tamaño de pista siempre crea una sola columna.
+
+Mirá la @grid:track-size[sección de tamaño de pistas] de arriba para más detalles.
+
+@@ GridElem::fill  [src:72d384db]
+Cómo rellenar las celdas.
+
+Puede ser:
+- un único color para todas las celdas
+- un array de colores correspondientes a cada columna
+- una función que asigne la posición de una celda a su color
+
+Sobre todo, los arrays y las funciones son útiles para crear grillas con rayas. Mirá la
+@grid:styling[sección de estilos] de arriba para más detalles.
+
+```example
+#grid(
+  fill: (x, y) =>
+    if calc.even(x + y) { luma(230) }
+    else { white },
+  align: center + horizon,
+  columns: 4,
+  inset: 2pt,
+  [X], [O], [X], [O],
+  [O], [X], [O], [X],
+  [X], [O], [X], [O],
+  [O], [X], [O], [X],
+)
+```
+
+
+@@ GridElem::gutter  [src:fb2fd0c2]
+Los espacios entre filas y columnas. Es un atajo para establecer @grid.column-gutter[`column-gutter`]
+y @grid.row-gutter[`row-gutter`] en el mismo valor.
+
+Si hay más gutters que tamaños definidos, se repite el último gutter.
+
+Mirá la @grid:track-size[sección de tamaño de pistas] de arriba para más detalles.
+
+@@ GridElem::inset  [src:975cfce6]
+Cuánto relleno se agrega al contenido de las celdas.
+
+Para especificar un inset uniforme para todas las celdas, podés usar una única longitud para
+todos los lados o un diccionario de longitudes para lados individuales. Mirá la
+@box.inset[documentación de box] para más detalles.
+
+Para especificar insets distintos para distintas celdas, podés:
+- usar un único inset para todas las celdas
+- usar un array de insets correspondientes a cada columna
+- usar una función que asigne la posición de una celda a su inset
+
+Mirá la @grid:styling[sección de estilos] de arriba para más detalles.
+
+Además, podés encontrar un ejemplo en el parámetro @table.inset.
+
+@@ GridElem::row_gutter  [src:3fd05db1]
+Los espacios entre filas.
+
+@@ GridElem::rows  [src:cf841f56]
+Los tamaños de las filas.
+
+Si hay más celdas de las que entran en las filas definidas, la última fila se repite hasta que
+no queden más celdas.
+
+Mirá la @grid:track-size[sección de tamaño de pistas] de arriba para más detalles.
+
+@@ GridElem::stroke  [src:c1f2dea6]
+Cómo @stroke[trazar] las celdas.
+
+Las grillas no tienen trazos por defecto, lo que se puede cambiar estableciendo esta opción
+en el trazo deseado.
+
+Si hace falta ubicar líneas que puedan cruzar el espacio entre celdas producido por la opción
+@grid.gutter[`gutter`], o reemplazar el trazo entre varias celdas específicas, considerá
+especificar uno o más de @grid.hline y @grid.vline junto con las celdas de tu grilla.
+
+Para especificar el mismo trazo para todas las celdas, podés usar un único @stroke[trazo] para
+todos los lados o un diccionario de @stroke[trazos] para lados individuales. Mirá la
+@rect.stroke[documentación del rectángulo] para más detalles.
+
+Para especificar trazos distintos para distintas celdas, podés:
+- usar un único trazo para todas las celdas
+- usar un array de trazos correspondientes a cada columna
+- usar una función que asigne la posición de una celda a su trazo
+
+Mirá la @grid:styling[sección de estilos] de arriba para más detalles.
+
+#example(
+  title: "Pasar una función para establecer un trazo según la posición",
+  ```
+  #set page(width: 420pt)
+  #set text(number-type: "old-style")
+  #show grid.cell.where(y: 0): set text(size: 1.3em)
+
+  #grid(
+    columns: (1fr, 2fr, 2fr),
+    row-gutter: 1.5em,
+    inset: (left: 0.5em),
+    stroke: (x, y) => if x > 0 { (left: 0.5pt + gray) },
+    align: horizon,
+
+    [Winter \ 2007 \ Season],
+    [Aaron Copland \ *The Tender Land* \ January 2007],
+    [Eric Satie \ *Gymnopedie 1, 2* \ February 2007],
+
+    [],
+    [Jan 12 \ *Middlebury College \ Center for the Arts* \ 20:00],
+    [Feb 2 \ *Johnson State College Dibden Center for the Arts* \ 19:30],
+
+    [],
+    [Skip a week \ #text(0.8em)[_Prepare your exams!_]],
+    [Feb 9 \ *Castleton State College \ Fine Arts Center* \ 19:30],
+
+    [],
+    [Jan 26, 27 \ *Lyndon State College Alexander Twilight Theater* \ 20:00],
+    [
+      Feb 17 --- #smallcaps[Anniversary] \
+      *Middlebury College \ Center for the Arts* \
+      19:00 #text(0.7em)[(for a special guest)]
+    ],
+  )
+  ```
+)
+
+#example(
+  title: "Plegar el diccionario de trazos",
+  ```
+  #set page(height: 13em, width: 26em)
+
+  #let cv(..jobs) = grid(
+    columns: 2,
+    inset: 5pt,
+    stroke: (x, y) => if x == 0 and y > 0 {
+      (right: (
+        paint: luma(180),
+        thickness: 1.5pt,
+        dash: "dotted",
+      ))
+    },
+    grid.header(grid.cell(colspan: 2)[
+      *Professional Experience*
+      #box(width: 1fr, line(length: 100%, stroke: luma(180)))
+    ]),
+    ..{
+      let last = none
+      for job in jobs.pos() {
+        (
+          if job.year != last [*#job.year*],
+          [
+            *#job.company* - #job.role _(#job.timeframe)_ \
+            #job.details
+          ]
+        )
+        last = job.year
+      }
+    }
+  )
+
+  #cv(
+    (
+      year: 2012,
+      company: [Pear Seed & Co.],
+      role: [Lead Engineer],
+      timeframe: [Jul - Dec],
+      details: [
+        - Raised engineers from 3x to 10x
+        - Did a great job
+      ],
+    ),
+    (
+      year: 2012,
+      company: [Mega Corp.],
+      role: [VP of Sales],
+      timeframe: [Mar - Jun],
+      details: [- Closed tons of customers],
+    ),
+    (
+      year: 2013,
+      company: [Tiny Co.],
+      role: [CEO],
+      timeframe: [Jan - Dec],
+      details: [- Delivered 4x more shareholder value],
+    ),
+    (
+      year: 2014,
+      company: [Glorbocorp Ltd],
+      role: [CTO],
+      timeframe: [Jan - Mar],
+      details: [- Drove containerization forward],
+    ),
+  )
+  ```
+)
+
+@@ GridFooter  [src:1d8086c3]
+Un pie de grilla repetible.
+
+Igual que el elemento @grid.header, el pie puede repetirse en cada página de la grilla.
+
+No se pueden ubicar otras celdas de la grilla después del pie.
+
+@@ GridFooter::children  [src:0f57ec1a]
+Las celdas y líneas dentro del pie.
+
+@@ GridFooter::repeat  [src:2d0e72a9]
+Si este pie se debe repetir en todas las páginas.
+
+@@ GridHLine  [src:6d2d9454]
+Una línea horizontal en la grilla.
+
+Reemplaza cualquier trazo por celda, incluido el trazo especificado mediante el campo
+`stroke` de la grilla. Puede cruzar el espacio entre celdas creado mediante la opción
+`column-gutter` de la grilla.
+
+Se puede encontrar un ejemplo de esta función en el elemento @table.hline.
+
+@@ GridHLine::end  [src:6ce368dd]
+La columna antes de la cual termina la línea horizontal (con índice desde cero, exclusivo).
+Por lo tanto, la línea horizontal se dibujará hasta la columna `end - 1` inclusive, y a lo
+largo de ella.
+
+Un valor igual a `{none}` o a la cantidad de columnas hace que se extienda hasta el final de
+la grilla.
+
+@@ GridHLine::position  [src:bac2438d]
+La posición en la que se ubica la línea, dada su fila (`y`): `{top}` para dibujarla por
+encima o `{bottom}` para dibujarla por debajo.
+
+Esta configuración solo es relevante cuando el gutter de filas está habilitado (y no se debe
+usar de otro modo; conviene simplemente aumentar en uno el campo `y`), ya que en ese caso la
+posición debajo de una fila pasa a ser distinta de la posición encima de la fila siguiente,
+debido al espacio entre ambas.
+
+@@ GridHLine::start  [src:32a56b51]
+La columna en la que empieza la línea horizontal (con índice desde cero, inclusivo).
+
+@@ GridHLine::stroke  [src:ee551cf6]
+El trazo de la línea.
+
+Especificar `{none}` elimina cualquier línea ubicada previamente a lo largo del rango de esta
+línea, incluidas las hlines o el trazo por celda que estén debajo.
+
+@@ GridHLine::y  [src:e1deecf6]
+La fila encima de la cual se ubica la línea horizontal (con índice desde cero). Si el campo
+`position` se establece en `{bottom}`, la línea se ubica en cambio debajo de la fila con el
+índice dado (mirá @grid.hline.position para más detalles).
+
+Especificar `{auto}` hace que la línea se ubique en la fila siguiente a la última celda
+posicionada automáticamente (es decir, sin coordenadas reemplazadas) anterior a la línea entre
+los hijos de la grilla. Si no hay ninguna celda así antes de la línea, se ubica en la parte
+superior de la grilla (fila 0). Tené en cuenta que especificar en esta opción exactamente la
+cantidad total de filas de la grilla hace que esta línea horizontal reemplace el borde inferior
+de la grilla, mientras que un valor de 0 reemplaza el borde superior.
+
+@@ GridHeader  [src:4d9a4896]
+Un encabezado de grilla repetible.
+
+Si `repeat` se establece en `true`, el encabezado se repetirá en todas las páginas. Para ver un
+ejemplo, consultá el elemento @table.header y el parámetro @grid.stroke.
+
+@@ GridHeader::children  [src:4cf56705]
+Las celdas y líneas dentro del encabezado.
+
+@@ GridHeader::level  [src:717c8446]
+El nivel del encabezado. No debe ser cero.
+
+Esto permite repetir varios encabezados a la vez. Los encabezados con distintos niveles pueden
+repetirse juntos, siempre que tengan niveles ascendentes.
+
+En particular, cuando un encabezado de nivel más bajo empieza a repetirse, todos los
+encabezados de nivel más alto o igual dejan de repetirse (son "reemplazados" por el nuevo
+encabezado).
+
+@@ GridHeader::repeat  [src:f35bc3c0]
+Si este encabezado se debe repetir en todas las páginas.
+
+@@ GridVLine  [src:f14338db]
+Una línea vertical en la grilla.
+
+Reemplaza cualquier trazo por celda, incluido el trazo especificado mediante el campo
+`stroke` de la grilla. Puede cruzar el espacio entre celdas creado mediante la opción
+`row-gutter` de la grilla.
+
+@@ GridVLine::end  [src:695f776b]
+La fila encima de la cual termina la línea vertical (con índice desde cero, exclusivo). Por
+lo tanto, la línea vertical se dibujará hasta la fila `end - 1` inclusive, y a lo largo de
+ella.
+
+Un valor igual a `{none}` o a la cantidad de filas hace que se extienda hasta la parte
+inferior de la grilla.
+
+@@ GridVLine::position  [src:2aaa8d85]
+La posición en la que se ubica la línea, dada su columna (`x`): `{start}` para dibujarla antes
+o `{end}` para dibujarla después.
+
+También se aceptan los valores `{left}` y `{right}`, pero no se recomiendan, ya que hacen que
+tu grilla sea inconsistente entre documentos de izquierda a derecha y de derecha a izquierda.
+
+Esta configuración solo es relevante cuando el gutter de columnas está habilitado (y no se
+debe usar de otro modo; conviene simplemente aumentar en uno el campo `x`), ya que en ese caso
+la posición después de una columna pasa a ser distinta de la posición antes de la columna
+siguiente, debido al espacio entre ambas.
+
+@@ GridVLine::start  [src:520803e1]
+La fila en la que empieza la línea vertical (con índice desde cero, inclusivo).
+
+@@ GridVLine::stroke  [src:d3a5fb14]
+El trazo de la línea.
+
+Especificar `{none}` elimina cualquier línea ubicada previamente a lo largo del rango de esta
+línea, incluidas las vlines o el trazo por celda que estén debajo.
+
+@@ GridVLine::x  [src:10b0e389]
+La columna antes de la cual se ubica la línea vertical (con índice desde cero). Si el campo
+`position` se establece en `{end}`, la línea se ubica en cambio después de la columna con el
+índice dado (mirá @grid.vline.position para más detalles).
+
+Especificar `{auto}` hace que la línea se ubique en la columna siguiente a la última celda
+posicionada automáticamente (es decir, sin coordenadas reemplazadas) anterior a la línea entre
+los hijos de la grilla. Si no hay ninguna celda así antes de la línea, se ubica antes de la
+primera columna de la grilla (columna 0). Tené en cuenta que especificar en esta opción
+exactamente la cantidad total de columnas de la grilla hace que esta línea vertical reemplace
+el borde final de la grilla (derecho en LTR, izquierdo en RTL), mientras que un valor de 0
+reemplaza el borde inicial (izquierdo en LTR, derecho en RTL).
