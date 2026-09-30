@@ -1,5 +1,5 @@
 @@ AlignPointElem  [src:def96ca9]
-Un punto de alineación matemático: `&`, `&&`.
+Un punto de alineación matemático (`&`, `&&`).
 
 @@ ClassElem  [src:ca9513f9]
 Uso forzado de una cierta clase matemática.

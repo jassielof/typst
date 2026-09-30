@@ -219,11 +219,12 @@ def check_pair(src, tr, lang, is_tutorial=False):
     def raws(t):
         # Inline ``` fences and `{"alt text"}` samples are prose, not code.
         t = re.sub(r"```[^\n]*?```", " ", t)
-        return re.sub(r"`\{\"[^`\n]*\"\}`", " ", t)
+        t = re.sub(r"`\{\"[^`\n]*\"\}`", " ", t)
+        return t
     diff_ms("`raw`", multiset(r"`[^`\n]+`", raws(ps)), multiset(r"`[^`\n]+`", raws(pt)), out)
     def words(t):  # visible words only: no raw, refs, calls, urls
         t = re.sub(r"(?m)^\s*(//.*|\[[\w ]+\],)$", " ", t)
-        t = re.sub(r"\b[\w-]+(\.[\w-]+)+\(", " ", t)
+        t = re.sub(r"\b[\w-]+(\.[\w-]+)+\(|\b(?!show-set)\w+(-\w+)+\b", " ", t)
         t = re.sub(r"`[^`\n]*`|@[\w:.-]+|#[\w.-]+|https?://\S+|<[\w:.-]+>|\"[^\"\n]*\"|\b[\w-]+:(?=\s)", " ", t)
         return t.lower()
     wps, wpt = words(ps), words(pt)
