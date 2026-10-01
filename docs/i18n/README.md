@@ -54,7 +54,7 @@ git remote add upstream https://github.com/typst/typst   # una sola vez
 git fetch upstream
 git merge upstream/main                                   # debería ser limpio
 python3 tools/i18n status                                 # nuevo / desactualizado / huérfano
-ANTHROPIC_API_KEY=... python3 tools/i18n translate       # traduce solo lo pendiente
+# traducir lo pendiente en una sesión de Claude Code (ver abajo); no hace falta API key
 python3 tools/i18n check                                  # valida estructura
 cargo docit compile --format pdf --lang es-AR
 ```
@@ -67,7 +67,11 @@ doc comments usan `cargo docit i18n-dump`, el mismo parser del build):
   código (y su cantidad), llamadas `#...`, `@refs`, `<labels>`, URLs, texto `raw`,
   balance de `[]`/`{}`, glosario y voseo. En la referencia los ejemplos deben
   quedar intactos; en el tutorial solo se admite traducir prosa de ejemplo.
-- `translate [--only SUBSTR] [--limit N] [--dry-run]`: llama a la API de
+- `export FILE` / `import [--force] FILE`: para doc comments de Rust, vuelcan las
+  entradas pendientes de un `.rs` (con los bloques de código enmascarados) y
+  vuelven a incorporar la traducción ya hecha.
+- `translate [--only SUBSTR] [--limit N] [--dry-run]` (**opcional**, requiere una
+  API key y no se usa en este fork): llama a la API de
   Anthropic (`ANTHROPIC_API_KEY`; modelo con `I18N_MODEL`) con temperatura baja,
   un lote por archivo, y reintenta una vez si `check` falla. Solo retraduce lo
   pendiente y actualiza hashes.
@@ -76,6 +80,15 @@ doc comments usan `cargo docit i18n-dump`, el mismo parser del build):
 
 Reglas y glosario que recibe el traductor: `docs/i18n/es-AR/rules.md` y
 `glossary.toml`.
+
+### Traducir lo pendiente sin API key
+
+Este fork se mantiene desde una sesión de Claude Code, sin API propia. Para
+sincronizar, pedile a la sesión que haga: merge de `upstream/main`, `status`,
+traducir cada unidad `new`/`outdated` siguiendo `rules.md` y `glossary.toml`
+(archivos del overlay: editar la copia en `files/`; doc comments: `export` /
+`import` o editar el `.i18n`), `stamp`, `check` y compilar con `--lang es-AR
+--deny-warnings`.
 
 ### Resolver conflictos
 
