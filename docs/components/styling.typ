@@ -23,6 +23,10 @@
   set table.cell(inset: 4pt)
 
   show title: set text(28pt)
+  show selector.or(title, ..range(1, 4).map(n => heading.where(level: n))): set text(
+    font: (stdx.font("Heading font", fonts.body), ..fonts.fallback),
+    features: ("lnum",),
+  )
 
   show heading.where(outlined: true): set heading(numbering: "1.1.1/1.1")
   show heading.where(level: 1): it => pagebreak(weak: true) + it
