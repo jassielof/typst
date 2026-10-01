@@ -19,6 +19,10 @@ jobs:
       - uses: dtolnay/rust-toolchain@f8be11a05b1d4f3fcebe6410cc16743212b999b0 # 1.98.0
       - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
 
+      # Reforma (headings) is free to use but not to modify, so it is fetched, not committed.
+      - name: Fetch fonts
+        run: python3 tools/i18n fonts
+
       - name: Compile documentation
         run: cargo docit compile --format pdf --lang es-AR --release
 

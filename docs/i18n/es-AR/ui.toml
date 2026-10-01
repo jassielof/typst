@@ -699,3 +699,7 @@
 "HK Grotesk" = "Inter"
 "Cascadia Mono" = "Google Sans Code"
 "New Computer Modern Math" = "IBM Plex Math"
+
+# Headings and titles (Reforma is fetched by `python3 tools/i18n fonts`).
+"Heading font" = "Reforma 1918"
+"Types" = "Tipos"
