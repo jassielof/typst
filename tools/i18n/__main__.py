@@ -79,7 +79,7 @@ def parse_sidecar(text):
 
 def write_sidecar(path: Path, entries):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(f"@@ {k}  [src:{hh}]\n{body}" for k, (hh, body) in sorted(entries.items())))
+    path.write_text("\n\n".join(f"@@ {k}  [src:{hh}]\n{body}" for k, (hh, body) in sorted(entries.items())))
 
 
 def sidecar_path(lang, rs):
@@ -149,6 +149,13 @@ def cmd_status(a):
 def cmd_stamp(a):
     lang = Lang(a.lang)
     for rel in a.paths:
+        if "::" in rel:  # `crates/x.rs::Key`: restamp one doc-comment sidecar entry
+            rs, key = rel.split("::", 1)
+            path = sidecar_path(lang, rs)
+            entries = parse_sidecar(path.read_text())
+            entries[key] = (h(rust_docs_for(rs)[key]), entries[key][1])
+            write_sidecar(path, entries)
+            continue
         lang.state[rel] = h((DOCS / rel).read_text())
     lang.save()
     return 0
@@ -248,6 +255,8 @@ def cmd_check(a):
         overlay = lang.dir / "files" / rel
         if overlay.exists():
             for p in check_pair((DOCS / rel).read_text(), overlay.read_text(), lang, rel.startswith("content/tutorial")):
+                if rel == "components/preface.typ" and p.startswith(("bracket count", "#calls", "urls")):
+                    continue  # the colophon carries the fork-only disclaimer
                 print(f"files/{rel}: {p}"); bad += 1
     if not a.no_docs:
         src = rust_docs()

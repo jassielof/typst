@@ -36,7 +36,7 @@
     radius: 3pt,
     breakable: false,
   )[
-    *Traducción no oficial.* Esta es una traducción al español rioplatense (es-AR) de la documentación de Typst. *No es una publicación oficial* de Typst GmbH ni del equipo de Typst, y no cuenta con su aval. Fue generada con inteligencia artificial (Claude Sonnet 5.5, de Anthropic) y puede contener errores o imprecisiones. Ante cualquier duda, prevalece la documentación oficial en inglés: https://typst.app/docs
+    *Traducción no oficial.* Esta es una traducción al español rioplatense (es-AR) de la documentación de Typst. *No es una publicación oficial* de Typst GmbH ni del equipo de Typst, y no cuenta con su aval. Fue generada con inteligencia artificial (Claude Sonnet 5.5, de Anthropic) y puede contener errores o imprecisiones. Ante cualquier duda, prevalece la documentación oficial en inglés:\ https://typst.app/docs
   ]
 
   #v(1fr)

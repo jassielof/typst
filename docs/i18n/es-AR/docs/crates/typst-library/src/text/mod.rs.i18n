@@ -44,7 +44,7 @@ word.
 ```
 
 
-@@ TextElem::body  [src:1a410e1d]
+@@ TextElem::body  [src:86a736ca]
 Contenido en el que todo el texto recibe estilo según los demás argumentos.
 
 Este parámetro solo está disponible en el constructor de `text` (y no en los elementos `text` existentes), porque el constructor de `text` no necesariamente construye un único elemento `text`. En cambio, aplica estilos a todos los elementos de texto dentro del cuerpo que se le pasa.
@@ -55,6 +55,7 @@ Este parámetro solo está disponible en el constructor de `text` (y no en los e
   #underline[content].
 ]
 ```
+
 
 @@ TextElem::bottom_edge  [src:fb6e6bcd]
 El extremo inferior del marco conceptual alrededor del texto que se usa para el diseño y el posicionamiento. Esto afecta
@@ -74,6 +75,7 @@ el tamaño de los contenedores que contienen texto.
 
 @@ TextElem::case  [src:9602af96]
 Una transformación de mayúsculas y minúsculas que se debe aplicar al texto.
+
 
 @@ TextElem::cjk_latin_spacing  [src:254295fa]
 Si se inserta automáticamente espaciado entre caracteres CJK y latinos.
@@ -129,8 +131,10 @@ modificaciones. (Actualmente, `{0%}` permite viudas/huérfanas; cualquier otro v
 @@ TextElem::deco  [src:ca8a6063]
 Líneas decorativas.
 
+
 @@ TextElem::delta  [src:2362cbab]
 Un delta que se aplica al peso de la fuente.
+
 
 @@ TextElem::dir  [src:a970a1b1]
 La dirección dominante del texto y los objetos en línea. Los valores posibles son:
@@ -159,8 +163,10 @@ del #link("https://forum.typst.app/")[foro], del #link("https://discord.gg/2uDyb
 Si están activas las ligaduras que se deben usar con moderación. Establecer esto en `{true}` habilita la característica de
 fuente OpenType `dlig`.
 
+
 @@ TextElem::emph  [src:254947eb]
 Si se debe invertir el estilo de la fuente.
+
 
 @@ TextElem::fallback  [src:742a1796]
 Si se permite el respaldo de fuente como último recurso cuando la lista de fuentes primarias no contiene ninguna
@@ -206,6 +212,7 @@ Características OpenType sin procesar que se aplican.
   =>
   ```
 )
+
 
 @@ TextElem::fill  [src:270b334b]
 El relleno de los glifos.
@@ -304,6 +311,7 @@ barra (por ejemplo, en las URL). En cambio, habilitala localmente cuando quieras
 Si están activas las ligaduras históricas. Establecer esto en `{true}` habilita la característica de fuente OpenType
 `hlig`.
 
+
 @@ TextElem::hyphenate  [src:90a96cc9]
 Si se separa el texto en sílabas para mejorar los saltos de línea. Cuando es `{auto}`, el texto se separará en sílabas si y
 solo si la justificación está habilitada.
@@ -379,6 +387,7 @@ El código de idioma no distingue mayúsculas de minúsculas y se pasará a min�
   ```
 )
 
+
 @@ TextElem::ligatures  [src:10fbd0c0]
 Si están activas las ligaduras estándar.
 
@@ -396,6 +405,7 @@ A fine ligature.
 Tené en cuenta que algunas fuentes de programación usan otras características de fuente OpenType para implementar
 "ligaduras", incluida la característica de alternativas contextuales (`calt`), que también está habilitada por defecto.
 Usá el parámetro general @text.features[`features`] para controlar esas características.
+
 
 @@ TextElem::number_type  [src:ede97745]
 Qué tipo de números / cifras seleccionar. Cuando se establece en `{auto}`, se usan los números por defecto de la fuente.
@@ -454,6 +464,7 @@ Esto permite que el proceso de tratamiento del texto tome decisiones más inform
 El código de región no distingue mayúsculas de minúsculas y se pasará a mayúsculas al acceder a él a través del
 @reference:context[contexto].
 
+
 @@ TextElem::script  [src:c089607c]
 La escritura OpenType.
 
@@ -484,6 +495,7 @@ caracteres que comparten una propiedad de escritura Unicode común.
 @@ TextElem::shift_settings  [src:a3b880ff]
 La configuración de superíndices o subíndices, si uno de ellos está habilitado.
 
+
 @@ TextElem::size  [src:d991ac26]
 El tamaño de los glifos. Este valor forma la base de la unidad `em`: `{1em}` equivale al tamaño de la fuente.
 
@@ -509,6 +521,7 @@ Si el glifo del cero lleva una barra. Establecer esto en `{true}` habilita la ca
 @@ TextElem::smallcaps  [src:1e3aa41c]
 Si se usan glifos de versalitas. ("smcp", "c2sc")
 
+
 @@ TextElem::spacing  [src:8fd3502c]
 La cantidad de espacio entre palabras.
 
@@ -525,6 +538,7 @@ Text with distant words.
 
 @@ TextElem::span_offset  [src:5706dd1c]
 El desplazamiento del texto en el nodo sintáctico de texto al que hace referencia el span de este elemento.
+
 
 @@ TextElem::stretch  [src:9621a26b]
 El ancho deseado de los glifos. Acepta una proporción entre `{50%}` y `{200%}`. Cuando el ancho deseado no está
@@ -588,7 +602,7 @@ estilísticos.
 ```
 
 
-@@ TextElem::text  [src:89e89701]
+@@ TextElem::text  [src:765b145c]
 El texto contenido en un elemento `text`.
 
 Este parámetro no está disponible en el constructor. En cambio, podés acceder a él en un elemento `text` existente. Esto se debe a que el constructor de `text` acepta contenido arbitrario como cuerpo (ver @text.body).
@@ -599,6 +613,7 @@ Este parámetro no está disponible en el constructor. En cambio, podés acceder
 }
 internationalization
 ```
+
 
 @@ TextElem::top_edge  [src:886f665a]
 El extremo superior del marco conceptual alrededor del texto que se usa para el diseño y el posicionamiento. Esto afecta el
@@ -680,6 +695,7 @@ El valor debe ser un diccionario que asigne etiquetas de ejes (@str[cadenas de t
   ```
 )
 
+
 @@ TextElem::weight  [src:12ca6ce4]
 El grosor deseado de los glifos de la fuente. Acepta un entero entre `{100}` y `{900}` o uno de los nombres de peso
 predefinidos. Cuando el peso deseado no está disponible, Typst selecciona de la familia la fuente más cercana en peso.
@@ -699,4 +715,3 @@ estilo más adelante si cambiás de idea sobre cómo señalar el énfasis fuerte
 #text(weight: 500)[Medium] \
 #text(weight: "bold")[Bold]
 ```
-
