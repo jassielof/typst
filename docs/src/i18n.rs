@@ -122,6 +122,7 @@ pub fn define(scope: &mut Scope) {
     scope.define("text-lang", text);
     scope.define_func::<i18n_docs>();
     scope.define_func::<ui>();
+    scope.define_func::<font>();
 }
 
 /// Returns the translation of the doc comment with the given key in the given
@@ -157,6 +158,20 @@ fn ui(text: EcoString) -> EcoString {
             text
         }
     }
+}
+
+/// Like `ui`, but for font families: returns the translated family only if
+/// that font is actually available, and `default` otherwise.
+#[func]
+fn font(key: EcoString, default: EcoString) -> EcoString {
+    let Some(family) = state().and_then(|s| s.ui.get(key.as_str())) else {
+        return default;
+    };
+    let available = crate::world::FONTS
+        .1
+        .iter()
+        .any(|font| font.info().family.eq_ignore_ascii_case(family));
+    if available { family.as_str().into() } else { default }
 }
 
 /// Parses a sidecar file.
