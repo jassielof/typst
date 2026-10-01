@@ -320,5 +320,7 @@ static EXAMPLE_LIBRARY: LazyLock<LazyHash<Library>> = LazyLock::new(|| {
         Smart::Custom(Margin::splat(Some(Smart::Custom(Abs::pt(15.0).into())))),
     );
 
+    crate::i18n::example_styles(&mut lib.styles);
+
     LazyHash::new(lib)
 });

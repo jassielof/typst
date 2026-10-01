@@ -14,8 +14,9 @@ use std::process::ExitCode;
 use std::sync::{Mutex, OnceLock};
 
 use ecow::EcoString;
-use typst::foundations::{Bytes, Dict, IntoValue, Scope, Value, func};
+use typst::foundations::{Bytes, Dict, IntoValue, Scope, Styles, Value, func};
 use typst::syntax::{FileId, RootedPath, VirtualRoot};
+use typst::text::{Lang, Region, TextElem};
 
 use crate::world::DOCS_ROOT;
 
@@ -69,6 +70,22 @@ pub fn overlay(id: FileId) -> Option<Bytes> {
     overlay_path(id)
         .and_then(|path| std::fs::read(path).ok())
         .map(Bytes::new)
+}
+
+/// Makes the code examples that the docs compile use the translated language
+/// (e.g. for heading supplements and bibliography titles).
+pub fn example_styles(styles: &mut Styles) {
+    let Some(state) = state() else { return };
+    let (lang, region) = match state.lang.split_once('-') {
+        Some((lang, region)) => (lang, Some(region)),
+        None => (state.lang.as_str(), None),
+    };
+    if let Ok(lang) = lang.to_lowercase().parse::<Lang>() {
+        styles.set(TextElem::lang, lang);
+    }
+    if let Some(region) = region.and_then(|r| r.to_uppercase().parse::<Region>().ok()) {
+        styles.set(TextElem::region, Some(region));
+    }
 }
 
 /// Defines the translation-related items of the `stdx` module.
