@@ -316,7 +316,7 @@
 
   if info.since != none {
     gap
-    small[#stdx.ui("Since:") #info.since]
+    small[#stdx.ui("Since:") #stdx.ui(str(info.since))]
   } else {
     panic("missing `since` for " + repr(info))
   }
