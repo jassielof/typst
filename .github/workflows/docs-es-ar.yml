@@ -1,7 +1,7 @@
 # Fork-only workflow: builds the Spanish (es-AR) documentation PDF and stores it
-# as a build artifact. It is a separate file so upstream merges never conflict
+# as a build artifact and publishes it on GitHub Pages. It is a separate file so upstream merges never conflict
 # with it; upstream's own workflows are left untouched.
-name: Docs es-AR (PDF)
+name: Docs es-AR (PDF + Pages)
 on:
   workflow_dispatch:
   push:
@@ -33,3 +33,44 @@ jobs:
           path: docs/dist/docs-es-AR.pdf
           if-no-files-found: error
           retention-days: 30
+
+
+      # Static page for GitHub Pages: the PDF plus a minimal landing page.
+      - name: Prepare Pages site
+        run: |
+          mkdir _site
+          cp docs/dist/docs-es-AR.pdf _site/docs-es-AR.pdf
+          cat > _site/index.html <<'EOF'
+          <!doctype html>
+          <html lang="es-AR">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Documentación de Typst (es-AR, no oficial)</title>
+          </head>
+          <body>
+            <h1>Documentación de Typst en español rioplatense</h1>
+            <p><strong>Traducción no oficial</strong>, generada con IA. Ante cualquier duda,
+            prevalece la <a href="https://typst.app/docs">documentación oficial en inglés</a>.</p>
+            <p><a href="docs-es-AR.pdf">Abrir el PDF</a></p>
+          </body>
+          </html>
+          EOF
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: pdf
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
