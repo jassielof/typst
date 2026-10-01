@@ -654,7 +654,7 @@
   }
 
   if constants.len() > 0 {
-    section(nested-label(<constants>))[Constants][constants][constant]
+    section(nested-label(<constants>))[#stdx.ui("Constants")][constants][constant]
     for (name, value) in constants {
       const-member(
         value,
@@ -666,7 +666,7 @@
   }
 
   if functions.len() > 0 {
-    section(nested-label(<functions>))[Functions][functions][function]
+    section(nested-label(<functions>))[#stdx.ui("Functions")][functions][function]
     for (name, value) in functions {
       func-member(
         value,
@@ -678,7 +678,7 @@
   }
 
   if types.len() > 0 {
-    section(nested-label(<types>))[Types][types][type]
+    section(nested-label(<types>))[#stdx.ui("Types")][types][type]
     for (name, value) in types {
       ty-member(
         value,
