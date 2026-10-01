@@ -43,7 +43,7 @@
   def-site,
 ) = {
   if def-site == none {
-    return eval(markup, scope: scope, mode: "markup")
+    return eval(stdx.ui(markup), scope: scope, mode: "markup")
   }
 
   let tr = stdx.i18n-docs(def-site.path, def-site.key)
