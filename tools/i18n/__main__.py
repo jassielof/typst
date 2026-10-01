@@ -431,7 +431,7 @@ def rust_docs_for(rs):
 # Reforma (PampaType, for the Universidad Nacional de Córdoba) is free to use but
 # not to modify, so it is downloaded at build time instead of being committed.
 REFORMA_URL = "https://www.pampatype.com/media/reforma/fonts/{fam}/{fam}-{style}.ttf"
-REFORMA_FILES = [("Reforma1918", s) for s in ("Gris", "GrisItalica", "Negra", "NegraItalica")]
+REFORMA_FILES = [(fam, s) for fam in ("Reforma1918", "Reforma2018") for s in ("Gris", "GrisItalica", "Negra", "NegraItalica")]
 
 
 def cmd_fonts(a):

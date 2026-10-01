@@ -128,11 +128,13 @@ git checkout docs-translation && git branch -D sync-test
 ## Tipografías
 
 Las fuentes están en `docs/i18n/es-AR/fonts/` y se cargan solo con `--lang`; los
-nombres se cambian desde `ui.toml` (`"HK Grotesk" = "Inter"`, etc.). Inter, Google
-Sans Code e IBM Plex Math (licencia OFL) están en el repo. **Reforma 1918**
-(PampaType, títulos; licencia Creative Commons que no permite modificarla) no se
-commitea: `python3 tools/i18n fonts` la descarga y el workflow lo hace antes de
-compilar. Si falta, los títulos usan la fuente del texto, sin warnings.
+nombres se cambian desde `ui.toml` (`"HK Grotesk" = "Reforma 2018"`, etc.). Google
+Sans Code e IBM Plex Math (licencia OFL) están en el repo, junto con Inter (hoy sin
+uso: fue el texto antes de Reforma 2018). **Reforma 2018** (texto) y **Reforma
+1918** (títulos), de PampaType, tienen una licencia Creative Commons que no
+permite modificarlas, así que no se commitean: `python3 tools/i18n fonts` las
+descarga y el workflow lo hace antes de compilar. Si faltan, el texto usa HK
+Grotesk y los títulos la fuente del texto, sin warnings.
 
 ## Textos sueltos (`ui.toml`)
 
