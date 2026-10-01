@@ -112,6 +112,7 @@
 
 // The part of the global styling that applies to the HTML version.
 #let html-styling(body) = {
+  set text(..stdx.text-lang)
   // Without this, we can't link to headings.
   show heading: it => {
     assert(it.has("label"), message: "headings must be labelled")

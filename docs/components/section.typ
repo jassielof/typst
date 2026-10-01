@@ -91,7 +91,7 @@
   // Reset the tooltip counter for each page.
   tooltip-counter.update((0,))
 
-  document(route + "index.html", title: title, html.html({
+  document(route + "index.html", title: title, html.html(..stdx.html-attrs, {
     // The index item is placed here so that all body text of this HTML document
     // is considered part of this index item.
     register-index-item(
@@ -119,17 +119,18 @@
       html.link(href: stdx.config.asset-base + "base.css", rel: "stylesheet")
       html.link(href: stdx.config.asset-base + "docs.css", rel: "stylesheet")
       html.script(type: "module", src: stdx.config.asset-base + "docs.js")
-      html.title(title + " - Typst Documentation")
+      html.title(title + " - " + stdx.ui("Typst Documentation"))
     })
 
     html.body(class: classnames("docs", class), {
       if stdx.is-dev-version {
         dev-version-warning()
       }
+      stdx.config.insertions.at("page-top", default: none)
       html.header(class: "w695", {
         html.button(
           class: "hamburger",
-          icon(16, "hamburger-dark", "Open navigation"),
+          icon(16, "hamburger-dark", stdx.ui("Open navigation")),
         )
       })
       html.div(class: "main-grid", {

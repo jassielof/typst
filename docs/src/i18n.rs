@@ -120,6 +120,12 @@ pub fn define(scope: &mut Scope) {
     }
     scope.define("lang", lang);
     scope.define("text-lang", text);
+    // Attributes of the `<html>` element (none for the original).
+    let mut html_attrs = Dict::new();
+    if lang != "en" {
+        html_attrs.insert("lang".into(), lang.into_value());
+    }
+    scope.define("html-attrs", html_attrs);
     scope.define_func::<i18n_docs>();
     scope.define_func::<ui>();
     scope.define_func::<font>();
