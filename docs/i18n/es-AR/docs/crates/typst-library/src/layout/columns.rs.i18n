@@ -49,10 +49,10 @@ explícitamente una columna y continuar en la siguiente. Usá el @columns.balanc
 ]
 ```
 
-= #short-or-long[A nivel de página][Columnas a nivel de página] <page-level>
+= #short-or-long[A nivel de página][Columnas de página] <page-level>
 Si necesitás insertar columnas en todo tu documento, usá en su lugar el
 @page.columns[parámetro `columns`] de la función `{page}`. Esto creará las columnas
-directamente a nivel de página en lugar de envolver todo tu contenido en un
+directamente en la página en lugar de envolver todo tu contenido en un
 contenedor de diseño. Como resultado, cosas como los @pagebreak[saltos de página], las
 @footnote[notas al pie] y los @par.line[números de línea] seguirán funcionando como
 se espera. Para más información, leé también la

@@ -5,16 +5,16 @@ Typst reúne automáticamente los elementos _en línea_ en párrafos. Los elemen
 @text[texto], el @h[espaciado horizontal], los @box[boxes] y las @math.equation[ecuaciones en línea].
 
 Para separar párrafos, usá una línea en blanco (o un @parbreak explícito). Los párrafos también se
-interrumpen automáticamente con cualquier elemento a nivel de bloque (como @block, @place o cualquier cosa
+interrumpen automáticamente con cualquier elemento de bloque (como @block, @place o cualquier cosa
 que se muestre como uno de estos).
 
 El elemento `par` se usa principalmente en reglas set para afectar las propiedades de los párrafos, pero
 también se puede usar para mostrar explícitamente su argumento como un párrafo propio. En ese caso, el
-cuerpo del párrafo no puede contener contenido a nivel de bloque.
+cuerpo del párrafo no puede contener contenido de bloque.
 
 = Boxes y bloques <boxes-and-blocks>
 Como se explicó arriba, normalmente los párrafos solo contienen contenido en línea. Sin embargo, podés
-integrar cualquier tipo de contenido a nivel de bloque en un párrafo envolviéndolo en un @box.
+integrar cualquier tipo de contenido de bloque en un párrafo envolviéndolo en un @box.
 
 Inversamente, podés separar contenido en línea de un párrafo envolviéndolo en un @block. En ese caso, no
 pasará a formar parte de ningún párrafo. Leé la siguiente sección para ver una explicación de por qué esto
@@ -30,7 +30,7 @@ Las reglas sobre cuándo Typst envuelve contenido en línea en un párrafo son l
 - Todo el texto en la raíz de un documento se envuelve en párrafos.
 
 - El texto dentro de un contenedor (como un `block`) solo se envuelve en un párrafo si el contenedor tiene
-  contenido a nivel de bloque. Si todo el contenido es en línea, no se crea ningún párrafo.
+  contenido de bloque. Si todo el contenido es en línea, no se crea ningún párrafo.
 
 En el documento ya dispuesto, no se ve de inmediato si el texto pasó a formar parte de un párrafo. Sin
 embargo, sigue siendo importante por varias razones:
@@ -79,7 +79,7 @@ El contenido del párrafo.
 La sangría que debe tener la primera línea de un párrafo.
 
 Por defecto, solo se indentará la primera línea de un párrafo consecutivo (no el primero del documento o
-del contenedor, ni los párrafos que siguen inmediatamente a otros elementos a nivel de bloque).
+del contenedor, ni los párrafos que siguen inmediatamente a otros elementos de bloque).
 
 Si en cambio querés indentar todos los párrafos, podés pasar un diccionario que contenga la cantidad
 (`amount`) de sangría como longitud y el par `{all: true}`. Cuando se omite `all` del diccionario, su valor
@@ -146,7 +146,7 @@ mientras que las claves `max` definen hasta qué límite superior se pueden esti
 
   Un valor `min` de `{100%}` significa que los espacios deben conservar su tamaño normal (es decir, no
   comprimirse), mientras que un valor de `{90% - 0.01em}` indicaría que un espacio se puede comprimir hasta un
-  ancho del 90% de su ancho normal menos 0,01 veces el tamaño de fuente actual. De manera similar, un valor
+  ancho del 90 % de su ancho normal menos 0,01 veces el tamaño de fuente actual. De manera similar, un valor
   `max` de `{100% + 0.02em}` significa que el ancho de un espacio se puede aumentar en 0,02 veces el tamaño
   de fuente actual. La parte de proporción siempre debe ser positiva. La parte de longitud, en cambio, no debe
   ser positiva para `min` ni negativa para `max`.
@@ -169,18 +169,18 @@ mientras que las claves `max` definen hasta qué límite superior se pueden esti
 Si solo especificás uno de `spacing` o `tracking`, el otro conserva su valor establecido previamente (o el
 valor por defecto si no se había establecido).
 
-Si querés habilitar la justificación a nivel de carácter, un buen valor para las claves `min` y `max` ronda
+Si querés habilitar la justificación por carácter, un buen valor para las claves `min` y `max` ronda
 entre `{0.01em}` y `{0.02em}` (negado para `min`). Usar el mismo valor para ambas da una buena base, pero
 ajustar los dos valores individualmente puede producir resultados más equilibrados, como demuestra el ejemplo
 de abajo. Tené cuidado de no establecer los límites demasiado amplios, ya que rápidamente se ve poco natural.
 
-La justificación a nivel de carácter es una técnica microtipográfica de gran impacto que puede mejorar el
+La justificación por carácter es una técnica microtipográfica de gran impacto que puede mejorar el
 aspecto del texto justificado, especialmente en columnas angostas. Tené en cuenta, sin embargo, que la
-justificación a nivel de carácter no funciona con todas las fuentes ni idiomas. Por ejemplo, las fuentes
-cursivas conectan las letras. Usar la justificación a nivel de carácter llevaría a conexiones irregulares.
+justificación por carácter no funciona con todas las fuentes ni idiomas. Por ejemplo, las fuentes
+cursivas conectan las letras. Usar la justificación por carácter llevaría a conexiones irregulares.
 
 #example(
-  title: "Justificación a nivel de carácter",
+  title: "Justificación por carácter",
   ```
   #let example(name) = columns(2, gutter: 10pt)[
     #place(top, float: true, scope: "parent", strong(name))

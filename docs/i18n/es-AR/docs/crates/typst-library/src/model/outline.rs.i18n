@@ -1,5 +1,5 @@
 @@ OutlineElem  [src:ed8b9a63]
-Una tabla de contenidos, de figuras u otros elementos.
+Un índice de contenidos, de figuras u otros elementos.
 
 Esta función genera una lista de todas las apariciones de un elemento en el documento, hasta una
 @outline.depth[`depth`] dada. La numeración y el número de página del elemento se mostrarán en el índice junto
@@ -19,7 +19,7 @@ con su título o epígrafe.
 ```
 
 = Índices alternativos <alternative-outlines>
-En su configuración por defecto, esta función genera una tabla de contenidos. Al establecer el parámetro
+En su configuración por defecto, esta función genera un índice de contenidos. Al establecer el parámetro
 `target`, el índice se puede usar para generar una lista de otros tipos de elementos distintos de los
 títulos.
 

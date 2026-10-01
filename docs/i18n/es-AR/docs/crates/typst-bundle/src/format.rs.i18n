@@ -55,7 +55,7 @@ Puede contener barras interiores, en cuyo caso los directorios intermedios se cr
 El formato de exportación a bundle de Typst (experimental).
 
 #info[
-  La exportación a bundle solo está disponible para experimentar detrás de un flag de característica. No uses esta característica en casos de uso de producción. En la CLI, podés experimentar con ella
+  La exportación a bundle solo está disponible para experimentar detrás de un indicador de característica. No uses esta característica en casos de uso de producción. En la CLI, podés experimentar con ella
   pasando `--features bundle` o estableciendo la variable de entorno `TYPST_FEATURES` en `bundle`. Para usar las características `bundle` y `html` al mismo tiempo, especificá ambas separadas por una coma
   (es decir, `bundle,html`). En la app web, la exportación a bundle no está disponible por el momento.
 ]

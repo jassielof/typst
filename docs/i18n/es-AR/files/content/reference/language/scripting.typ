@@ -241,7 +241,7 @@ En lugar de una cadena de texto o una @path[ruta], también podés usar un @modu
 ```
 
 = Paquetes <packages>
-Para reutilizar bloques de construcción entre proyectos, también podés crear e importar _paquetes_ de Typst. La importación de un paquete se especifica como una tripla formada por un espacio de nombres, un nombre y una versión.
+Para reutilizar componentes entre proyectos, también podés crear e importar _paquetes_ de Typst. La importación de un paquete se especifica como una tripla formada por un espacio de nombres, un nombre y una versión.
 
 ```example
 >>> #let add(x, y) = x + y

@@ -25,7 +25,7 @@ Mirá la @math[documentación de matemática] para más detalles.
 #list[A][B]
 ```
 
-Las funciones son un bloque de construcción fundamental de Typst. Typst ofrece
+Las funciones son un componente fundamental de Typst. Typst ofrece
 funciones para una variedad de tareas de composición. Además, el marcado que
 escribís está respaldado por funciones y todo el estilo se aplica a través de
 funciones. Esta referencia enumera todas las funciones disponibles y cómo podés

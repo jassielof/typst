@@ -765,7 +765,7 @@ con tus expertos de impresión de producción.
 Si este valor es `{"all"}` y tu impresión involucrará varias
 #link("https://en.wikipedia.org/wiki/Offset_printing#Plates")[planchas de color],
 el uso de este colorante dará como resultado que el tinte especificado se aplique por igual a todas las planchas. Si elegís `{none}`, no se aplicará
-ningún colorante al usar este color. Este valor especial suele usarse para indicar cortes o barnices. ¡Asegurate de conversarlo con tu impresor de
+ningún colorante al usar este color. Este valor especial suele usarse para indicar cortes o barnices. ¡Asegurate de consultarlo con tu imprenta de
 producción!
 
 No recomendamos usar los nombres `{"Cyan"}`, `{"Magenta"}`, `{"Yellow"}`, `{"Key"}`, `{"Black"}` ni sus traducciones a tu idioma local. Según tu

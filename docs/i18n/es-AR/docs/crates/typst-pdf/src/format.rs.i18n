@@ -54,7 +54,7 @@ PDF es el formato de exportación por defecto de Typst. Ejecutar el subcomando `
 - Con qué @pdf.standard[estándares de PDF] debe garantizar Typst la conformidad, especificando `--pdf-standard` seguido de uno o varios estándares separados por comas. Los estándares válidos son `1.4`,
   `1.5`, `1.6`, `1.7`, `2.0`, `a-1b`, `a-1a`, `a-2b`, `a-2u`, `a-2a`, `a-3b`, `a-3u`, `a-3a`, `a-4`, `a-4f`, `a-4e` y `ua-1`. Por defecto, Typst produce archivos conformes con PDF-1.7.
 
-- Podés desactivar por completo el etiquetado del PDF con `--pdf-tagged=false`. Por defecto, Typst siempre escribirá un _PDF etiquetado (Tagged PDF)_ para ofrecer un nivel básico de accesibilidad. Con este flag,
+- Podés desactivar por completo el etiquetado del PDF con `--pdf-tagged=false`. Por defecto, Typst siempre escribirá un _PDF etiquetado (Tagged PDF)_ para ofrecer un nivel básico de accesibilidad. Con este indicador,
   podés desactivar las etiquetas. Esto hará que tu archivo sea inaccesible e impedirá la conformidad con los niveles de conformidad accesibles de PDF/A y con todas las partes de PDF/UA.
 
 - Qué páginas exportar, especificando `--pages` seguido de una lista de números separados por comas o de rangos de números separados por guiones. Los rangos pueden ser semiabiertos. Ejemplo: `2,3,7-9,11-`.
@@ -84,7 +84,7 @@ Cada celda de una tabla es una celda de encabezado o una celda de datos. Por def
 
 Si tu encabezado contiene una celda que no es una celda de encabezado, podés usar esta función para marcarla como celda de datos.
 
-La API de esta característica es temporal. Por lo tanto, llamar a esta función requiere por el momento habilitar el flag de característica `a11y-extras`. En una futura versión de Typst, esta funcionalidad podría
+La API de esta característica es temporal. Por lo tanto, llamar a esta función requiere por el momento habilitar el indicador de característica `a11y-extras`. En una futura versión de Typst, esta funcionalidad podría
 salir del módulo `pdf` para que las tablas de otros destinos de exportación puedan contener la misma información.
 
 ```example
@@ -139,7 +139,7 @@ La función `pdf.header-cell` te permite indicar que una celda es una celda de e
 - Tenés una celda en @table.header, por ejemplo al comienzo, que etiqueta tanto su fila como su columna. En ese caso, pasás `{"both"}` como argumento del parámetro @pdf.header-cell.scope[`scope`].
 - Tenés una celda de encabezado en una fila que no contiene otras celdas de encabezado. En ese caso, podés usar esta función para marcarla como celda de encabezado.
 
-La API de esta característica es temporal. Por lo tanto, llamar a esta función requiere por el momento habilitar el flag de característica `a11y-extras`. En una futura versión de Typst, esta funcionalidad podría
+La API de esta característica es temporal. Por lo tanto, llamar a esta función requiere por el momento habilitar el indicador de característica `a11y-extras`. En una futura versión de Typst, esta funcionalidad podría
 salir del módulo `pdf` para que las tablas de otros destinos de exportación puedan contener la misma información.
 
 ```example
@@ -338,8 +338,8 @@ para la conclusión central de la tabla. En cambio, incluila en el texto que rod
 Si tenés dudas sobre si tu tabla es lo bastante compleja como para justificar un resumen, inclinate por no incluir uno. Si estás seguro de que tu tabla es lo bastante compleja, considerá si un usuario vidente
 podría encontrarla difícil. Podría beneficiarse de las instrucciones que pongas acá, así que considerá imprimirlas visiblemente en el documento.
 
-La API de esta característica es temporal. Por lo tanto, llamar a esta función requiere por el momento habilitar el flag de característica `a11y-extras`. Aunque esta funcionalidad llegue a estar disponible sin un
-flag de característica en el futuro, el resumen seguirá siendo exclusivo de la exportación a PDF.
+La API de esta característica es temporal. Por lo tanto, llamar a esta función requiere por el momento habilitar el indicador de característica `a11y-extras`. Aunque esta funcionalidad llegue a estar disponible sin un
+indicador de característica en el futuro, el resumen seguirá siendo exclusivo de la exportación a PDF.
 
 ```example
 #figure(

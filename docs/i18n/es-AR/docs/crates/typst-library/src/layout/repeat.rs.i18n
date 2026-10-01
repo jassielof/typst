@@ -1,7 +1,7 @@
 @@ RepeatElem  [src:bbac7b25]
 Repite contenido hasta llenar el espacio disponible.
 
-Esto puede ser útil al implementar un índice, una referencia o una tabla de contenidos
+Esto puede ser útil al implementar un índice, una referencia o un índice de contenidos
 personalizados.
 
 Se puede insertar espacio entre las instancias del parámetro body, así que asegurate de

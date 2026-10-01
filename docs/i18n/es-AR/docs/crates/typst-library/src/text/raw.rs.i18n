@@ -99,7 +99,7 @@ La sintaxis raw con _tres o más_ acentos graves tiene las siguientes propiedade
   Para incluir texto que contiene una secuencia de acentos graves, los acentos graves inicial y final deben tener al menos un
   acento grave más que la secuencia.
 
-- *Si el texto raw contiene un salto de línea, será a nivel de bloque; de lo contrario, será en línea*
+- *Si el texto raw contiene un salto de línea, será de bloque; de lo contrario, será en línea*
 
   Esto establece el parámetro @raw.block[`block`] en `{true}` o `{false}` según corresponda.
 

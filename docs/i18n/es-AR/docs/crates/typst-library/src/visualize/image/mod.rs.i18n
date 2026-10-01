@@ -3,7 +3,7 @@ Un gráfico ráster o vectorial.
 
 Podés envolver la imagen en una @figure para darle un número y un epígrafe.
 
-Como la mayoría de los elementos, las imágenes son _a nivel de bloque_ por defecto y, por lo tanto, no se integran en los párrafos adyacentes. Para forzar
+Como la mayoría de los elementos, las imágenes son _de bloque_ por defecto y, por lo tanto, no se integran en los párrafos adyacentes. Para forzar
 que una imagen sea en línea, ponela en un @box.
 
 = Ejemplo <example>

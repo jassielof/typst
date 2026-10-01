@@ -62,7 +62,7 @@ Hello, world!
   Efecto en la posición de otros elementos
 ] <effect-on-other-elements>
 Los elementos superpuestos no ocupan espacio en el flujo del contenido, pero una llamada
-a `place` inserta un elemento invisible a nivel de bloque en el flujo. Esto puede
+a `place` inserta un elemento invisible de bloque en el flujo. Esto puede
 afectar el diseño al cortar el párrafo actual. Para evitarlo, podés envolver la llamada
 a `place` en un @box cuando la llamada se hace en medio de un párrafo. La alineación y
 los desplazamientos serán entonces relativos a este box de tamaño cero. Para asegurarte

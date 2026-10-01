@@ -126,7 +126,7 @@ El tamaño del acento, relativo al ancho de la base.
 )
 
 Tené en cuenta que el acento resultante puede no tener exactamente el tamaño deseado. Por ejemplo, una flecha puede ser un glifo corto predefinido o un glifo largo armado con
-bloques de construcción (punta de flecha + línea) que proporciona la fuente. Los tamaños de las dos posibilidades pueden no cubrir todo el rango. En consecuencia, no se pueden
+piezas (punta de flecha + línea) que proporciona la fuente. Los tamaños de las dos posibilidades pueden no cubrir todo el rango. En consecuencia, no se pueden
 construir flechas de ciertos tamaños intermedios.
 
 #example(

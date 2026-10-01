@@ -1,7 +1,7 @@
 @@ here  [src:c1b2aa89]
 Proporciona la ubicación actual en el documento.
 
-Podés pensar en `here` como un bloque de construcción de bajo nivel que extrae
+Podés pensar en `here` como una pieza fundamental de bajo nivel que extrae
 directamente la ubicación actual del @reference:context[contexto] activo. Algunas
 otras funciones la usan internamente: por ejemplo, `{counter.get()}` equivale a
 `{counter.at(here())}`.

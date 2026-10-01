@@ -56,7 +56,7 @@ que hay dentro de ellos. De esta manera, podés crear diseños intrincados:
 ```
 
 = Alineación dentro de la misma línea <alignment-within-the-same-line>
-La función `align` realiza una alineación a nivel de bloque y, por lo tanto, siempre
+La función `align` realiza una alineación de bloque y, por lo tanto, siempre
 interrumpe el párrafo actual. Para tener una alineación distinta en partes de la
 misma línea, tenés que usar en su lugar @h[espaciado fraccionario]:
 

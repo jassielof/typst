@@ -27,7 +27,7 @@ Function call.
 = Sintaxis <syntax>
 Esta función también tiene una sintaxis dedicada: empezá una línea con un guion seguido de un
 espacio para crear un elemento de lista. Un elemento de lista puede contener varios párrafos y
-otro contenido a nivel de bloque. Todo el contenido que tenga más sangría que el marcador de un
+otro contenido de bloque. Todo el contenido que tenga más sangría que el marcador de un
 elemento pasa a formar parte de ese elemento.
 
 @@ ListElem::body_indent  [src:26203ea7]

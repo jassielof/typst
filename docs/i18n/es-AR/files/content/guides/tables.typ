@@ -104,7 +104,7 @@ Pongamos esto en práctica con una tabla que contiene las fechas, los números y
 )
 ```
 
-Acá pasamos nuestra lista de longitudes de columna como un @array[arreglo], encerrado entre paréntesis y con sus elementos separados por comas. Las dos primeras columnas tienen tamaño automático, de modo que toman el tamaño de su contenido, y la tercera es `{1fr}` para que ocupe el resto del espacio de la página. Si en cambio quisieras que la segunda columna fuera un poco más espaciosa, podrías reemplazar su entrada en el arreglo `columns` por un valor como `{6em}`.
+Acá pasamos nuestra lista de longitudes de columna como un @array[array], encerrado entre paréntesis y con sus elementos separados por comas. Las dos primeras columnas tienen tamaño automático, de modo que toman el tamaño de su contenido, y la tercera es `{1fr}` para que ocupe el resto del espacio de la página. Si en cambio quisieras que la segunda columna fuera un poco más espaciosa, podrías reemplazar su entrada en el array `columns` por un valor como `{6em}`.
 
 = #short-or-long[Epígrafes y referencias][¿Cómo le pongo epígrafe a mi tabla y la referencio?] <captions-and-references>
 Una tabla vale tanto como la información que tus lectores extraen de ella. Podés mejorar la eficacia tanto de tu texto como de tu tabla estableciendo una conexión clara entre ambos con una referencia cruzada. Typst puede ayudarte con las @ref[referencias] automáticas y con la @figure[función `figure`].
@@ -143,7 +143,7 @@ Muchas tablas usan filas o columnas alternadas en lugar de trazos para diferenci
 Para agregarle rayas de cebra a una tabla, usamos el argumento `fill` de la función `table`. Puede recibir tres tipos de valores:
 
 - Un solo color (también puede ser un degradé o un mosaico) con el que se rellenan todas las celdas. Como queremos que algunas celdas tengan otro color, esto no sirve si queremos armar tablas cebra.
-- Un arreglo de colores por los que Typst cicla en cada columna. Podemos usar un arreglo de dos elementos para obtener columnas alternadas.
+- Un array de colores por los que Typst cicla en cada columna. Podemos usar un array de dos elementos para obtener columnas alternadas.
 - Una función que recibe la coordenada horizontal `x` y la coordenada vertical `y` de una celda y devuelve su relleno. Podemos usarla para crear rayas horizontales o @grid.cell[patrones de tablero de ajedrez].
 
 Empecemos con un ejemplo de una tabla con rayas horizontales:
@@ -258,7 +258,7 @@ Por supuesto, podés hacer esta función tan compleja como quieras. Por ejemplo,
 >>> )
 ```
 
-Este ejemplo muestra una forma alternativa de escribir nuestra función de relleno. La función usa un arreglo con tres colores y cicla entre sus valores en cada fila indexando el arreglo con el resto de dividir `y` por 3.
+Este ejemplo muestra una forma alternativa de escribir nuestra función de relleno. La función usa un array con tres colores y cicla entre sus valores en cada fila indexando el array con el resto de dividir `y` por 3.
 
 Por último, un ejemplo extra que usa el _trazo_ para lograr filas alternadas:
 
@@ -331,7 +331,7 @@ Por ejemplo, esta es una lista de todos los presidentes de Alemania, con los bor
 )
 ```
 
-En este ejemplo usamos variables porque solo hubo tres partidos cuyos miembros llegaron a ser presidentes (y un presidente independiente). Sus colores se repiten varias veces, así que guardamos una función que produce un arreglo con el nombre del partido y una celda de tabla con el color de ese partido y el nombre del presidente (`cdu`, `spd` y `fdp`). Después usamos estas funciones en la lista de argumentos de `table` en lugar de agregar directamente el nombre. Usamos el @arguments:spreading[operador spread] `..` para convertir los elementos de los arreglos en celdas individuales. También podríamos escribir algo como `{[FDP], table.cell(fill: yellow)[Theodor Heuss]}` para cada celda directamente en la lista de argumentos de `table`, pero se vuelve ilegible, sobre todo para los partidos con colores oscuros, que requieren texto blanco. También eliminamos los trazos verticales y configuramos la fuente en Roboto.
+En este ejemplo usamos variables porque solo hubo tres partidos cuyos miembros llegaron a ser presidentes (y un presidente independiente). Sus colores se repiten varias veces, así que guardamos una función que produce un array con el nombre del partido y una celda de tabla con el color de ese partido y el nombre del presidente (`cdu`, `spd` y `fdp`). Después usamos estas funciones en la lista de argumentos de `table` en lugar de agregar directamente el nombre. Usamos el @arguments:spreading[operador spread] `..` para convertir los elementos de los arrays en celdas individuales. También podríamos escribir algo como `{[FDP], table.cell(fill: yellow)[Theodor Heuss]}` para cada celda directamente en la lista de argumentos de `table`, pero se vuelve ilegible, sobre todo para los partidos con colores oscuros, que requieren texto blanco. También eliminamos los trazos verticales y configuramos la fuente en Roboto.
 
 La columna del partido y el color de la celda comunican información redundante a propósito: comunicar datos importantes solo con color es una mala práctica de accesibilidad. Perjudica a los usuarios con discapacidad visual y viola los estándares de acceso universal, como el #link("https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html")[criterio de éxito 1.4.1 de WCAG 2.1]. Para mejorar esta tabla, agregamos una columna que imprime el nombre del partido. Como alternativa, podrías haber elegido una paleta amigable para el daltonismo y marcado tus celdas con una etiqueta adicional que los lectores de pantalla puedan leer en voz alta. Esta última función todavía no está soportada por Typst, pero se va a agregar en una versión futura. Podés comprobar cómo se ven los colores para lectores daltónicos con #link("https://chromewebstore.google.com/detail/colorblindly/floniaahmccleoclneebhhmnjgdfijgg")[esta extensión de Chrome], #link("https://helpx.adobe.com/photoshop/using/proofing-colors.html")[Photoshop] o #link("https://docs.gimp.org/2.10/en/gimp-display-filter-dialog.html")[GIMP].
 
@@ -606,7 +606,7 @@ Este ejemplo es un poco más complejo. Empezamos dibujando todos los trazos a la
 == #short-or-long[Trazo doble][¿Cómo logro una línea doble?] <double-stroke>
 Typst todavía no tiene una forma nativa de dibujar trazos dobles, pero hay varias maneras de emularlos, por ejemplo con @tiling[mosaicos]. En esta sección mostramos otra solución alternativa: la separación entre celdas de la tabla.
 
-Las tablas pueden separar sus celdas con el argumento `gutter`. Cuando se aplica una separación, se dibuja un trazo en cada una de las celdas ahora separadas. Podemos agregar separación de forma selectiva entre las filas o columnas en las que queremos dibujar una línea doble. Los argumentos `row-gutter` y `column-gutter` nos permiten hacerlo. Aceptan arreglos de valores de separación. Veamos un ejemplo:
+Las tablas pueden separar sus celdas con el argumento `gutter`. Cuando se aplica una separación, se dibuja un trazo en cada una de las celdas ahora separadas. Podemos agregar separación de forma selectiva entre las filas o columnas en las que queremos dibujar una línea doble. Los argumentos `row-gutter` y `column-gutter` nos permiten hacerlo. Aceptan arrays de valores de separación. Veamos un ejemplo:
 
 ```example
 #table(
@@ -620,7 +620,7 @@ Las tablas pueden separar sus celdas con el argumento `gutter`. Cuando se aplica
 )
 ```
 
-Vemos que usamos un arreglo para `row-gutter` que especifica un espacio de `{2.2pt}` entre la primera y la segunda fila. Luego continúa con `auto` (que es el valor predeterminado, en este caso una separación de `{0pt}`), que será la separación entre todas las demás filas, ya que es la última entrada del arreglo.
+Vemos que usamos un array para `row-gutter` que especifica un espacio de `{2.2pt}` entre la primera y la segunda fila. Luego continúa con `auto` (que es el valor predeterminado, en este caso una separación de `{0pt}`), que será la separación entre todas las demás filas, ya que es la última entrada del array.
 
 = #short-or-long[Alineación][¿Cómo alineo el contenido de las celdas de mi tabla?] <alignment>
 Podés usar varios mecanismos para alinear el contenido de tu tabla. Podés usar el argumento `align` de la función `table` para establecer la alineación de toda la tabla (o usarlo en una regla set para establecerla en las tablas de todo tu documento), o bien la función @align (o el argumento `align` de `table.cell`) para sobrescribir la alineación de una sola celda.
@@ -628,10 +628,10 @@ Podés usar varios mecanismos para alinear el contenido de tu tabla. Podés usar
 Al usar el argumento align de la función `table`, podés elegir entre tres métodos para especificar una @alignment[alineación]:
 
 - Simplemente especificar una única alineación, como `right` (alinea en la esquina superior derecha) o `center + horizon` (centra todo el contenido de las celdas). Esto cambia la alineación de todas las celdas.
-- Proporcionar un arreglo. Typst cicla por este arreglo en cada columna.
+- Proporcionar un array. Typst cicla por este array en cada columna.
 - Proporcionar una función a la que se le pasan las coordenadas horizontal `x` y vertical `y` de una celda y que devuelve una alineación.
 
-Por ejemplo, este itinerario de viaje alinea a la derecha la columna del día y a la izquierda todo lo demás, proporcionando un arreglo en el argumento `align`:
+Por ejemplo, este itinerario de viaje alinea a la derecha la columna del día y a la izquierda todo lo demás, proporcionando un array en el argumento `align`:
 
 ```example
 >>> #set page(width: 12cm)
@@ -787,7 +787,7 @@ Primero vamos a rotar la tabla en la página. El ejemplo también coloca algo de
 
 Lo que tenemos acá es un documento de dos columnas en papel ISO A5 con números de página al pie. La tabla tiene seis columnas y algunas personalizaciones de @guides:tables:strokes[trazo], alineación y espaciado. Pero lo más importante es que la tabla está envuelta en una llamada a la función `rotate` con el argumento `reflow` en `{true}`. Esto hace que la tabla gire 90 grados en sentido antihorario. El argumento reflow es necesario para que la rotación de la tabla afecte al diseño. Si se omitiera, Typst diagramaría la página como si la tabla no estuviera rotada (`{true}` podría pasar a ser el valor predeterminado en el futuro).
 
-El ejemplo también muestra cómo producir muchas columnas del mismo tamaño: a la columna inicial de `{1fr}` le sumamos un arreglo con cinco elementos `{auto}`, que creamos multiplicando por cinco un arreglo con un solo elemento `{auto}`. Tené en cuenta que los arreglos con un solo elemento necesitan una coma final para distinguirlos de simples expresiones entre paréntesis.
+El ejemplo también muestra cómo producir muchas columnas del mismo tamaño: a la columna inicial de `{1fr}` le sumamos un array con cinco elementos `{auto}`, que creamos multiplicando por cinco un array con un solo elemento `{auto}`. Tené en cuenta que los arrays con un solo elemento necesitan una coma final para distinguirlos de simples expresiones entre paréntesis.
 
 El segundo ejemplo muestra cómo rotar toda la página para que la tabla quede derecha:
 
@@ -887,7 +887,7 @@ Primero, carguemos este archivo con la función @csv. Acepta como argumento de t
 #let moore = csv("moore.csv")
 ```
 
-Cargamos nuestro archivo (suponiendo que lo llamamos `moore.csv`) y @reference:scripting:bindings[lo asociamos] a la nueva variable `moore`. Esto no produce ninguna salida, así que todavía no hay nada para ver. Si queremos examinar lo que Typst cargó, podemos pasar el mouse sobre el nombre de la variable en la app web o imprimir algunos elementos del arreglo:
+Cargamos nuestro archivo (suponiendo que lo llamamos `moore.csv`) y @reference:scripting:bindings[lo asociamos] a la nueva variable `moore`. Esto no produce ninguna salida, así que todavía no hay nada para ver. Si queremos examinar lo que Typst cargó, podemos pasar el mouse sobre el nombre de la variable en la app web o imprimir algunos elementos del array:
 
 ```example
 #let moore = csv("moore.csv")
@@ -895,9 +895,9 @@ Cargamos nuestro archivo (suponiendo que lo llamamos `moore.csv`) y @reference:s
 #moore.slice(0, 3)
 ```
 
-Con los argumentos `{(0, 3)}`, el método @array.slice[`slice`] devuelve los tres primeros elementos del arreglo (con los índices 0, 1 y 2). Vemos que cada fila es su propio arreglo con un elemento por celda.
+Con los argumentos `{(0, 3)}`, el método @array.slice[`slice`] devuelve los tres primeros elementos del array (con los índices 0, 1 y 2). Vemos que cada fila es su propio array con un elemento por celda.
 
-Ahora escribamos un bucle que transforme estos datos en un arreglo de celdas que podamos usar con la función table.
+Ahora escribamos un bucle que transforme estos datos en un array de celdas que podamos usar con la función table.
 
 ```example
 #let moore = csv("moore.csv")
@@ -910,9 +910,9 @@ Ahora escribamos un bucle que transforme estos datos en un arreglo de celdas que
 )
 ```
 
-El ejemplo anterior usa un bucle for que itera sobre las filas de nuestro archivo CSV y devuelve un arreglo en cada iteración. Usamos la capacidad de @reference:scripting:bindings[desestructuración] del bucle for para descartar todos los elementos de cada fila salvo los dos últimos. Luego creamos un arreglo nuevo con solo esos dos. Como Typst concatena los arreglos resultantes de todas las iteraciones del bucle, obtenemos un arreglo unidimensional en el que se alternan la columna del año y la cantidad de transistores. Después podemos insertar el arreglo como celdas. Para eso usamos el @arguments:spreading[operador spread] (`..`). Al anteponer dos puntos a un arreglo o, en nuestro caso, a una expresión que produce un arreglo, le indicamos a Typst que los elementos del arreglo deben usarse como argumentos posicionales.
+El ejemplo anterior usa un bucle for que itera sobre las filas de nuestro archivo CSV y devuelve un array en cada iteración. Usamos la capacidad de @reference:scripting:bindings[desestructuración] del bucle for para descartar todos los elementos de cada fila salvo los dos últimos. Luego creamos un array nuevo con solo esos dos. Como Typst concatena los arrays resultantes de todas las iteraciones del bucle, obtenemos un array unidimensional en el que se alternan la columna del año y la cantidad de transistores. Después podemos insertar el array como celdas. Para eso usamos el @arguments:spreading[operador spread] (`..`). Al anteponer dos puntos a un array o, en nuestro caso, a una expresión que produce un array, le indicamos a Typst que los elementos del array deben usarse como argumentos posicionales.
 
-Como alternativa, también podemos usar los métodos de arreglo @array.map[`map`], @array.slice[`slice`] y @array.flatten[`flatten`] para escribir esto en un estilo más funcional:
+Como alternativa, también podemos usar los métodos de array @array.map[`map`], @array.slice[`slice`] y @array.flatten[`flatten`] para escribir esto en un estilo más funcional:
 
 ```typ
 #let moore = csv("moore.csv")
@@ -923,7 +923,7 @@ Como alternativa, también podemos usar los métodos de arreglo @array.map[`map`
 )
 ```
 
-Este ejemplo se renderiza igual que el anterior, pero primero cargamos el CSV y luego transformamos cada fila con `map`. La función que le pasamos a `map` se aplica a cada fila de los datos y devuelve un arreglo nuevo que reemplaza a la fila original. Acá usamos `{.slice(2, 4)}` para extraer solo la tercera y la cuarta columna, ya que son las que queremos conservar. Como `moore` es un arreglo bidimensional (cada fila es a su vez un arreglo), el resultado del mapeo sigue siendo un arreglo anidado. La función `flatten` convierte esta estructura anidada en un arreglo unidimensional, que es lo que se necesita al expandir los datos en la función `table`. Por último, especificamos explícitamente `{columns: 2}` porque conservamos exactamente dos columnas de cada fila.
+Este ejemplo se renderiza igual que el anterior, pero primero cargamos el CSV y luego transformamos cada fila con `map`. La función que le pasamos a `map` se aplica a cada fila de los datos y devuelve un array nuevo que reemplaza a la fila original. Acá usamos `{.slice(2, 4)}` para extraer solo la tercera y la cuarta columna, ya que son las que queremos conservar. Como `moore` es un array bidimensional (cada fila es a su vez un array), el resultado del mapeo sigue siendo un array anidado. La función `flatten` convierte esta estructura anidada en un array unidimensional, que es lo que se necesita al expandir los datos en la función `table`. Por último, especificamos explícitamente `{columns: 2}` porque conservamos exactamente dos columnas de cada fila.
 
 Ahora que tenemos un buen código para nuestra tabla, ¡tratemos de que la tabla en sí también quede linda! La cantidad de transistores pasa de millones en 1995 a billones en 2021 y con tantos dígitos cuesta ver los cambios. Podríamos intentar presentar nuestros datos en escala logarítmica para hacerlos más digeribles:
 
@@ -950,7 +950,7 @@ Ahora que tenemos un buen código para nuestra tabla, ¡tratemos de que la tabla
 )
 ```
 
-En este ejemplo, primero descartamos la fila de encabezado de los datos, ya que agregamos la nuestra. Luego descartamos todas las columnas salvo las dos últimas, como antes. Lo hacemos @reference:scripting:bindings[desestructurando] el arreglo `m` y descartando todo menos los dos últimos elementos. Después convertimos la cadena de `count` en un número de punto flotante, calculamos su logaritmo y lo guardamos en la variable `log`. Finalmente, lo redondeamos a dos dígitos, lo convertimos en cadena de texto y lo guardamos en la variable `rounded`. Luego devolvemos un arreglo con `year` y `rounded` que reemplaza a la fila original. En nuestra tabla agregamos un encabezado propio que le indica al lector que aplicamos un logaritmo a los valores. Después expandimos los datos aplanados, como antes.
+En este ejemplo, primero descartamos la fila de encabezado de los datos, ya que agregamos la nuestra. Luego descartamos todas las columnas salvo las dos últimas, como antes. Lo hacemos @reference:scripting:bindings[desestructurando] el array `m` y descartando todo menos los dos últimos elementos. Después convertimos la cadena de `count` en un número de punto flotante, calculamos su logaritmo y lo guardamos en la variable `log`. Finalmente, lo redondeamos a dos dígitos, lo convertimos en cadena de texto y lo guardamos en la variable `rounded`. Luego devolvemos un array con `year` y `rounded` que reemplaza a la fila original. En nuestra tabla agregamos un encabezado propio que le indica al lector que aplicamos un logaritmo a los valores. Después expandimos los datos aplanados, como antes.
 
 También le dimos estilo a la tabla con @guides:tables:fills[rayas], una @guides:tables:individual-lines[línea horizontal] debajo de la primera fila, todo @guides:tables:alignment[alineado] a la derecha y la primera columna en negrita. ¡Hacé clic en los enlaces para ir a las secciones de la guía correspondientes y ver cómo se hace!
 

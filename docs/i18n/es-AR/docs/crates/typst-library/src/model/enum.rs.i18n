@@ -51,7 +51,7 @@ Esta función también tiene una sintaxis dedicada:
 - Empezar una línea con un número seguido de un punto crea un elemento de enumeración numerado
   explícitamente.
 
-Los elementos de una enumeración pueden contener varios párrafos y otro contenido a nivel de
+Los elementos de una enumeración pueden contener varios párrafos y otro contenido de
 bloque. Todo el contenido que tenga más sangría que el marcador de un elemento pasa a formar
 parte de ese elemento.
 

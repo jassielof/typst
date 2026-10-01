@@ -1,7 +1,7 @@
 @@ EquationElem  [src:ddd70b34]
 Una ecuación matemática.
 
-Se puede mostrar en línea con el texto o como un bloque separado. Una ecuación pasa a ser a nivel de bloque por la presencia de un espacio en blanco después del signo de pesos
+Se puede mostrar en línea con el texto o como un bloque separado. Una ecuación pasa a ser de bloque por la presencia de un espacio en blanco después del signo de pesos
 inicial y un espacio en blanco antes del signo de pesos final.
 
 = Ejemplo <example>
@@ -17,7 +17,7 @@ Prove by induction:
 $ sum_(k=1)^n k = (n(n+1)) / 2 $
 ```
 
-Por defecto, las ecuaciones a nivel de bloque no se cortan entre páginas. Esto se puede cambiar con `{show math.equation: set block(breakable: true)}`.
+Por defecto, las ecuaciones de bloque no se cortan entre páginas. Esto se puede cambiar con `{show math.equation: set block(breakable: true)}`.
 
 = Sintaxis <syntax>
 Esta función también tiene una sintaxis dedicada: escribí marcado matemático entre signos de pesos para crear una ecuación. Empezar y terminar la ecuación con un espacio en blanco
@@ -72,7 +72,7 @@ $ E &= sqrt(m_0^2 + p^2) \
 
 
 @@ EquationElem::numbering  [src:8fb78b53]
-Cómo numerar las ecuaciones a nivel de bloque. Acepta un @numbering[patrón o función de numeración] que toma un único número.
+Cómo numerar las ecuaciones de bloque. Acepta un @numbering[patrón o función de numeración] que toma un único número.
 
 ```example
 #set math.equation(numbering: "(1)")

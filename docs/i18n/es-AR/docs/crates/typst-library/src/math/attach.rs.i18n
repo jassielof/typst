@@ -97,7 +97,7 @@ El glifo que se estira.
 @@ StretchElem::size  [src:d3d3cd3e]
 El tamaño al que se estira, relativo al tamaño máximo del glifo y sus adjuntos.
 
-Tené en cuenta que el glifo resultante puede no tener exactamente el tamaño deseado. Un glifo estirado puede ser un glifo predefinido o un glifo armado con bloques de construcción
+Tené en cuenta que el glifo resultante puede no tener exactamente el tamaño deseado. Un glifo estirado puede ser un glifo predefinido o un glifo armado con piezas
 que proporciona la fuente. Los tamaños posibles pueden no cubrir todo el rango. En el siguiente ejemplo, cuando el parámetro `size` aumenta de `{101%}` a `{200%}`, el glifo
 seleccionado sigue siendo el mismo, por lo que el tamaño real no cambia.
 

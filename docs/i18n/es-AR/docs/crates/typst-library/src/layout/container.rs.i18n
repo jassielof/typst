@@ -1,5 +1,5 @@
 @@ BlockElem  [src:a4585ebb]
-Un contenedor a nivel de bloque.
+Un contenedor de bloque.
 
 Un contenedor así se puede usar para separar contenido, para darle @block.width[tamaño]
 o @block.clip[recortarlo], o para darle un @block.fill[fondo] o un @block.stroke[borde].
@@ -121,7 +121,7 @@ valor. Como los valores de `above` y `below` pueden diferir, un bloque de
 directamente a `{block.spacing}`.
 
 Esta propiedad se puede usar en combinación con una regla show para ajustar el
-espaciado alrededor de elementos arbitrarios a nivel de bloque.
+espaciado alrededor de elementos arbitrarios de bloque.
 
 ```example
 #set align(center)
@@ -208,7 +208,7 @@ La otra manera de ajustarla es desplazar verticalmente la línea base por defect
 cierta cantidad, especificada como una @relative[longitud relativa]. Por ejemplo, un
 valor de `{2pt}` la moverá hacia arriba esa longitud exacta (lo que hace que el
 contenido baje, ya que el punto de alineación sube), mientras que `{-40%}` desplazará
-la línea base _hacia abajo_ un 40% de la altura total del box, incluido el inset (lo
+la línea base _hacia abajo_ un 40 % de la altura total del box, incluido el inset (lo
 que hace que el contenido suba).
 
 Ambas opciones se pueden especificar al mismo tiempo mediante un diccionario con las

@@ -6,12 +6,12 @@ o con una etiqueta particular. Para usarla, primero tenés que asegurarte de que
 @reference:context[contexto] disponible.
 
 = Encontrar elementos <finding-elements>
-En el siguiente ejemplo, creamos manualmente una tabla de contenidos en lugar de usar
+En el siguiente ejemplo, creamos manualmente un índice de contenidos en lugar de usar
 la función @outline.
 
 Para hacerlo, primero consultamos todos los títulos del documento de nivel 1 y donde
 `outlined` sea verdadero. Consultar solo los títulos de nivel 1 asegura que, a los
-fines de este ejemplo, los subtítulos no se incluyan en la tabla de contenidos. El
+fines de este ejemplo, los subtítulos no se incluyan en el índice de contenidos. El
 campo `outlined` se usa para excluir el propio título "Table of Contents".
 
 Fijate que abrimos un `context` para poder usar la función `query`.

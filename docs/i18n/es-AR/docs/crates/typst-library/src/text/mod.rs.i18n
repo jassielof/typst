@@ -47,6 +47,15 @@ word.
 @@ TextElem::body  [src:1a410e1d]
 Contenido en el que todo el texto recibe estilo según los demás argumentos.
 
+Este parámetro solo está disponible en el constructor de `text` (y no en los elementos `text` existentes), porque el constructor de `text` no necesariamente construye un único elemento `text`. En cambio, aplica estilos a todos los elementos de texto dentro del cuerpo que se le pasa.
+
+```example
+#text(red)[
+  The `body` can be _arbitrary_
+  #underline[content].
+]
+```
+
 @@ TextElem::bottom_edge  [src:fb6e6bcd]
 El extremo inferior del marco conceptual alrededor del texto que se usa para el diseño y el posicionamiento. Esto afecta
 el tamaño de los contenedores que contienen texto.
@@ -580,7 +589,16 @@ estilísticos.
 
 
 @@ TextElem::text  [src:89e89701]
-El texto.
+El texto contenido en un elemento `text`.
+
+Este parámetro no está disponible en el constructor. En cambio, podés acceder a él en un elemento `text` existente. Esto se debe a que el constructor de `text` acepta contenido arbitrario como cuerpo (ver @text.body).
+
+```example
+#show regex("i.+n"): it => {
+  "i" + str(it.text.len() - 2) + "n"
+}
+internationalization
+```
 
 @@ TextElem::top_edge  [src:886f665a]
 El extremo superior del marco conceptual alrededor del texto que se usa para el diseño y el posicionamiento. Esto afecta el

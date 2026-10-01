@@ -84,7 +84,7 @@ Si intentás crear o acceder a una ruta fuera de esta raíz, vas a obtener un er
 ```
 
 Por defecto, la raíz del proyecto es el directorio padre del archivo principal de
-Typst. Si querés usar otra carpeta como raíz de tu proyecto, podés usar el flag
+Typst. Si querés usar otra carpeta como raíz de tu proyecto, podés usar el indicador
 `--root` de la CLI:
 
 ```bash

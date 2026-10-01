@@ -29,7 +29,7 @@ En Typst, cada página tiene un ancho, un alto y márgenes en los cuatro lados. 
 #rect(fill: aqua.lighten(40%))
 ```
 
-Este ejemplo visualiza las dimensiones del contenido de la página, los encabezados y los pies de página. El contenido de la página es el tamaño de la página (ISO B7) menos el margen por defecto de cada lado. En los márgenes superior e inferior hay rectángulos con trazo que visualizan el encabezado y el pie de página. No tocan el contenido principal, sino que están desplazados el 30% del margen respectivo. Podés controlar este desplazamiento especificando los argumentos @page.header-ascent[`header-ascent`] y @page.footer-descent[`footer-descent`].
+Este ejemplo visualiza las dimensiones del contenido de la página, los encabezados y los pies de página. El contenido de la página es el tamaño de la página (ISO B7) menos el margen por defecto de cada lado. En los márgenes superior e inferior hay rectángulos con trazo que visualizan el encabezado y el pie de página. No tocan el contenido principal, sino que están desplazados el 30 % del margen respectivo. Podés controlar este desplazamiento especificando los argumentos @page.header-ascent[`header-ascent`] y @page.footer-descent[`footer-descent`].
 
 A continuación, la guía va a entrar en más detalle sobre cómo cumplir con requisitos comunes de configuración de página, con ejemplos.
 
@@ -304,7 +304,7 @@ Muy comúnmente, los trabajos científicos tienen un título y un resumen a una 
 La _ubicación flotante_ se refiere a que los elementos se empujan hacia la parte superior o inferior de la columna o de la página, mientras el resto del contenido fluye entremedio. También se usa con frecuencia para las @figure.placement[figuras].
 
 == #short-or-long[Columnas en cualquier lugar][Usar columnas en cualquier parte de tu documento] <columns-anywhere>
-Para crear columnas dentro de un diseño anidado, por ejemplo dentro de un rectángulo, podés usar directamente la @columns[función `columns`]. Sin embargo, realmente solo debería usarse dentro de diseños anidados. A nivel de página, es preferible la regla set de page, porque interactúa mejor con cosas como los elementos flotantes a nivel de página, las notas al pie y los números de línea.
+Para crear columnas dentro de un diseño anidado, por ejemplo dentro de un rectángulo, podés usar directamente la @columns[función `columns`]. Sin embargo, realmente solo debería usarse dentro de diseños anidados. A nivel de página, es preferible la regla set de page, porque interactúa mejor con cosas como los elementos flotantes de página, las notas al pie y los números de línea.
 
 ```example
 #rect(

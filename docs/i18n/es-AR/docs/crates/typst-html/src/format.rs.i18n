@@ -55,7 +55,7 @@ La etiqueta del elemento.
 El formato de exportación a HTML de Typst (experimental).
 
 #info[
-  La exportación a HTML de Typst está actualmente en desarrollo activo. La característica todavía es muy incompleta y solo está disponible para experimentar detrás de un flag de característica. No uses
+  La exportación a HTML de Typst está actualmente en desarrollo activo. La característica todavía es muy incompleta y solo está disponible para experimentar detrás de un indicador de característica. No uses
   esta característica en casos de uso de producción. En la CLI, podés experimentar con la exportación a HTML pasando `--features html` o estableciendo la variable de entorno `TYPST_FEATURES` en `html`.
   En la app web, podés habilitarla igualmente como característica experimental. Visitá el
   #link("https://github.com/typst/typst/issues/5512")[issue de seguimiento] para seguir el progreso de la exportación a HTML y conocer más sobre las características planeadas.
