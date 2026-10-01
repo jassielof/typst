@@ -694,3 +694,8 @@
 "A paper that is\n92.0\n×\n126.0\nmillimeters in size." = "Un papel de\n92.0\n×\n126.0\nmilímetros."
 "A paper that is\n96.0\n×\n136.0\nmillimeters in size." = "Un papel de\n96.0\n×\n136.0\nmilímetros."
 "forever" = "siempre"
+
+# Fonts (the files live in fonts/).
+"HK Grotesk" = "Inter"
+"Cascadia Mono" = "Google Sans Code"
+"New Computer Modern Math" = "IBM Plex Math"
