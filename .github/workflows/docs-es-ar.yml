@@ -1,7 +1,7 @@
 # Fork-only workflow: builds the Spanish (es-AR) documentation PDF and stores it
 # as a build artifact and publishes it on GitHub Pages. It is a separate file so upstream
 # merges never conflict with it; upstream's own workflows are left untouched.
-name: Docs es-AR (PDF + Pages)
+name: Docs es-AR (PDF + website)
 on:
   workflow_dispatch:
   push:
@@ -39,10 +39,16 @@ jobs:
           retention-days: 30
 
 
-      # GitHub Pages serves the PDF directly at /docs-es-AR.pdf.
-      - name: Prepare Pages site
+      # The website is served from `/<repo>/` on a project site. Set the repository
+      # variable DOCS_BASE (e.g. `/`) when using a custom domain.
+      - name: Compile website
+        env:
+          BASE: ${{ vars.DOCS_BASE || format('/{0}/', github.event.repository.name) }}
         run: |
+          cargo docit compile --format website --lang es-AR --release \
+            --input "base=$BASE" docs/i18n/es-AR/web.typ docs/dist/site-es-AR
           mkdir _site
+          cp -r "docs/dist/site-es-AR${BASE}." _site/
           cp docs/dist/docs-es-AR.pdf _site/docs-es-AR.pdf
 
       - uses: actions/upload-pages-artifact@v5

@@ -9,9 +9,24 @@ cargo docit compile --format pdf --lang es-AR   # -> docs/dist/docs-es-AR.pdf
 cargo docit compile --format pdf                # sin --lang: idéntico a upstream
 ```
 
-El workflow `.github/workflows/docs-es-ar.yml` compila el PDF en español y lo
-guarda como artifact (`typst-docs-es-AR`) en cada push a `docs-translation` o a
-demanda (*Run workflow*).
+El sitio web también se genera con la traducción (se publica en GitHub Pages):
+
+```sh
+cargo docit compile --format website --lang es-AR --release \
+  --input base=/typst/ docs/i18n/es-AR/web.typ docs/dist/site-es-AR
+# -> docs/dist/site-es-AR/typst/ (la ruta base `base` es parte de la salida)
+```
+
+`docs/i18n/es-AR/web.typ` es el punto de entrada propio del sitio: fija la ruta base
+y agrega, en todas las páginas, el aviso de traducción no oficial (con enlace a
+https://typst.app/docs y al PDF).
+
+El workflow `.github/workflows/docs-es-ar.yml` compila el PDF y el sitio en cada
+push a `docs-translation` o a demanda (*Run workflow*), guarda el PDF como artifact
+(`typst-docs-es-AR`) y despliega el sitio y el PDF (`/docs-es-AR.pdf`) en GitHub
+Pages. La ruta base es `/<repo>/`; con dominio propio, definí la variable de
+repositorio `DOCS_BASE` (p. ej. `/`). Requiere *Settings → Pages → Source: GitHub
+Actions* y permitir `docs-translation` en el entorno `github-pages`.
 
 ## Cómo funciona
 
@@ -153,6 +168,9 @@ Los nombres propios (estilos de citas, revistas) se dejan en inglés a propósit
 - El colofón (`files/components/preface.typ`) incluye un aviso visible de que
   la traducción **no es oficial**, hecha con IA (Claude Sonnet 5.5), con enlace a
   https://typst.app/docs. Hay que conservarlo al reaplicar el overlay.
+- La web usa las tipografías originales (HK Grotesk, Cascadia Mono), no las del PDF;
+  los textos del JavaScript (p. ej. el panel de símbolos) y el changelog quedan en
+  inglés, y el sitio conserva el `noindex` de upstream.
 - Sin traducir (cae al inglés): el changelog (a propósito), los ejemplos de código
   fuera del tutorial, y las etiquetas de interfaz sin hook (p. ej. tooltips).
 - `check` marca un falso positivo conocido en `PdfFormat` (un span `raw` que
