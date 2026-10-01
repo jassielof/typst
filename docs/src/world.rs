@@ -197,10 +197,11 @@ impl FileLoader for DocsFiles {
 
 /// The fonts available to docs compilation.
 pub static FONTS: LazyLock<(LazyHash<FontBook>, Vec<Font>)> = LazyLock::new(|| {
-    let fonts: Vec<_> = typst_assets::fonts()
+    let mut fonts: Vec<_> = typst_assets::fonts()
         .chain(typst_dev_assets::fonts())
         .flat_map(|data| Font::iter(Bytes::new(data)))
         .collect();
+    crate::i18n::add_fonts(&mut fonts);
     let book = FontBook::from_fonts(&fonts);
     (LazyHash::new(book), fonts)
 });

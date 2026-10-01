@@ -16,7 +16,7 @@ use std::sync::{Mutex, OnceLock};
 use ecow::EcoString;
 use typst::foundations::{Bytes, Dict, IntoValue, Scope, Styles, Value, func};
 use typst::syntax::{FileId, RootedPath, VirtualRoot};
-use typst::text::{Lang, Region, TextElem};
+use typst::text::{Font, Lang, Region, TextElem};
 
 use crate::world::DOCS_ROOT;
 
@@ -85,6 +85,26 @@ pub fn example_styles(styles: &mut Styles) {
     }
     if let Some(region) = region.and_then(|r| r.to_uppercase().parse::<Region>().ok()) {
         styles.set(TextElem::region, Some(region));
+    }
+}
+
+/// Adds the fonts shipped with the translation (`docs/i18n/<lang>/fonts`) to
+/// the ones that are available to the docs.
+pub fn add_fonts(fonts: &mut Vec<Font>) {
+    let Some(state) = state() else { return };
+    let Ok(dir) = std::fs::read_dir(state.root.join("fonts")) else { return };
+    let mut paths: Vec<_> = dir
+        .flatten()
+        .map(|entry| entry.path())
+        .filter(|path| {
+            matches!(path.extension().and_then(|e| e.to_str()), Some("ttf" | "otf"))
+        })
+        .collect();
+    paths.sort();
+    for path in paths {
+        if let Ok(data) = std::fs::read(path) {
+            fonts.extend(Font::iter(Bytes::new(data)));
+        }
     }
 }
 
