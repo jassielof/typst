@@ -126,9 +126,17 @@ fn i18n_docs(path: RootedPath, key: EcoString) -> Value {
 /// Translates a UI string, falling back to the English text.
 #[func]
 fn ui(text: EcoString) -> EcoString {
-    state()
-        .and_then(|s| s.ui.get(text.as_str()))
-        .map_or(text, |t| t.as_str().into())
+    let Some(state) = state() else { return text };
+    match state.ui.get(text.as_str()) {
+        Some(t) => t.as_str().into(),
+        None => {
+            // Developer aid: `I18N_MISSING=1` lists the strings without a translation.
+            if std::env::var_os("I18N_MISSING").is_some() {
+                eprintln!("I18N_MISSING {}", serde_json::Value::from(text.as_str()));
+            }
+            text
+        }
+    }
 }
 
 /// Parses a sidecar file.

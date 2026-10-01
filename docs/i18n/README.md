@@ -125,6 +125,14 @@ python3 tools/i18n status        # ¿marca lo modificado como outdated?
 git checkout docs-translation && git branch -D sync-test
 ```
 
+## Textos sueltos (`ui.toml`)
+
+`ui.toml` traduce, por coincidencia exacta con el texto en inglés, las etiquetas
+de la interfaz y los textos de variantes/detalles que no salen de doc comments
+(atributos de Rust, enums, módulos HTML/ARIA). Para listar lo que falta:
+`I18N_MISSING=1 cargo docit compile --format pdf --lang es-AR 2>&1 | grep ^I18N_MISSING`.
+Los nombres propios (estilos de citas, revistas) se dejan en inglés a propósito.
+
 ## Limitaciones conocidas
 
 - En modo `watch`, los cambios en `ui.toml` y en los `.i18n` no recargan en
