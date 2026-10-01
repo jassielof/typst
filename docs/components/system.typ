@@ -50,9 +50,9 @@
 
 // Fonts that are used in the documentation.
 #let fonts = (
-  body: "HK Grotesk",
-  mono: "Cascadia Mono",
-  math: "New Computer Modern Math",
+  body: stdx.ui("HK Grotesk"),
+  mono: stdx.ui("Cascadia Mono"),
+  math: stdx.ui("New Computer Modern Math"),
   fallback: ("Noto Serif CJK SC",),
 )
 
