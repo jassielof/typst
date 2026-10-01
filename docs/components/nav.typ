@@ -57,7 +57,7 @@
             ..if item.route == current { (aria-current: "page") },
           )
           if k < i {
-            html.button(icon(16, "chevron-right", "Expand"))
+            html.button(icon(16, "chevron-right", stdx.ui("Expand")))
             nav-items(items.slice(k, i), current, is-expanded)
           }
         })
@@ -70,8 +70,8 @@
 
 // The folding navigation on the left of the docs.
 #let nav-folding(current) = html.nav(class: "folding", context {
-  html.button(class: "close", icon(16, "close", "Close"))
-  search-box(id: "docs-search", placeholder: "Search (S)")
+  html.button(class: "close", icon(16, "close", stdx.ui("Close")))
+  search-box(id: "docs-search", placeholder: stdx.ui("Search (S)"))
   html.ul(id: "search-results", class: "search-results hidden")
   let items = query(selector.or(
     <metadata-page>,
@@ -90,11 +90,11 @@
 // The breadcrumbs at the top of the page.
 #let nav-breadcrumbs(route) = html.ul(
   class: "breadcrumbs",
-  aria-label: "Breadcrumbs",
+  aria-label: stdx.ui("Breadcrumbs"),
   context {
     html.li(class: "root", html.a(
       href: stdx.config.content-base,
-      icon(16, "docs-dark", "Docs"),
+      icon(16, "docs-dark", stdx.ui("Docs")),
     ))
     let titles = title-map()
     for m in route.matches("/") {
@@ -135,7 +135,7 @@
   let titles = query(selector.and(title, <summary>).within(scope))
   if titles.len() > 0 {
     let dest = titles.first().location()
-    items.push((dest: dest, level: 1, body: [Summary]))
+    items.push((dest: dest, level: 1, body: [#stdx.ui("Summary")]))
   }
 
   items += query(heading.where(outlined: true).within(scope))
@@ -144,7 +144,7 @@
   if items.len() == 0 { return }
 
   html.nav(id: "page-overview", {
-    strong[On this page]
+    strong(stdx.ui("On this page"))
     with-short-versions(nav-on-this-page-items(items))
   })
 }
