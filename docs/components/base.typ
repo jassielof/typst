@@ -226,7 +226,7 @@
 //
 // Only support in the web output.
 #let search-box(..props) = html.div(class: "search", {
-  icon(16, "search-gray", "Search")
+  icon(16, "search-gray", stdx.ui("Search"))
   html.input(type: "search", ..props)
 })
 
@@ -299,7 +299,7 @@
 
 // Displays an indicator for a development build.
 #let dev-version-warning() = {
-  let body = [Development build #stdx.commit]
+  let body = [#stdx.ui("Development build") #stdx.commit]
   context if target() == "html" {
     html.div(class: "dev-version-warning", body)
   } else {
