@@ -1,0 +1,5 @@
+# Font files that are not loaded (case-insensitive substrings of the path).
+# Without this, a request for the regular weight (400) picks Reforma "Blanca"
+# (weight 300) over "Gris" (weight 500) because both are equally far from 400.
+blanca
+reforma1969

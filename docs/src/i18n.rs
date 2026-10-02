@@ -126,8 +126,20 @@ pub fn example_styles(styles: &mut Styles) {
 /// the ones that are available to the docs.
 pub fn add_fonts(fonts: &mut Vec<Font>) {
     let Some(state) = state() else { return };
+    let dir = state.root.join("fonts");
     let mut paths = Vec::new();
-    collect_fonts(&state.root.join("fonts"), &mut paths);
+    collect_fonts(&dir, &mut paths);
+    // `fonts/skip.txt`: one case-insensitive substring of a file path per line.
+    let skip: Vec<String> = std::fs::read_to_string(dir.join("skip.txt"))
+        .unwrap_or_default()
+        .lines()
+        .map(|line| line.trim().to_lowercase())
+        .filter(|line| !line.is_empty() && !line.starts_with('#'))
+        .collect();
+    paths.retain(|path| {
+        let path = path.to_string_lossy().to_lowercase();
+        !skip.iter().any(|pattern| path.contains(pattern.as_str()))
+    });
     paths.sort();
     for path in paths {
         if let Ok(data) = std::fs::read(path) {

@@ -66,7 +66,7 @@
 
 // A simple favicon, so the tab does not show a generic icon (and does not imitate
 // the official one).
-#let favicon = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='#239dad'/><text x='32' y='43' font-family='Georgia,serif' font-size='30' font-weight='bold' text-anchor='middle' fill='#fff'>es</text></svg>"
+#let favicon = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='#239dad'/><text x='32' y='46' font-family='Georgia,serif' font-size='40' font-weight='bold' text-anchor='middle' fill='#fff'>ES</text></svg>"
 #asset(base + "assets/favicon.svg", bytes(favicon))
 
 // A prominent link to the PDF edition, in the banner and in the sidebar.

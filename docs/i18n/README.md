@@ -150,7 +150,9 @@ variantes duplicadas que vienen en las mismas descargas (carpetas `*webfont*`, `
 `woff`, `woff2`, `css`, `scss`, `__MACOSX` y los `*VariableFont*`). Los nombres se
 cambian desde `ui.toml` (`"HK Grotesk" = "Reforma 2018"`, `"Cascadia Mono" = "Chivo
 Mono"`, `"New Computer Modern Math" = "IBM Plex Math"`; los títulos usan Reforma
-1918). Si una fuente falta, se usa la original sin warnings.
+1918). `fonts/skip.txt` lista fragmentos de ruta de archivos que no se cargan (hoy, la
+variante Blanca de Reforma, para que el peso regular use Gris). Si una fuente falta,
+se usa la original sin warnings.
 
 Para la web, `web.typ` publica los `.woff2` (Reforma, IBM Plex Math) y los `.ttf`
 variables (Chivo Mono) de esas mismas carpetas y redefine las familias de los CSS
