@@ -106,7 +106,7 @@
   show: rest => if target() == "paged" {
     if title != none {
       align(right, block(
-        small[Example #sym.dot.c #text(weight: 500, title)],
+        small[#stdx.ui("Example") #sym.dot.c #text(weight: 500, title)],
         sticky: true,
         below: 0.65em,
       ))
@@ -115,7 +115,7 @@
   } else {
     if folding == true or (folding == auto and title != none) {
       folding-details(
-        title: [View example] + if title != none [: #title],
+        title: [#stdx.ui("View example")] + if title != none [: #title],
         open: open,
         rest,
       )
@@ -163,7 +163,7 @@
         class: "copy",
         html.button(
           disabled: true,
-          use-icon(16, "copy", "Copy"),
+          use-icon(16, "copy", stdx.ui("Copy")),
         ),
       )
       let reconstructed = html.elem(
