@@ -79,6 +79,7 @@
     1,
   )
 
+  let title = stdx.ui(title)
   let route = stdx.config.content-base + route.trim("/")
   if not route.ends-with("/") {
     route += "/"
