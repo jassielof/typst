@@ -1,0 +1,7 @@
+# Line patches for docs/content/changelog/utils.typ (see docs/src/i18n.rs).
+"#let breaking = [*(Breaking change)*]" = "#let breaking = [*(Cambio incompatible)*]"
+"#let minor-breaking = [*(Minor breaking change)*]" = "#let minor-breaking = [*(Cambio incompatible menor)*]"
+"link(dest, icon(16, \"link\", \"Link\"))" = "link(dest, icon(16, \"link\", \"Enlace\"))"
+"icon(16, \"link\", \"Link\")," = "icon(16, \"link\", \"Enlace\"),"
+"\"Issue #\" + str(nr) + \" on \" + repo," = "\"Issue #\" + str(nr) + \" en \" + repo,"
+"\"PR #\" + str(nr) + \" on \" + repo," = "\"PR #\" + str(nr) + \" en \" + repo,"

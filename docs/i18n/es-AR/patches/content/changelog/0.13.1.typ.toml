@@ -1,0 +1,13 @@
+# Line patches for docs/content/changelog/0.13.1.typ (see docs/src/i18n.rs).
+"= Command Line Interface <command-line-interface>" = "= Interfaz de línea de comandos <command-line-interface>"
+"- Fixed high CPU usage for `typst watch` on Linux. Depending on the project size, CPU usage would spike for varying amounts of time. This bug appeared with 0.13.0 due to a behavioral change in the inotify file watching backend." = "- Se corrigió el uso elevado de CPU de `typst watch` en Linux. Según el tamaño del proyecto, el uso de CPU se disparaba durante períodos variables. Este error apareció con la 0.13.0 por un cambio de comportamiento en el backend de observación de archivos inotify."
+"= HTML export <html-export>" = "= Exportación a HTML <html-export>"
+"- Fixed export of tables with @table.gutter[gutters]" = "- Se corrigió la exportación de tablas con @table.gutter[separaciones]"
+"- Fixed usage of `<html>` and `<body>` element within @reference:context[context]" = "- Se corrigió el uso de los elementos `<html>` y `<body>` dentro de @reference:context[contexto]"
+"- Fixed querying of @metadata[metadata] next to `<html>` and `<body>` element" = "- Se corrigió la consulta de @metadata[metadatos] junto a los elementos `<html>` y `<body>`"
+"= Visualization <visualization>" = "= Visualización <visualization>"
+"- Fixed @curve[curves] with multiple non-closed components" = "- Se corrigieron las @curve[curvas] con varios componentes no cerrados"
+"= Introspection <introspection>" = "= Introspección <introspection>"
+"- Fixed a regression where labelled @symbol[symbols] could not be @query[queried] by label" = "- Se corrigió una regresión por la cual los @symbol[símbolos] con etiqueta no se podían @query[consultar] por etiqueta"
+"= Deprecations <deprecations>" = "= Obsolescencias <deprecations>"
+"- Fixed false positives in deprecation warnings for type/str comparisons" = "- Se corrigieron falsos positivos en las advertencias de obsolescencia para comparaciones entre tipo y cadena de texto"
