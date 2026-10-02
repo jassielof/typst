@@ -63,6 +63,15 @@
   ))
   .join()
 )
+// The dark palette: applied when chosen explicitly (`data-theme="dark"` on the
+// root element) and, unless "light" was chosen, when the system prefers it.
+#let dark-src = read("dark.css")
+#let dark-css = (
+  dark-src.replace("@@", ":root[data-theme='dark']")
+    + "@media (prefers-color-scheme: dark){"
+    + dark-src.replace("@@", ":root:not([data-theme='light'])")
+    + "}"
+)
 #let style = (
   reforma("HK Grotesk", "Reforma2018")
     + reforma("Reforma 1918", "Reforma1918")
@@ -71,6 +80,16 @@
     + face("NewComputerModernMath", "IBMPlexMath-Regular.woff2", "400")
     + "body.docs h1,body.docs h2,body.docs h3{font-family:\"Reforma 1918\",\"HK Grotesk\",serif;font-variant-numeric:lining-nums;}"
     + "pre,code,.code,.pill{font-family:\"Chivo Mono\",\"Courier New\",monospace;}"
+    + "#es-ar-notice{position:relative;box-sizing:border-box;width:100%;padding:.5em 3em .5em 1em;font-size:.8em;line-height:1.4;text-align:center;background:#fff7e0;color:#4a3b00;border-bottom:1px solid #e6c85c;}"
+    + "#es-ar-notice button{position:absolute;top:.2em;right:.5em;padding:0 .4em;border:0;background:none;color:inherit;font-size:1.6em;line-height:1;cursor:pointer;}"
+    + ".es-ar-theme{margin:1.5em 0 0;font-size:.8em;color:var(--text-primary);}"
+    + ".es-ar-theme>div{display:flex;margin-top:.4em;}"
+    + ".es-ar-theme button{flex:1;padding:.3em .2em;border-radius:0;font:inherit;cursor:pointer;}"
+    + ".es-ar-theme button:first-child{border-radius:6px 0 0 6px;}"
+    + ".es-ar-theme button:last-child{border-radius:0 6px 6px 0;}"
+    + ".es-ar-theme button+button{border-left-width:0;}"
+    + ".es-ar-theme button[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:#fff;}"
+    + dark-css
 )
 
 // A simple favicon, so the tab does not show a generic icon (and does not imitate
@@ -96,11 +115,35 @@
     + "var l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';"
     + "l.href='" + base + "assets/favicon.svg';document.head.appendChild(l)})()"
 )
+// Theme choice: "light", "dark" or none (follow the system, the default).
+#let theme-js = (
+  "function esArTheme(t){var r=document.documentElement;"
+    + "if(t==='light'||t==='dark')r.setAttribute('data-theme',t);else{r.removeAttribute('data-theme');t='system'}"
+    + "try{if(t==='system')localStorage.removeItem('es-ar-theme');else localStorage.setItem('es-ar-theme',t)}catch(e){}"
+    + "var b=document.querySelectorAll('.es-ar-theme button');"
+    + "for(var i=0;i<b.length;i++)b[i].setAttribute('aria-pressed',String(b[i].dataset.theme===t))}"
+    + "(function(){var t='system';try{t=localStorage.getItem('es-ar-theme')||'system'}catch(e){}"
+    + "if(t!=='light'&&t!=='dark')t='system';"
+    + "if(t!=='system')document.documentElement.setAttribute('data-theme',t);"
+    + "document.addEventListener('DOMContentLoaded',function(){var b=document.querySelectorAll('.es-ar-theme button');for(var i=0;i<b.length;i++)b[i].setAttribute('aria-pressed',String(b[i].dataset.theme===t))})})()"
+)
+#let theme-switch = html.div(class: "es-ar-theme", {
+  [Tema]
+  html.div(
+    for (id, label) in (("light", "Claro"), ("dark", "Oscuro"), ("system", "Sistema")) {
+      html.elem("button", attrs: (
+        type: "button",
+        "data-theme": id,
+        "aria-pressed": "false",
+        onclick: "esArTheme('" + id + "')",
+      ))[#label]
+    },
+  )
+})
 #let notice = {
   html.style(style)
   html.div(
     id: "es-ar-notice",
-    style: "position: relative; box-sizing: border-box; width: 100%; padding: 0.5em 3em 0.5em 1em; font-size: 0.8em; line-height: 1.4; text-align: center; background: #fff7e0; color: #4a3b00; border-bottom: 1px solid #e6c85c;",
     {
       strong[Traducción no oficial]
       [ al español rioplatense (es-AR), generada con IA (Claude Sonnet 5.5) bajo la dirección y revisión de ]
@@ -117,11 +160,11 @@
         onclick: close-js,
         "aria-label": "Cerrar aviso",
         title: "Cerrar aviso",
-        style: "position: absolute; top: 0.2em; right: 0.5em; padding: 0 0.4em; border: 0; background: none; color: inherit; font-size: 1.6em; line-height: 1; cursor: pointer;",
       ))[×]
     },
   )
   html.script(init-js)
+  html.script(theme-js)
 }
 
 #docs(
@@ -129,6 +172,6 @@
   asset-base: base + "assets/",
   insertions: (
     "page-top": notice,
-    "after-nav-items": pdf-button(block: true),
+    "after-nav-items": { pdf-button(block: true); theme-switch },
   ),
 )

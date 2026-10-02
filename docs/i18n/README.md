@@ -20,7 +20,10 @@ cargo docit compile --format website --lang es-AR --release \
 `docs/i18n/es-AR/web.typ` es el punto de entrada propio del sitio: fija la ruta base
 y agrega, en todas las páginas, el aviso de traducción no oficial (con enlace a
 https://typst.app/docs) y un botón *Descargar el PDF* (en el aviso y en la barra
-lateral).
+lateral) y un selector de tema (claro, oscuro o sistema; por defecto sigue al sistema,
+sin tocar el CSS original). La paleta oscura está en `docs/i18n/es-AR/dark.css`:
+redefine las variables y los colores fijos del CSS de upstream; si upstream agrega
+colores nuevos, se ajusta ahí.
 
 El workflow `.github/workflows/docs-es-ar.yml` compila el PDF y el sitio en cada
 push a `docs-translation` o a demanda (*Run workflow*), guarda el PDF como artifact
