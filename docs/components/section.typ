@@ -261,7 +261,7 @@
     route: route,
     def-target: def-target,
     ..args,
-    kind: "Chapter",
+    kind: stdx.ui("Chapter"),
     prose-styling(body, base-target: def-target),
   )
 }
