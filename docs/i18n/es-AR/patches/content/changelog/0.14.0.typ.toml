@@ -160,7 +160,6 @@
 "- Fixed sorting for empty sort values #pr(390, repo: \"typst/hayagriva\")" = "- Se corrigió el ordenamiento con valores de orden vacíos #pr(390, repo: \"typst/hayagriva\")"
 "= Text <text>" = "= Texto <text>"
 "- The @sub and @super functions now use the `subs` and `sups` OpenType font features instead of special Unicode characters for typographic scripts, fixing semantical, sizing, and positioning issues #pr(5777)" = "- Las funciones @sub y @super ahora usan las características de fuente OpenType `subs` y `sups` en lugar de caracteres Unicode especiales para los subíndices y superíndices tipográficos, lo que corrige problemas semánticos, de tamaño y de posicionamiento #pr(5777)"
-"- The @raw element" = "- El elemento @raw"
 "- Tweaked default syntax-highlighting color scheme of @raw text to make the colors more accessible #pr(6754)" = "- Se retocó el esquema de colores de resaltado de sintaxis predeterminado del texto @raw para que los colores sean más accesibles #pr(6754)"
 "- JSON keys and string values now use different colors in the default `raw` syntax highlighting @raw.theme[theme] #pr(6873)" = "- Las claves y los valores de cadena de JSON ahora usan colores distintos en el @raw.theme[tema] de resaltado de sintaxis predeterminado de `raw` #pr(6873)"
 "- Fixed a crash when a `raw` @raw.syntaxes[syntax] contains an unescaped trailing backslash #pr(6883)" = "- Se corrigió un fallo cuando una @raw.syntaxes[sintaxis] de `raw` contiene una barra invertida final sin escapar #pr(6883)"

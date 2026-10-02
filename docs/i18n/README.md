@@ -151,6 +151,15 @@ permite modificarlas, así que no se commitean: `python3 tools/i18n fonts` las
 descarga y el workflow lo hace antes de compilar. Si faltan, el texto usa HK
 Grotesk y los títulos la fuente del texto, sin warnings.
 
+## Parches de líneas (`patches/`)
+
+Para archivos upstream que cambian seguido (el changelog, `assets/docs.js`) no se
+copia el archivo: `patches/<ruta>.toml` guarda pares `"línea original" = "línea
+traducida"` que `docs/src/i18n.rs` aplica línea por línea (ignorando la sangría)
+al archivo upstream. Si upstream agrega o cambia una línea, solo esa línea queda en
+inglés. `python3 tools/i18n status` lista las líneas `new` (sin traducir) y las
+claves `outdated` (que ya no coinciden con ninguna línea) de los parches.
+
 ## Textos sueltos (`ui.toml`)
 
 `ui.toml` traduce, por coincidencia exacta con el texto en inglés, las etiquetas
@@ -168,10 +177,7 @@ Los nombres propios (estilos de citas, revistas) se dejan en inglés a propósit
 - El colofón (`files/components/preface.typ`) incluye un aviso visible de que
   la traducción **no es oficial**, hecha con IA (Claude Sonnet 5.5), con enlace a
   https://typst.app/docs. Hay que conservarlo al reaplicar el overlay.
-- La web usa las tipografías originales (HK Grotesk, Cascadia Mono), no las del PDF;
-  los textos del JavaScript (p. ej. el panel de símbolos) y el changelog quedan en
-  inglés, y el sitio conserva el `noindex` de upstream.
-- Sin traducir (cae al inglés): el changelog (a propósito), los ejemplos de código
-  fuera del tutorial, y las etiquetas de interfaz sin hook (p. ej. tooltips).
+- Sin traducir (cae al inglés): los ejemplos de código fuera del tutorial, los
+  nombres propios (estilos de cita, revistas) y las etiquetas de interfaz sin hook.
 - `check` marca un falso positivo conocido en `PdfFormat` (un span `raw` que
   cruza un salto de línea en el original).

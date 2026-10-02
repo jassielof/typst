@@ -727,3 +727,16 @@
 "Category" = "Categoría"
 "Chapter" = "Capítulo"
 "Parameter of " = "Parámetro de "
+
+# More labels (the sentence pieces are completed around raw text).
+"Feature toggle" = "Característica opcional"
+"Requires the " = "Requiere la característica "
+" feature" = ""
+"Warning" = "Advertencia"
+"; it will be removed in Typst " = "; se eliminará en Typst "
+"Go to source" = "Ir al código fuente"
+"View options" = "Ver opciones"
+"Copy" = "Copiar"
+"Example" = "Ejemplo"
+"View example" = "Ver ejemplo"
+"Question mark" = "Signo de pregunta"

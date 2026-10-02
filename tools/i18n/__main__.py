@@ -130,7 +130,42 @@ def compute_status(lang, with_docs=True):
                 if rs not in src:
                     for key in parse_sidecar(p.read_text()):
                         docs[f"{rs}::{key}"] = "orphan"
-    return {"files": files, "docs": docs}
+    return {"files": files, "docs": docs, "patches": patch_status(lang)}
+
+
+def patch_lines(rel):
+    """Translatable lines of an upstream file that is translated by line patches
+    (changelog files: prose lines outside code fences)."""
+    out, fence = [], False
+    for line in (DOCS / rel).read_text().split("\n"):
+        t = line.strip()
+        if t.startswith("```"):
+            fence = not fence
+        elif not fence and re.match(r"^([-=+]+ |[A-Z_*])", t):
+            u = re.sub(r"`[^`]*`|@[\w:.\-]+|#[\w.\-]+\([^)]*\)|#[\w.\-]+|https?://\S+|<[\w:.\-]+>|\"[^\"]*\"", " ", t)
+            if re.search(r"[A-Za-z]{3,}", u):
+                out.append(t)
+    return out
+
+
+def patch_status(lang):
+    """`patches/<path>.toml` translate single lines of upstream files (see
+    docs/src/i18n.rs). A key that no longer matches a source line is `outdated`;
+    for the changelog, prose lines without an entry are `new`."""
+    res = {}
+    root = lang.dir / "patches"
+    if not root.exists():
+        return res
+    for p in sorted(root.rglob("*.toml")):
+        rel = p.relative_to(root).as_posix()[: -len(".toml")]
+        keys = set(tomllib.loads(p.read_text(encoding="utf-8")))
+        source = [l.strip() for l in (DOCS / rel).read_text().split("\n")]
+        for k in keys - set(source):
+            res[f"{rel}: {k[:70]}"] = "outdated"
+        if rel.startswith("content/changelog/") and rel.endswith(".typ"):
+            for t in patch_lines(rel):
+                res[f"{rel}: {t[:70]}"] = "ok" if t in keys else "new"
+    return res
 
 
 def cmd_status(a):
@@ -139,7 +174,7 @@ def cmd_status(a):
     for kind, units in st.items():
         c = collections.Counter(units.values())
         print(f"{kind}: " + ", ".join(f"{k}={c[k]}" for k in ("ok", "new", "outdated", "orphan")))
-        for state in ("outdated", "orphan") if not a.verbose else ("new", "outdated", "orphan"):
+        for state in ("new", "outdated", "orphan") if (a.verbose or kind == "patches") else ("outdated", "orphan"):
             for u, s in sorted(units.items()):
                 if s == state:
                     print(f"  {state:9} {u}")
