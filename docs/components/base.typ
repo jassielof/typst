@@ -175,7 +175,7 @@
   let id = "tooltip-" + str(tooltip-counter.get().first())
   html.span(aria-describedby: id, body)
   html.div(class: "tooltip-context", {
-    use-icon(12, "tooltip", "Question mark")
+    use-icon(12, "tooltip", stdx.ui("Question mark"))
     html.div(
       id: id,
       role: "tooltip",
@@ -197,7 +197,7 @@
   } else {
     html.details(class: "folding-details", open: open, {
       html.summary({
-        icon(16, "chevron-right", "Expand")
+        icon(16, "chevron-right", stdx.ui("Expand"))
         title
       })
       body
