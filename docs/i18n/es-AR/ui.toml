@@ -719,3 +719,11 @@
 
 # The official site (typst.app) is indexed; the standalone build is not.
 "noindex" = "index, follow"
+
+# Kinds shown in the search results.
+"Function" = "Función"
+"Type" = "Tipo"
+"Group" = "Grupo"
+"Category" = "Categoría"
+"Chapter" = "Capítulo"
+"Parameter of " = "Parámetro de "

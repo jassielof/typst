@@ -65,11 +65,45 @@ pub fn overlay_path(id: FileId) -> Option<PathBuf> {
     path.is_file().then_some(path)
 }
 
-/// Loads the translated replacement for a file, if there is one.
+/// Loads the translated replacement for a file, if there is one: either a full
+/// copy in `files/` or a line patch in `patches/`.
 pub fn overlay(id: FileId) -> Option<Bytes> {
-    overlay_path(id)
-        .and_then(|path| std::fs::read(path).ok())
-        .map(Bytes::new)
+    match overlay_path(id) {
+        Some(path) => std::fs::read(path).ok().map(Bytes::new),
+        None => patched(id),
+    }
+}
+
+/// Applies `patches/<path>.toml` (`"original line" = "translated line"`, compared
+/// ignoring indentation) to the upstream file. Lines without an entry, e.g.
+/// because upstream added or changed them, stay in English.
+fn patched(id: FileId) -> Option<Bytes> {
+    let state = state()?;
+    let VirtualRoot::Package(spec) = id.root() else { return None };
+    if *spec != DOCS_ROOT {
+        return None;
+    }
+    let rel = id.vpath().get_without_slash();
+    let patch =
+        std::fs::read_to_string(state.root.join("patches").join(format!("{rel}.toml")))
+            .ok()?;
+    let rules = parse_ui(&patch);
+    let docs = state.root.parent()?.parent()?;
+    let source = std::fs::read_to_string(docs.join(rel)).ok()?;
+    let mut out = String::with_capacity(source.len());
+    for line in source.split_inclusive('\n') {
+        let body = line.trim_end_matches(['\n', '\r']);
+        let trimmed = body.trim_start();
+        match rules.get(trimmed.trim_end()) {
+            Some(new) => {
+                out.push_str(&body[..body.len() - trimmed.len()]);
+                out.push_str(new);
+                out.push_str(&line[body.len()..]);
+            }
+            None => out.push_str(line),
+        }
+    }
+    Some(Bytes::new(out.into_bytes()))
 }
 
 /// Makes the code examples that the docs compile use the translated language

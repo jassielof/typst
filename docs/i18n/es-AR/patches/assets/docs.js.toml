@@ -1,0 +1,3 @@
+# Line patches for docs/assets/docs.js (see docs/src/i18n.rs).
+"foShorthandRemark.textContent = \"(only in math)\";" = "foShorthandRemark.textContent = \"(solo en matemática)\";"
+"foShorthandRemark.textContent = \"(only in markup)\";" = "foShorthandRemark.textContent = \"(solo en marcado)\";"

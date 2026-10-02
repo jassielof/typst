@@ -69,7 +69,7 @@
 
 #let copy-button() = html.button(
   class: "copy",
-  icon(16, "copy", "Copy"),
+  icon(16, "copy", "Copiar"),
 )
 
 // The HTML template that is instantiated for the popup.
@@ -80,16 +80,16 @@
       html.div(class: "props", {
         html.h3(html.span(class: "unic-name"))
         html.p(class: "sym-deprecation", {
-          use-icon(16, "warn", "Warning")
-          html.span(class: "text")[This symbol is deprecated]
+          use-icon(16, "warn", "Advertencia")
+          html.span(class: "text")[Este símbolo está obsoleto]
         })
         html.p(class: "sym-name", {
-          [Name: ]
+          [Nombre: ]
           html.code()
           copy-button()
         })
         html.p(class: "shorthand", {
-          [Shorthand: ]
+          [Atajo: ]
           html.code(class: "typ-escape")
           copy-button()
           html.span(class: "remark")
@@ -103,11 +103,11 @@
           copy-button()
         })
         html.p(class: "accent", {
-          [Accent: ]
-          icon(16, "check", "Yes")
+          [Acento: ]
+          icon(16, "check", "Sí")
         })
         html.p(class: "math-class", {
-          [Math Class: ]
+          [Clase matemática: ]
           html.span(class: "value")
         })
         html.p(class: "latex-name", {
@@ -117,7 +117,7 @@
       })
     })
     html.div(class: "variants-box", {
-      html.h4[Variants]
+      html.h4[Variantes]
       html.ul(class: "symbol-grid")
     })
   }))
