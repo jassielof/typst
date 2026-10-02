@@ -126,18 +126,25 @@ pub fn example_styles(styles: &mut Styles) {
 /// the ones that are available to the docs.
 pub fn add_fonts(fonts: &mut Vec<Font>) {
     let Some(state) = state() else { return };
-    let Ok(dir) = std::fs::read_dir(state.root.join("fonts")) else { return };
-    let mut paths: Vec<_> = dir
-        .flatten()
-        .map(|entry| entry.path())
-        .filter(|path| {
-            matches!(path.extension().and_then(|e| e.to_str()), Some("ttf" | "otf"))
-        })
-        .collect();
+    let mut paths = Vec::new();
+    collect_fonts(&state.root.join("fonts"), &mut paths);
     paths.sort();
     for path in paths {
         if let Ok(data) = std::fs::read(path) {
             fonts.extend(Font::iter(Bytes::new(data)));
+        }
+    }
+}
+
+/// Collects all `.ttf` and `.otf` files below a directory.
+fn collect_fonts(dir: &Path, out: &mut Vec<PathBuf>) {
+    let Ok(entries) = std::fs::read_dir(dir) else { return };
+    for path in entries.flatten().map(|entry| entry.path()) {
+        if path.is_dir() {
+            collect_fonts(&path, out);
+        } else if matches!(path.extension().and_then(|e| e.to_str()), Some("ttf" | "otf"))
+        {
+            out.push(path);
         }
     }
 }
