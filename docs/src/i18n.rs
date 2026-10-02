@@ -136,13 +136,26 @@ pub fn add_fonts(fonts: &mut Vec<Font>) {
     }
 }
 
-/// Collects all `.ttf` and `.otf` files below a directory.
+/// Collects the `.ttf` and `.otf` files below a directory. Web and duplicate
+/// flavors that usually ship in the same download (web fonts, `*VariableFont*`
+/// `.ttf` copies next to `.otf`, variable fonts when static instances ship
+/// too) are skipped.
 fn collect_fonts(dir: &Path, out: &mut Vec<PathBuf>) {
     let Ok(entries) = std::fs::read_dir(dir) else { return };
     for path in entries.flatten().map(|entry| entry.path()) {
+        let name = path.file_name().and_then(|n| n.to_str()).unwrap_or("").to_lowercase();
         if path.is_dir() {
-            collect_fonts(&path, out);
-        } else if matches!(path.extension().and_then(|e| e.to_str()), Some("ttf" | "otf"))
+            let skip = name.contains("webfont")
+                || matches!(
+                    name.as_str(),
+                    "ttf" | "woff" | "woff2" | "css" | "scss" | "__macosx"
+                );
+            if !skip {
+                collect_fonts(&path, out);
+            }
+        } else if !name.starts_with("._")
+            && !name.contains("variablefont")
+            && matches!(path.extension().and_then(|e| e.to_str()), Some("ttf" | "otf"))
         {
             out.push(path);
         }

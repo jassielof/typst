@@ -19,7 +19,8 @@ cargo docit compile --format website --lang es-AR --release \
 
 `docs/i18n/es-AR/web.typ` es el punto de entrada propio del sitio: fija la ruta base
 y agrega, en todas las páginas, el aviso de traducción no oficial (con enlace a
-https://typst.app/docs y al PDF).
+https://typst.app/docs) y un botón *Descargar el PDF* (en el aviso y en la barra
+lateral).
 
 El workflow `.github/workflows/docs-es-ar.yml` compila el PDF y el sitio en cada
 push a `docs-translation` o a demanda (*Run workflow*), guarda el PDF como artifact
@@ -142,14 +143,18 @@ git checkout docs-translation && git branch -D sync-test
 
 ## Tipografías
 
-Las fuentes están en `docs/i18n/es-AR/fonts/` y se cargan solo con `--lang`; los
-nombres se cambian desde `ui.toml` (`"HK Grotesk" = "Reforma 2018"`, etc.). Google
-Sans Code e IBM Plex Math (licencia OFL) están en el repo, junto con Inter (hoy sin
-uso: fue el texto antes de Reforma 2018). **Reforma 2018** (texto) y **Reforma
-1918** (títulos), de PampaType, tienen una licencia Creative Commons que no
-permite modificarlas, así que no se commitean: `python3 tools/i18n fonts` las
-descarga y el workflow lo hace antes de compilar. Si faltan, el texto usa HK
-Grotesk y los títulos la fuente del texto, sin warnings.
+Las fuentes están en `docs/i18n/es-AR/fonts/`, cada una en su carpeta tal como se
+descarga (con su licencia): `Reforma/` (CC BY-ND 4.0, PampaType), `ChivoMono/` y
+`IBMPlexMath/` (OFL). Se cargan solo con `--lang`, de forma recursiva; se omiten las
+variantes duplicadas que vienen en las mismas descargas (carpetas `*webfont*`, `ttf`,
+`woff`, `woff2`, `css`, `scss`, `__MACOSX` y los `*VariableFont*`). Los nombres se
+cambian desde `ui.toml` (`"HK Grotesk" = "Reforma 2018"`, `"Cascadia Mono" = "Chivo
+Mono"`, `"New Computer Modern Math" = "IBM Plex Math"`; los títulos usan Reforma
+1918). Si una fuente falta, se usa la original sin warnings.
+
+Para la web, `web.typ` publica los `.woff2` (Reforma, IBM Plex Math) y los `.ttf`
+variables (Chivo Mono) de esas mismas carpetas y redefine las familias de los CSS
+originales. Si cambiás las carpetas, actualizá las rutas de `web.typ`.
 
 ## Parches de líneas (`patches/`)
 

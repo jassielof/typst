@@ -463,38 +463,18 @@ def rust_docs_for(rs):
     return json.loads(res.stdout).get(rs, {})
 
 
-# Reforma (PampaType, for the Universidad Nacional de Córdoba) is free to use but
-# not to modify, so it is downloaded at build time instead of being committed.
-REFORMA_URL = "https://www.pampatype.com/media/reforma/fonts/{fam}/{fam}-{style}.ttf"
-REFORMA_FILES = [(fam, s) for fam in ("Reforma1918", "Reforma2018") for s in ("Gris", "GrisItalica", "Negra", "NegraItalica")]
-
-
-def cmd_fonts(a):
-    """Downloads the fonts that are not committed to the repo."""
-    out = Lang(a.lang).dir / "fonts"
-    out.mkdir(parents=True, exist_ok=True)
-    for fam, style in REFORMA_FILES:
-        dest = out / f"{fam}-{style}.ttf"
-        if dest.exists():
-            continue
-        req = urllib.request.Request(REFORMA_URL.format(fam=fam, style=style), headers={"User-Agent": "Mozilla/5.0"})
-        dest.write_bytes(urllib.request.urlopen(req, timeout=60).read())
-        print("downloaded", dest.relative_to(ROOT))
-    return 0
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--lang", default="es-AR")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name, fn in (("status", cmd_status), ("check", cmd_check), ("stamp", cmd_stamp), ("translate", cmd_translate), ("export", cmd_export), ("import", cmd_import), ("fonts", cmd_fonts)):
+    for name, fn in (("status", cmd_status), ("check", cmd_check), ("stamp", cmd_stamp), ("translate", cmd_translate), ("export", cmd_export), ("import", cmd_import)):
         p = sub.add_parser(name)
         p.set_defaults(fn=fn)
         p.add_argument("--lang", default=argparse.SUPPRESS)
         if name in ("export", "import"):
             p.add_argument("file", help="Rust source path relative to the repo root")
             p.add_argument("--all" if name == "export" else "--force", action="store_true")
-        if name not in ("stamp", "export", "import", "fonts"):
+        if name not in ("stamp", "export", "import"):
             p.add_argument("--no-docs", action="store_true", help="skip Rust doc comments (no cargo needed)")
         if name == "status":
             p.add_argument("-v", "--verbose", action="store_true")

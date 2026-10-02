@@ -7,31 +7,29 @@
 
 #let base = sys.inputs.at("base", default: "/")
 
-// The fonts of the PDF edition, served as assets. Reforma is fetched by
-// `python3 tools/i18n fonts`; the others are committed in `fonts/`.
+// The fonts of the PDF edition, served as assets from the committed font
+// folders (web flavors where they exist).
+#let reforma-dir = "fonts/Reforma/Reforma/Reforma Webfonts/"
 #let font-files = (
-  "Reforma2018-Gris.ttf",
-  "Reforma2018-GrisItalica.ttf",
-  "Reforma2018-Negra.ttf",
-  "Reforma2018-NegraItalica.ttf",
-  "Reforma1918-Gris.ttf",
-  "Reforma1918-GrisItalica.ttf",
-  "Reforma1918-Negra.ttf",
-  "Reforma1918-NegraItalica.ttf",
-  "GoogleSansCode-Regular.ttf",
-  "GoogleSansCode-Bold.ttf",
-  "IBMPlexMath-Regular.otf",
+  ..for (family, dir) in (("Reforma1918", "Reforma1918"), ("Reforma2018", "Reforma2018")) {
+    for style in ("Gris", "GrisItalica", "Negra", "NegraItalica") {
+      ((family + "-" + style + ".woff2", reforma-dir + dir + "/" + family + "-" + style + ".woff2"),)
+    }
+  },
+  ("ChivoMono.ttf", "fonts/ChivoMono/ChivoMono-VariableFont_wght.ttf"),
+  ("ChivoMono-Italic.ttf", "fonts/ChivoMono/ChivoMono-Italic-VariableFont_wght.ttf"),
+  ("IBMPlexMath-Regular.woff2", "fonts/IBMPlexMath/fonts/complete/woff2/IBMPlexMath-Regular.woff2"),
 )
-#for file in font-files {
-  asset(base + "assets/fonts/" + file, read("fonts/" + file, encoding: none))
+#for (name, path) in font-files {
+  asset(base + "assets/fonts/" + name, read(path, encoding: none))
 }
 
 // Redefines the families that the original style sheets use, so that no
 // upstream CSS has to change: "HK Grotesk" (text) becomes Reforma 2018,
-// "Cascadia Mono" (code) Google Sans Code and "NewComputerModernMath" IBM Plex
-// Math. Headings use Reforma 1918. These rules come after the original ones.
-#let face(family, file, weight, style: "normal", format: "truetype") = (
-  "@font-face{font-family:\"" + family + "\";font-weight:" + str(weight)
+// "Cascadia Mono" (code) Chivo Mono and "NewComputerModernMath" IBM Plex Math.
+// Headings use Reforma 1918. These rules come after the original ones.
+#let face(family, file, weight, style: "normal", format: "woff2") = (
+  "@font-face{font-family:\"" + family + "\";font-weight:" + weight
     + ";font-style:" + style + ";font-display:swap;src:url(\"" + base
     + "assets/fonts/" + file + "\") format(\"" + format + "\");}"
 )
@@ -43,34 +41,35 @@
     (("normal", ""), ("italic", "Italica"))
       .map(((style, suffix)) => face(
         family,
-        prefix + "-" + name + suffix + ".ttf",
-        weight,
+        prefix + "-" + name + suffix + ".woff2",
+        str(weight),
         style: style,
       ))
       .join()
   })
   .join()
 )
-#let mono = (
-  weights
-  .map(weight => face(
-    "Cascadia Mono",
-    if weight >= 600 { "GoogleSansCode-Bold.ttf" } else { "GoogleSansCode-Regular.ttf" },
-    weight,
-  ))
-  .join()
-)
 #let style = (
   reforma("HK Grotesk", "Reforma2018")
     + reforma("Reforma 1918", "Reforma1918")
-    + mono
+    + face("Cascadia Mono", "ChivoMono.ttf", "100 900", format: "truetype")
     + face(
-      "NewComputerModernMath",
-      "IBMPlexMath-Regular.otf",
-      400,
-      format: "opentype",
+      "Cascadia Mono",
+      "ChivoMono-Italic.ttf",
+      "100 900",
+      style: "italic",
+      format: "truetype",
     )
+    + face("NewComputerModernMath", "IBMPlexMath-Regular.woff2", "400")
     + "body.docs h1,body.docs h2,body.docs h3{font-family:\"Reforma 1918\",\"HK Grotesk\",serif;font-variant-numeric:lining-nums;}"
+)
+
+// A prominent link to the PDF edition, in the banner and in the sidebar.
+#let pdf-style = "display: inline-block; padding: 0.15em 0.8em; border: 1px solid var(--brand, #239dad); border-radius: 6px; background: var(--brand, #239dad); color: #fff; font-weight: bold; text-decoration: none;"
+#let pdf-button(block: false) = html.a(
+  href: base + "docs-es-AR.pdf",
+  style: pdf-style + if block { " display: block; text-align: center; margin: 1.5em 0 0.5em; padding: 0.5em 0.8em;" },
+  [Descargar el PDF],
 )
 
 // Shown at the top of every page (see the `page-top` insertion).
@@ -84,9 +83,9 @@
       link("https://github.com/jassielof")[Jassiel Ovando]
       [. No es una publicación de Typst GmbH ni cuenta con su aval; ante cualquier duda, prevalece la ]
       link("https://typst.app/docs")[documentación oficial en inglés]
-      [. También podés ]
-      link(base + "docs-es-AR.pdf")[descargar el PDF]
-      [. Tipografía: ]
+      [. ]
+      pdf-button()
+      [ Tipografía: ]
       link("https://www.pampatype.com/reforma")[Reforma]
       [, de PampaType.]
     },
@@ -96,5 +95,8 @@
 #docs(
   content-base: base,
   asset-base: base + "assets/",
-  insertions: ("page-top": notice),
+  insertions: (
+    "page-top": notice,
+    "after-nav-items": pdf-button(block: true),
+  ),
 )

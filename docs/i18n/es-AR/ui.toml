@@ -697,7 +697,7 @@
 
 # Fonts (the files live in fonts/).
 "HK Grotesk" = "Reforma 2018"
-"Cascadia Mono" = "Google Sans Code"
+"Cascadia Mono" = "Chivo Mono"
 "New Computer Modern Math" = "IBM Plex Math"
 
 # Headings and titles (Reforma is fetched by `python3 tools/i18n fonts`).
