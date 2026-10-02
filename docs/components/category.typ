@@ -871,7 +871,7 @@
       raw(name)
     }
 
-    let oneliner = oneliner(info.docs)
+    let oneliner = oneliner(stdx.i18n-docs-or(info.docs, info.at("def-site", default: none)))
 
     if target() == "paged" {
       dests.push(def-dest(def-target))
@@ -916,7 +916,7 @@
       target: selector.or(..dests),
     )
   } else {
-    [= Definitions <definitions>]
+    [= #stdx.ui("Definitions") <definitions>]
     html.ul(class: "subgridded catgrid", lis.join())
   }
 }
