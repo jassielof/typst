@@ -49,19 +49,28 @@
   })
   .join()
 )
+// One rule per weight (the variable font covers them all). It gets its own
+// family name and the original rules are overridden below: reusing the name
+// "Cascadia Mono" left some elements on the original font.
+#let mono(file, style) = (
+  weights
+  .map(weight => face(
+    "Chivo Mono",
+    file,
+    str(weight),
+    style: style,
+    format: "truetype",
+  ))
+  .join()
+)
 #let style = (
   reforma("HK Grotesk", "Reforma2018")
     + reforma("Reforma 1918", "Reforma1918")
-    + face("Cascadia Mono", "ChivoMono.ttf", "100 900", format: "truetype")
-    + face(
-      "Cascadia Mono",
-      "ChivoMono-Italic.ttf",
-      "100 900",
-      style: "italic",
-      format: "truetype",
-    )
+    + mono("ChivoMono.ttf", "normal")
+    + mono("ChivoMono-Italic.ttf", "italic")
     + face("NewComputerModernMath", "IBMPlexMath-Regular.woff2", "400")
     + "body.docs h1,body.docs h2,body.docs h3{font-family:\"Reforma 1918\",\"HK Grotesk\",serif;font-variant-numeric:lining-nums;}"
+    + "pre,code,.code,.pill{font-family:\"Chivo Mono\",\"Courier New\",monospace;}"
 )
 
 // A simple favicon, so the tab does not show a generic icon (and does not imitate
