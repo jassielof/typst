@@ -246,7 +246,7 @@
           .flatten(),
       )
       context if strings.len() > 10 and target() == "html" {
-        folding-details(title: [View options], t)
+        folding-details(title: [#stdx.ui("View options")], t)
       } else {
         t
       }
@@ -291,7 +291,7 @@
     html.a(
       href: url,
       class: "sources-link",
-      use-icon(16, "code", "Go to source"),
+      use-icon(16, "code", stdx.ui("Go to source")),
     )
   }
 }
@@ -323,19 +323,19 @@
 
   if info.feature != none {
     gap
-    item(16, "toggle", "Feature toggle", {
-      [Requires the ]
+    item(16, "toggle", stdx.ui("Feature toggle"), {
+      [#stdx.ui("Requires the ")]
       raw(info.feature)
-      [ feature]
+      [#stdx.ui(" feature")]
     })
   }
 
   if info.deprecation != none {
     gap
-    item(16, "warn", "Warning", {
+    item(16, "warn", stdx.ui("Warning"), {
       text-with-code(info.deprecation.message)
       if info.deprecation.until != none {
-        [; it will be removed in Typst #info.deprecation.until]
+        [#stdx.ui("; it will be removed in Typst ")#info.deprecation.until]
       }
     })
   }
