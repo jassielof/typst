@@ -716,3 +716,6 @@
 "Open navigation" = "Abrir navegación"
 "Development build" = "Versión de desarrollo"
 "Summary" = "Resumen"
+
+# The official site (typst.app) is indexed; the standalone build is not.
+"noindex" = "index, follow"
