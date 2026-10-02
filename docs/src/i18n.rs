@@ -14,7 +14,7 @@ use std::process::ExitCode;
 use std::sync::{Mutex, OnceLock};
 
 use ecow::EcoString;
-use typst::foundations::{Bytes, Dict, IntoValue, Scope, Styles, Value, func};
+use typst::foundations::{Bytes, Dict, FromValue, IntoValue, Scope, Styles, Value, func};
 use typst::syntax::{FileId, RootedPath, VirtualRoot};
 use typst::text::{Font, Lang, Region, TextElem};
 
@@ -193,6 +193,7 @@ pub fn define(scope: &mut Scope) {
     }
     scope.define("html-attrs", html_attrs);
     scope.define_func::<i18n_docs>();
+    scope.define_func::<i18n_docs_or>();
     scope.define_func::<ui>();
     scope.define_func::<font>();
 }
@@ -214,6 +215,25 @@ fn i18n_docs(path: RootedPath, key: EcoString) -> Value {
         Some(text) => Value::Str(text.as_str().into()),
         None => Value::None,
     }
+}
+
+/// Like `i18n-docs`, but takes the `docs` and `def-site` of a reflected item
+/// and returns the translation or the original `docs`.
+#[func]
+fn i18n_docs_or(docs: Value, def_site: Value) -> Value {
+    if let Value::Dict(site) = &def_site
+        && let (Ok(path), Ok(key)) = (site.get("path"), site.get("key"))
+        && let (Ok(path), Ok(key)) = (
+            RootedPath::from_value(path.clone()),
+            EcoString::from_value(key.clone()),
+        )
+    {
+        let tr = i18n_docs(path, key);
+        if !matches!(tr, Value::None) {
+            return tr;
+        }
+    }
+    docs
 }
 
 /// Translates a UI string, falling back to the English text.
