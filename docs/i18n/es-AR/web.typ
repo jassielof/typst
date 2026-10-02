@@ -88,7 +88,7 @@
     + ".es-ar-theme button:first-child{border-radius:6px 0 0 6px;}"
     + ".es-ar-theme button:last-child{border-radius:0 6px 6px 0;}"
     + ".es-ar-theme button+button{border-left-width:0;}"
-    + ".es-ar-theme button[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:#fff;}"
+    + ".es-ar-theme button[aria-pressed=true]{background:var(--brand);border-color:var(--brand-line,var(--brand));color:var(--brand-ink,#fff);}"
     + dark-css
 )
 
@@ -98,7 +98,7 @@
 #asset(base + "assets/favicon.svg", bytes(favicon))
 
 // A prominent link to the PDF edition, in the banner and in the sidebar.
-#let pdf-style = "display: inline-block; padding: 0.15em 0.8em; border: 1px solid var(--brand, #239dad); border-radius: 6px; background: var(--brand, #239dad); color: #fff; font-weight: bold; text-decoration: none;"
+#let pdf-style = "display: inline-block; padding: 0.15em 0.8em; border: 1px solid var(--brand-line, #239dad); border-radius: 6px; background: var(--brand, #239dad); color: var(--brand-ink, #fff); font-weight: bold; text-decoration: none;"
 #let pdf-button(block: false) = html.a(
   href: base + "docs-es-AR.pdf",
   style: pdf-style + if block { " display: block; text-align: center; margin: 1.5em 0 0.5em; padding: 0.5em 0.8em;" },

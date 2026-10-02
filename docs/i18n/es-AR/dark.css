@@ -8,7 +8,9 @@
   --action-secondary-plain: #22212a;
   --action-secondary-shaded: #2a2933;
   --action-secondary-hover: #34333f;
-  --brand: #2bb3c4;
+  --brand: #165c67;
+  --brand-line: #2f95a3;
+  --brand-ink: #e4f6f9;
   --text-primary: #ececf2;
   --text-disabled: rgba(236, 236, 242, 0.5);
   --text-c-comment: #9d9da8;
@@ -84,7 +86,6 @@
 @@ .symbol-flyout .latex-name { color: rgba(236, 236, 242, 0.5); }
 /* Our own additions. */
 @@ #es-ar-notice { background: #2e2810; color: #f2e6b0; border-bottom-color: #6b5a14; }
-@@ .es-ar-theme button[aria-pressed="true"] { background: #2bb3c4; border-color: #2bb3c4; color: #0d1f22; }
 /* Syntax colors are emitted inline by the docs; remap them to the dark set. */
 @@ [style*="color: #d73948"] { color: var(--text-c-keyword) !important; }
 @@ [style*="color: #4b69c6"] { color: var(--text-c-func) !important; }
