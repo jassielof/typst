@@ -50,7 +50,7 @@ use crate::text::{Lang, LocalName, Region, SmallcapsElem, SubElem, SuperElem, Te
 ///
 /// - A Hayagriva `.yaml`/`.yml` file. Hayagriva is a new bibliography file
 ///   format designed for use with Typst. Visit its
-///   #link("https://github.com/typst/hayagriva/blob/main/docs/file-format.md")[documentation]
+///   #link("https://github.com/typst/hayagriva/blob/v" + stdx.hayagriva-version + "/docs/file-format.md")[documentation]
 ///   for more details.
 /// - A BibLaTeX `.bib` file.
 ///

@@ -246,6 +246,8 @@ fn stdx_module(is_dev_version: bool) -> Module {
     scope.define("raw-langs", crate::reflect::raw_langs());
     scope.define("commit", display_commit(typst_utils::version().commit()));
     scope.define("is-dev-version", is_dev_version);
+    // The Hayagriva version from `Cargo.lock`, for linking to matching docs.
+    scope.define("hayagriva-version", env!("TYPST_HAYAGRIVA_VERSION"));
     Module::new("stdx", scope)
 }
 

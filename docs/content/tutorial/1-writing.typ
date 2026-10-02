@@ -127,7 +127,7 @@ we don't take action soon!
 = #short-or-long[Bibliography][Adding a bibliography] <bibliography>
 As you write up your report, you need to back up some of your claims. You can add a bibliography to your document with the @bibliography function. This function expects a path to a bibliography file.
 
-Typst's native bibliography format is #link("https://github.com/typst/hayagriva/blob/main/docs/file-format.md")[Hayagriva], but for compatibility you can also use BibLaTeX files. As your classmate has already done a literature survey and sent you a `.bib` file, you'll use that one. Upload the file through the file panel to access it in Typst.
+Typst's native bibliography format is #link("https://github.com/typst/hayagriva/blob/v" + stdx.hayagriva-version + "/docs/file-format.md")[Hayagriva], but for compatibility you can also use BibLaTeX files. As your classmate has already done a literature survey and sent you a `.bib` file, you'll use that one. Upload the file through the file panel to access it in Typst.
 
 Once the document contains a bibliography, you can start citing from it. Citations use the same syntax as references to a label. As soon as you cite a source for the first time, it will appear in the bibliography section of your document. Typst supports different citation and bibliography styles. Consult the @bibliography.style[reference] for more details.
 

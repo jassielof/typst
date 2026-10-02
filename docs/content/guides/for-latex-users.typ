@@ -559,7 +559,7 @@ The example below
 This should be a good starting point! If you want to go further, why not create a reusable template?
 
 = Bibliographies <bibliographies>
-Typst includes a fully-featured bibliography system that is compatible with BibTeX files. You can continue to use your `.bib` literature libraries by loading them with the @bibliography function. Another possibility is to use #link("https://github.com/typst/hayagriva/blob/main/docs/file-format.md")[Typst's YAML-based native format].
+Typst includes a fully-featured bibliography system that is compatible with BibTeX files. You can continue to use your `.bib` literature libraries by loading them with the @bibliography function. Another possibility is to use #link("https://github.com/typst/hayagriva/blob/v" + stdx.hayagriva-version + "/docs/file-format.md")[Typst's YAML-based native format].
 
 Typst uses the Citation Style Language to define and process citation and bibliography styles. You can compare CSL files to BibLaTeX's `.bbx` files. The compiler already includes @bibliography.style[over 80 citation styles], but you can use any CSL-compliant style from the #link("https://github.com/citation-style-language/styles")[CSL repository] or write your own.
 
