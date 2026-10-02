@@ -204,7 +204,7 @@
       }
       if not muted {
         register-index-item(
-          kind: "Parameter of " + repr(func),
+          kind: stdx.ui("Parameter of ") + repr(func),
           title: title-case(param.name),
           dest: it.location(),
         )
@@ -466,7 +466,7 @@
       register-def(func, it.location())
       if not muted {
         register-index-item(
-          kind: "Function",
+          kind: stdx.ui("Function"),
           title: info.title,
           dest: it.location(),
           keywords: info.keywords,
@@ -578,7 +578,7 @@
     show heading: it => {
       register-def(ty, it.location())
       register-index-item(
-        kind: "Type",
+        kind: stdx.ui("Type"),
         title: info.title,
         dest: it.location(),
         keywords: info.keywords,
@@ -712,7 +712,7 @@
   binding-info,
 ) = {
   show: func-or-ty-section.with(
-    kind: "Function",
+    kind: stdx.ui("Function"),
     route: base-route + "/" + name,
     title: info.title,
     title-fmt: raw(info.name),
@@ -753,7 +753,7 @@
     title-fmt: ty-pill(ty, linked: false),
     subtitle: ty-subtitle(ty-info, binding-info),
     has-summary: true,
-    kind: "Type",
+    kind: stdx.ui("Type"),
     keywords: ty-info.keywords,
     def-target: ty,
     description: "Documentation for the `" + name + "` type.",
@@ -792,7 +792,7 @@
 #let group-section(base-route, base-target, info) = {
   let def-target = group-target(base-target, info)
   show: docs-section.with(
-    kind: "Group",
+    kind: stdx.ui("Group"),
     route: base-route + "/" + info.name,
     title: info.title,
     description: info.description,
@@ -1029,7 +1029,7 @@
   )
 
   func-or-ty-section(
-    kind: "Function",
+    kind: stdx.ui("Function"),
     route: route,
     title: info.title,
     title-fmt: raw(info.name),
@@ -1120,7 +1120,7 @@
     has-summary: true,
     route: route,
     def-target: def-target,
-    kind: "Category",
+    kind: stdx.ui("Category"),
     description: description,
     {
       prose-styling(body, base-target: def-target)
