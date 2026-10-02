@@ -206,22 +206,22 @@ Probablemente ya notaste que los argumentos tienen tipos de datos distintivos. T
 #docs-table(
   table.header[Tipo de dato][Ejemplo],
 
-  [@content[Content]],
+  [@content[Contenido]],
   [`{[*fast* typesetting]}`],
 
-  [@str[String]],
+  [@str[Cadena de texto]],
   [`{"Pietro S. Author"}`],
 
-  [@int[Integer]],
+  [@int[Entero]],
   [`{23}`],
 
-  [@float[Floating point number]],
+  [@float[Número de punto flotante]],
   [`{1.459}`],
 
-  [@length[Absolute length]],
+  [@length[Longitud absoluta]],
   [`{12pt}`, `{5in}`, `{0.3cm}`, ...],
 
-  [@ratio[Relative length]],
+  [@ratio[Longitud relativa]],
   [`{65%}`],
 )
 

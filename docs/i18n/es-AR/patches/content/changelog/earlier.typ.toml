@@ -234,3 +234,4 @@
 "- Fixed tons of math bugs" = "- Se corrigieron toneladas de errores de matemática"
 "- Bugfixes for performance, file management, editing reliability" = "- Correcciones de rendimiento, gestión de archivos y confiabilidad de edición"
 "- Added redirection to the page originally navigated to after signin" = "- Se agregó la redirección a la página a la que se navegó originalmente después de iniciar sesión"
+"#link(\"https://typst.app/blog/2023/january-update\")[Go to the announcement blog post.]" = "#link(\"https://typst.app/blog/2023/january-update\")[Ir a la entrada del blog con el anuncio.]"
