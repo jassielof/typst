@@ -96,6 +96,103 @@
 // the official one).
 #let favicon = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='#239dad'/><text x='32' y='46' font-family='Georgia,serif' font-size='40' font-weight='bold' text-anchor='middle' fill='#fff'>ES</text></svg>"
 #asset(base + "assets/favicon.svg", bytes(favicon))
+#asset(base + "assets/social-card.png", read("social-card.png", encoding: none))
+
+// SEO. `origin` (e.g. `--input origin=https://user.github.io`) is the scheme and
+// host the site is served from; without it, absolute URLs (canonical, social
+// cards, sitemap) are left out. The official docs share the same page paths.
+#let origin = sys.inputs.at("origin", default: none)
+#let official = "https://typst.app/docs/"
+#let site-title = "Documentación de Typst en español"
+#let meta(name, content, key: "name") = html.elem("meta", attrs: ((key): name, content: content))
+#let seo-head(route, title, description) = {
+  let rel = route.slice(base.len())
+  let url = if origin != none { origin + route }
+  let full-title = title + " - " + site-title
+  html.link(rel: "icon", type: "image/svg+xml", href: base + "assets/favicon.svg")
+  for (family, file) in (("Reforma2018", "Gris"), ("Reforma1918", "Negra")) {
+    html.elem("link", attrs: (
+      rel: "preload",
+      "as": "font",
+      type: "font/woff2",
+      crossorigin: "",
+      href: base + "assets/fonts/" + family + "-" + file + ".woff2",
+    ))
+  }
+  html.link(rel: "alternate", hreflang: "en", href: official + rel)
+  html.link(rel: "alternate", hreflang: "x-default", href: official + rel)
+  meta("og:type", "website", key: "property")
+  meta("og:site_name", site-title, key: "property")
+  meta("og:locale", "es_AR", key: "property")
+  meta("og:title", full-title, key: "property")
+  meta("og:description", description, key: "property")
+  meta("twitter:card", "summary_large_image")
+  meta("twitter:title", full-title)
+  meta("twitter:description", description)
+  if url != none {
+    html.link(rel: "canonical", href: url)
+    html.link(rel: "alternate", hreflang: "es-AR", href: url)
+    meta("og:url", url, key: "property")
+    let image = origin + base + "assets/social-card.png"
+    meta("og:image", image, key: "property")
+    meta("og:image:width", "1200", key: "property")
+    meta("og:image:height", "630", key: "property")
+    meta("og:image:alt", site-title, key: "property")
+    meta("twitter:image", image)
+    html.script(type: "application/ld+json", json.encode((
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      headline: title,
+      description: description,
+      inLanguage: "es-AR",
+      url: url,
+      isBasedOn: official + rel,
+      isPartOf: (
+        "@type": "WebSite",
+        name: site-title,
+        url: origin + base,
+        inLanguage: "es-AR",
+      ),
+    )))
+  }
+}
+
+// Crawler files. A sitemap (and, for a custom domain at the root, robots.txt)
+// plus a Spanish 404 page.
+#context if origin != none {
+  let pages = query(<metadata-page>).map(page => page.value.route)
+  asset(
+    base + "sitemap.xml",
+    bytes(
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        + "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
+        + pages.map(route => "<url><loc>" + origin + route + "</loc></url>\n").join()
+        + "</urlset>\n",
+    ),
+  )
+  asset(
+    base + "robots.txt",
+    bytes("User-agent: *\nAllow: /\n\nSitemap: " + origin + base + "sitemap.xml\n"),
+  )
+}
+#document(base + "404.html", title: "Página no encontrada - " + site-title, html.html(lang: "es-AR", {
+  html.head({
+    html.meta(charset: "utf-8")
+    html.meta(name: "viewport", content: "width=device-width, initial-scale=1")
+    html.meta(name: "robots", content: "noindex")
+    html.title("Página no encontrada - " + site-title)
+    html.style("body{font-family:sans-serif;max-width:36em;margin:4em auto;padding:0 1em;line-height:1.5}")
+  })
+  html.body({
+    html.h1[Página no encontrada]
+    html.p[No existe esta página en la documentación de Typst en español.]
+    html.p({
+      html.a(href: base)[Ir al inicio de la documentación]
+      [ · ]
+      html.a(href: official)[Documentación oficial (en inglés)]
+    })
+  })
+}))
 
 // A prominent link to the PDF edition, in the banner and in the sidebar.
 #let pdf-style = "display: inline-block; padding: 0.15em 0.8em; border: 1px solid var(--brand-line, #239dad); border-radius: 6px; background: var(--brand, #239dad); color: var(--brand-ink, #fff); font-weight: bold; text-decoration: none;"
@@ -112,8 +209,7 @@
 #let init-js = (
   "(function(){var n=document.getElementById('es-ar-notice');"
     + "try{if(n&&sessionStorage.getItem('es-ar-notice')==='closed')n.style.display='none'}catch(e){}"
-    + "var l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';"
-    + "l.href='" + base + "assets/favicon.svg';document.head.appendChild(l)})()"
+    + "})()"
 )
 // Theme choice: "light", "dark" or none (follow the system, the default).
 #let theme-js = (
@@ -171,6 +267,7 @@
   content-base: base,
   asset-base: base + "assets/",
   insertions: (
+    head: seo-head,
     "page-top": notice,
     "after-nav-items": { pdf-button(block: true); theme-switch },
   ),

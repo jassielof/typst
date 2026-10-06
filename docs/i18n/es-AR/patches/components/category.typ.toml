@@ -20,3 +20,5 @@
 "Positional parameters are specified in order, without names." = "Los parámetros posicionales se especifican en orden, sin nombres."
 "binding-info.title," = "stdx.ui(binding-info.title),"
 "info.title," = "stdx.ui(info.title),"
+"description: \"Documentation for the `\" + name + \"` function.\"," = "description: stdx.i18n-description(\"la función\", name, info.docs, info.at(\"def-site\", default: none)),"
+"description: \"Documentation for the `\" + name + \"` type.\"," = "description: stdx.i18n-description(\"el tipo\", name, ty-info.docs, ty-info.at(\"def-site\", default: none)),"

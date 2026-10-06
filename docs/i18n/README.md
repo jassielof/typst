@@ -25,6 +25,14 @@ sin tocar el CSS original). La paleta oscura está en `docs/i18n/es-AR/dark.css`
 redefine las variables y los colores fijos del CSS de upstream; si upstream agrega
 colores nuevos, se ajusta ahí.
 
+SEO: con `--input origin=https://host` el sitio agrega, en el `<head>` de cada
+página (mediante la inserción `head` de `web.typ`, que upstream no usa), URL canónica,
+`hreflang` hacia la página equivalente de typst.app/docs, Open Graph/Twitter Card
+(con `social-card.png`), JSON-LD, precarga de las tipografías y un favicon; además
+publica `sitemap.xml`, `robots.txt` y una página 404 en español. Las descripciones de
+las páginas de funciones y tipos se arman con la primera frase traducida de su
+documentación (`i18n-description` en `docs/src/i18n.rs`).
+
 El workflow `.github/workflows/docs-es-ar.yml` compila el PDF y el sitio en cada
 push a `docs-translation` o a demanda (*Run workflow*), guarda el PDF como artifact
 (`typst-docs-es-AR`) y despliega el sitio y el PDF (`/docs-es-AR.pdf`) en GitHub

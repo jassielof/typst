@@ -194,6 +194,7 @@ pub fn define(scope: &mut Scope) {
     scope.define("html-attrs", html_attrs);
     scope.define_func::<i18n_docs>();
     scope.define_func::<i18n_docs_or>();
+    scope.define_func::<i18n_description>();
     scope.define_func::<ui>();
     scope.define_func::<font>();
 }
@@ -234,6 +235,54 @@ fn i18n_docs_or(docs: Value, def_site: Value) -> Value {
         }
     }
     docs
+}
+
+/// Builds a plain-text `<meta name="description">` for a definition page:
+/// what it is, its name, and the (translated) first sentence(s) of its docs,
+/// without markup and cut at a word boundary.
+#[func]
+fn i18n_description(
+    kind: EcoString,
+    name: EcoString,
+    docs: Value,
+    def_site: Value,
+) -> EcoString {
+    let docs = i18n_docs_or(docs, def_site);
+    let text = match &docs {
+        Value::Str(s) => s.as_str().to_string(),
+        _ => String::new(),
+    };
+    let first = text.split("\n\n").next().unwrap_or("").replace('\n', " ");
+    let mut plain = String::new();
+    let mut chars = first.chars().peekable();
+    while let Some(c) = chars.next() {
+        match c {
+            '`' | '*' | '_' | '#' | '$' | '\\' => {}
+            '@' => {
+                // Skip reference labels like `@figure` (keep the text of `@x[text]`).
+                while chars.peek().is_some_and(|c| c.is_alphanumeric() || matches!(c, ':' | '-')) {
+                    chars.next();
+                }
+            }
+            '[' | ']' => {}
+            c => plain.push(c),
+        }
+    }
+    let plain = plain.split_whitespace().collect::<Vec<_>>().join(" ");
+    let mut out = format!("Documentación de {kind} {name} de Typst.");
+    if !plain.is_empty() {
+        out.push(' ');
+        let budget = 155usize.saturating_sub(out.chars().count());
+        if plain.chars().count() <= budget {
+            out.push_str(&plain);
+        } else {
+            let cut: String = plain.chars().take(budget.saturating_sub(1)).collect();
+            let cut = cut.rsplit_once(' ').map_or(cut.as_str(), |(head, _)| head);
+            out.push_str(cut.trim_end_matches(&[',', ';', ':', '.'][..]));
+            out.push('…');
+        }
+    }
+    out.into()
 }
 
 /// Translates a UI string, falling back to the English text.

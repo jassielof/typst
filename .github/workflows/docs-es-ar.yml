@@ -36,13 +36,15 @@ jobs:
 
 
       # The website is served from `/<repo>/` on a project site. Set the repository
-      # variable DOCS_BASE (e.g. `/`) when using a custom domain.
+      # variables DOCS_BASE (e.g. `/`) and DOCS_ORIGIN (e.g. `https://docs.example.org`)
+      # when using a custom domain. The origin feeds canonical URLs and the sitemap.
       - name: Compile website
         env:
           BASE: ${{ vars.DOCS_BASE || format('/{0}/', github.event.repository.name) }}
+          ORIGIN: ${{ vars.DOCS_ORIGIN || format('https://{0}.github.io', github.repository_owner) }}
         run: |
           cargo docit compile --format website --lang es-AR --release \
-            --input "base=$BASE" docs/i18n/es-AR/web.typ docs/dist/site-es-AR
+            --input "base=$BASE" --input "origin=$ORIGIN" docs/i18n/es-AR/web.typ docs/dist/site-es-AR
           mkdir _site
           cp -r "docs/dist/site-es-AR${BASE}." _site/
           cp docs/dist/docs-es-AR.pdf _site/docs-es-AR.pdf
