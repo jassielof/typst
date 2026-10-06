@@ -121,6 +121,7 @@
       html.link(href: stdx.config.asset-base + "docs.css", rel: "stylesheet")
       html.script(type: "module", src: stdx.config.asset-base + "docs.js")
       html.title(title + " - " + stdx.ui("Typst Documentation"))
+      if "head" in stdx.config.insertions { (stdx.config.insertions.head)(route, title, description) }
     })
 
     html.body(class: classnames("docs", class), {
