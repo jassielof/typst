@@ -80,7 +80,7 @@
     + face("NewComputerModernMath", "IBMPlexMath-Regular.woff2", "400")
     + "body.docs h1,body.docs h2,body.docs h3{font-family:\"Reforma 1918\",\"HK Grotesk\",serif;font-variant-numeric:lining-nums;}"
     + "pre,code,.code,.pill{font-family:\"Chivo Mono\",\"Courier New\",monospace;}"
-    + "#es-ar-notice{position:relative;box-sizing:border-box;width:100%;padding:.5em 3em .5em 1em;font-size:.8em;line-height:1.4;text-align:center;background:#fff7e0;color:#4a3b00;border-bottom:1px solid #e6c85c;}"
+    + "#es-ar-notice{position:relative;box-sizing:border-box;width:100%;padding:.5em 3em .5em 1em;font-size:.8em;line-height:1.7;text-align:center;background:#fff7e0;color:#4a3b00;border-bottom:1px solid #e6c85c;}"
     + "#es-ar-notice button{position:absolute;top:.2em;right:.5em;padding:0 .4em;border:0;background:none;color:inherit;font-size:1.6em;line-height:1;cursor:pointer;}"
     + ".es-ar-theme{margin:1.5em 0 0;font-size:.8em;color:var(--text-primary);}"
     + ".es-ar-theme>div{display:flex;margin-top:.4em;}"
@@ -247,7 +247,6 @@
       [. No es una publicación de Typst GmbH ni cuenta con su aval; ante cualquier duda, prevalece la ]
       link("https://typst.app/docs")[documentación oficial en inglés]
       [. ]
-      pdf-button()
       [ Tipografía: ]
       link("https://www.pampatype.com/reforma")[Reforma]
       [, de PampaType.]
