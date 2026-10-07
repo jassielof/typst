@@ -246,9 +246,9 @@
       link("https://github.com/jassielof")[Jassiel Ovando]
       [. No es una publicación de Typst GmbH ni cuenta con su aval; ante cualquier duda, prevalece la ]
       link("https://typst.app/docs")[documentación oficial en inglés]
-      [. ¿Un error de traducción o una sugerencia? ]
-      link(issues)[Reportalo]
-      [. Tipografía: ]
+      [. ]
+      link(issues)[¿Un error de traducción o una sugerencia? Reportalo.]
+      [ Tipografía: ]
       link("https://www.pampatype.com/reforma")[Reforma]
       [, de PampaType.]
       html.elem("button", attrs: (
