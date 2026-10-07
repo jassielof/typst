@@ -224,10 +224,8 @@ fn i18n_docs(path: RootedPath, key: EcoString) -> Value {
 fn i18n_docs_or(docs: Value, def_site: Value) -> Value {
     if let Value::Dict(site) = &def_site
         && let (Ok(path), Ok(key)) = (site.get("path"), site.get("key"))
-        && let (Ok(path), Ok(key)) = (
-            RootedPath::from_value(path.clone()),
-            EcoString::from_value(key.clone()),
-        )
+        && let (Ok(path), Ok(key)) =
+            (RootedPath::from_value(path.clone()), EcoString::from_value(key.clone()))
     {
         let tr = i18n_docs(path, key);
         if !matches!(tr, Value::None) {
@@ -260,7 +258,10 @@ fn i18n_description(
             '`' | '*' | '_' | '#' | '$' | '\\' => {}
             '@' => {
                 // Skip reference labels like `@figure` (keep the text of `@x[text]`).
-                while chars.peek().is_some_and(|c| c.is_alphanumeric() || matches!(c, ':' | '-')) {
+                while chars
+                    .peek()
+                    .is_some_and(|c| c.is_alphanumeric() || matches!(c, ':' | '-'))
+                {
                     chars.next();
                 }
             }
@@ -272,7 +273,7 @@ fn i18n_description(
     let mut out = format!("Documentación de {kind} {name} de Typst.");
     if !plain.is_empty() {
         out.push(' ');
-        let budget = 155usize.saturating_sub(out.chars().count());
+        let budget = 155_usize.saturating_sub(out.chars().count());
         if plain.chars().count() <= budget {
             out.push_str(&plain);
         } else {
