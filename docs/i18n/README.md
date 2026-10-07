@@ -33,6 +33,10 @@ publica `sitemap.xml`, `robots.txt` y una página 404 en español. Las descripci
 las páginas de funciones y tipos se arman con la primera frase traducida de su
 documentación (`i18n-description` en `docs/src/i18n.rs`).
 
+El favicon (`favicon.svg`) y la miniatura social (`social-card.png`) se generan con
+Typst a partir de `docs/i18n/es-AR/brand/*.typ` (con Reforma 1969); los comandos están
+en el encabezado de cada archivo.
+
 El workflow `.github/workflows/docs-es-ar.yml` compila el PDF y el sitio en cada
 push a `docs-translation` o a demanda (*Run workflow*), guarda el PDF como artifact
 (`typst-docs-es-AR`) y despliega el sitio y el PDF (`/docs-es-AR.pdf`) en GitHub

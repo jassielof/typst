@@ -92,10 +92,8 @@
     + dark-css
 )
 
-// A simple favicon, so the tab does not show a generic icon (and does not imitate
-// the official one).
-#let favicon = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='#239dad'/><text x='32' y='46' font-family='Georgia,serif' font-size='40' font-weight='bold' text-anchor='middle' fill='#fff'>ES</text></svg>"
-#asset(base + "assets/favicon.svg", bytes(favicon))
+// The favicon and the social card are generated with Typst (see `brand/`).
+#asset(base + "assets/favicon.svg", read("favicon.svg", encoding: none))
 #asset(base + "assets/social-card.png", read("social-card.png", encoding: none))
 
 // SEO. `origin` (e.g. `--input origin=https://user.github.io`) is the scheme and
@@ -103,7 +101,7 @@
 // cards, sitemap) are left out. The official docs share the same page paths.
 #let origin = sys.inputs.at("origin", default: none)
 #let official = "https://typst.app/docs/"
-#let site-title = "Documentación de Typst en español"
+#let site-title = "Documentación de Typst"
 #let meta(name, content, key: "name") = html.elem("meta", attrs: ((key): name, content: content))
 #let seo-head(route, title, description) = {
   let rel = route.slice(base.len())
@@ -137,7 +135,7 @@
     meta("og:image", image, key: "property")
     meta("og:image:width", "1200", key: "property")
     meta("og:image:height", "630", key: "property")
-    meta("og:image:alt", site-title, key: "property")
+    meta("og:image:alt", "Documentación de Typst, traducción rioplatense", key: "property")
     meta("twitter:image", image)
     html.script(type: "application/ld+json", json.encode((
       "@context": "https://schema.org",
@@ -223,6 +221,8 @@
     + "if(t!=='system')document.documentElement.setAttribute('data-theme',t);"
     + "document.addEventListener('DOMContentLoaded',function(){var b=document.querySelectorAll('.es-ar-theme button');for(var i=0;i<b.length;i++)b[i].setAttribute('aria-pressed',String(b[i].dataset.theme===t))})})()"
 )
+#let issues = "https://github.com/jassielof/typst/issues"
+#let report-link = html.div(class: "es-ar-theme", html.a(href: issues)[Reportar un error de traducción])
 #let theme-switch = html.div(class: "es-ar-theme", {
   [Tema]
   html.div(
@@ -246,8 +246,9 @@
       link("https://github.com/jassielof")[Jassiel Ovando]
       [. No es una publicación de Typst GmbH ni cuenta con su aval; ante cualquier duda, prevalece la ]
       link("https://typst.app/docs")[documentación oficial en inglés]
-      [. ]
-      [ Tipografía: ]
+      [. ¿Un error de traducción o una sugerencia? ]
+      link(issues)[Abrí un issue]
+      [. Tipografía: ]
       link("https://www.pampatype.com/reforma")[Reforma]
       [, de PampaType.]
       html.elem("button", attrs: (
@@ -268,6 +269,6 @@
   insertions: (
     head: seo-head,
     "page-top": notice,
-    "after-nav-items": { pdf-button(block: true); theme-switch },
+    "after-nav-items": { pdf-button(block: true); theme-switch; report-link },
   ),
 )
