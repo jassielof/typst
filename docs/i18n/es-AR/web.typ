@@ -242,7 +242,7 @@
     id: "es-ar-notice",
     {
       strong[Traducción no oficial]
-      [ al español rioplatense (es-AR), generada con IA (Claude Sonnet 5.5) bajo la dirección y revisión de ]
+      [ al español rioplatense, generada con IA (Claude Sonnet 5.5) bajo la dirección y revisión de ]
       link("https://github.com/jassielof")[Jassiel Ovando]
       [. No es una publicación de Typst GmbH ni cuenta con su aval; ante cualquier duda, prevalece la ]
       link("https://typst.app/docs")[documentación oficial en inglés]

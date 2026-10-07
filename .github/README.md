@@ -1,8 +1,8 @@
-# Documentación de Typst en español rioplatense (es-AR)
+# Documentación de Typst en español rioplatense
 
 > **Traducción no oficial.** Este repositorio es un *fork* de [typst/typst](https://github.com/typst/typst) cuyo único propósito es mantener una traducción de la **documentación** de Typst al español de Argentina (voseo). No es una publicación de Typst GmbH ni cuenta con su aval. Ante cualquier duda, prevalece la [documentación oficial en inglés](https://typst.app/docs).
 >
-> *This fork only maintains an unofficial Spanish (es-AR) translation of Typst's documentation. For Typst itself (the compiler, issues, releases), go to [typst/typst](https://github.com/typst/typst).*
+> *This fork only maintains an unofficial Rioplatense Spanish translation of Typst's documentation. For Typst itself (the compiler, issues, releases), go to [typst/typst](https://github.com/typst/typst).*
 
 ## Leer la documentación
 
