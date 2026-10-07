@@ -108,7 +108,7 @@
 #let seo-head(route, title, description) = {
   let rel = route.slice(base.len())
   let url = if origin != none { origin + route }
-  let full-title = title + " - " + site-title
+  let full-title = title + " - Documentación de Typst"
   html.link(rel: "icon", type: "image/svg+xml", href: base + "assets/favicon.svg")
   for (family, file) in (("Reforma2018", "Gris"), ("Reforma1918", "Negra")) {
     html.elem("link", attrs: (
@@ -180,7 +180,7 @@
     html.meta(charset: "utf-8")
     html.meta(name: "viewport", content: "width=device-width, initial-scale=1")
     html.meta(name: "robots", content: "noindex")
-    html.title("Página no encontrada - " + site-title)
+    html.title("Página no encontrada - Documentación de Typst")
     html.style("body{font-family:sans-serif;max-width:36em;margin:4em auto;padding:0 1em;line-height:1.5}")
   })
   html.body({
