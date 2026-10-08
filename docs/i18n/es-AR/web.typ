@@ -92,8 +92,9 @@
     + dark-css
 )
 
-// The favicon and the social card are generated with Typst (see `brand/`).
-#asset(base + "assets/favicon.svg", read("favicon.svg", encoding: none))
+// The favicon is a hand-made SVG (outlined text); the social card is generated
+// with Typst (see `brand/`).
+#asset(base + "assets/favicon.svg", read("brand/favicon.svg", encoding: none))
 #asset(base + "assets/social-card.png", read("social-card.png", encoding: none))
 
 // SEO. `origin` (e.g. `--input origin=https://user.github.io`) is the scheme and
