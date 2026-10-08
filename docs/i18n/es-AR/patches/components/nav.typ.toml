@@ -1,3 +1,4 @@
 # Line patches for docs/components/nav.typ (see docs/src/i18n.rs).
 "hint: [Previous page]," = "hint: [Página anterior],"
 "hint: [Next page]," = "hint: [Página siguiente],"
+"if title == none or title == \"Overview\" { continue }" = "if title == none or title == \"Descripción general\" { continue }"
