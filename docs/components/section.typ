@@ -70,6 +70,7 @@
   class: none,
   nav-buttons: none,
   kind: none,
+  path: none,
   keywords: none,
   description: none,
   body,
@@ -98,6 +99,7 @@
     register-index-item(
       kind: kind,
       title: title,
+      path: path,
       dest: route,
       keywords: keywords,
     )
@@ -185,6 +187,8 @@
 
   // The kind of section. This is displayed in the search result for the page.
   kind: none,
+  // The canonical path for this item in Typst's standard library.
+  path: none,
   // Keywords for the page. The page can be found in search with these.
   keywords: (),
   // The plain-text description of the HTML page.
@@ -233,6 +237,7 @@
       class: class,
       nav-buttons: nav-buttons,
       kind: kind,
+      path: path,
       keywords: keywords,
       description: description,
       body,
