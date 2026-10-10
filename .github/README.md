@@ -7,7 +7,7 @@
 ## Leer la documentación
 
 - 🌐 **Sitio web:** <https://jassielof.github.io/typst/>
-- 📄 **PDF:** <https://jassielof.github.io/typst/docs-es-AR.pdf>
+- 📄 **PDF:** <https://jassielof.github.io/typst/Documentaci%C3%B3n%20de%20Typst.pdf>
 - 🇬🇧 **Documentación oficial:** <https://typst.app/docs>
 
 Ambos se generan automáticamente con GitHub Actions en cada cambio de la rama `docs-translation` (la rama predeterminada de este repositorio).

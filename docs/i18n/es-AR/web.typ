@@ -196,7 +196,7 @@
 // A prominent link to the PDF edition, in the banner and in the sidebar.
 #let pdf-style = "display: inline-block; padding: 0.15em 0.8em; border: 1px solid var(--brand-line, #239dad); border-radius: 6px; background: var(--brand, #239dad); color: var(--brand-ink, #fff); font-weight: bold; text-decoration: none;"
 #let pdf-button(block: false) = html.a(
-  href: base + "docs-es-AR.pdf",
+  href: base + "Documentaci%C3%B3n%20de%20Typst.pdf",
   style: pdf-style + if block { " display: block; text-align: center; margin: 1.5em 0 0.5em; padding: 0.5em 0.8em;" } else { " font-size: 1em; line-height: 1.3; padding: 0.05em 0.7em; margin: 0 0.2em; border-radius: 4px; font-weight: 600;" },
   [Descargar el PDF],
 )

@@ -50,7 +50,7 @@ jobs:
             --input "base=$BASE" --input "origin=$ORIGIN" docs/i18n/es-AR/web.typ docs/dist/site-es-AR
           mkdir _site
           cp -r "docs/dist/site-es-AR${BASE}." _site/
-          cp docs/dist/docs-es-AR.pdf _site/docs-es-AR.pdf
+          cp docs/dist/docs-es-AR.pdf "_site/Documentación de Typst.pdf"
 
       - uses: actions/upload-pages-artifact@v5
         with:

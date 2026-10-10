@@ -46,7 +46,7 @@ está en el encabezado del archivo.
 
 El workflow `.github/workflows/docs-es-ar.yml` compila el PDF y el sitio en cada
 push a `docs-translation` o a demanda (*Run workflow*), guarda el PDF como artifact
-(`typst-docs-es-AR`) y despliega el sitio y el PDF (`/docs-es-AR.pdf`) en GitHub
+(`typst-docs-es-AR`) y despliega el sitio y el PDF (`/Documentación de Typst.pdf`) en GitHub
 Pages. La ruta base es `/<repo>/`; con dominio propio, definí la variable de
 repositorio `DOCS_BASE` (p. ej. `/`). Requiere *Settings → Pages → Source: GitHub
 Actions* y permitir `docs-translation` en el entorno `github-pages`.
