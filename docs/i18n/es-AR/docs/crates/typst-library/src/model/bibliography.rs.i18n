@@ -1,4 +1,4 @@
-@@ BibliographyElem  [src:bc18d059]
+@@ BibliographyElem  [src:ef7e2366]
 Una bibliografía / listado de referencias.
 
 Podés crear una bibliografía nueva llamando a esta función con la ruta de un archivo de bibliografía en uno de
@@ -59,12 +59,37 @@ clave de cita referenciada). Esto cubre casos comunes como las bibliografías po
 control más fino, las citas pueden ser apuntadas explícitamente por una bibliografía mediante un selector
 @bibliography.target[`target`].
 
+= Estilizado <styling>
+Algunos estilos de bibliografía dan formato a las entradas con sangría francesa. Por defecto, esos estilos aplican
+una sangría de `{1.5em}` mediante una regla show-set incorporada sobre @par.hanging-indent. Para anular este valor
+por defecto, podés escribir tu propia regla show-set
+#footnote[
+  Un simple `{set par(hanging-indent: ..)}` no tendrá efecto sobre la bibliografía, ya que las reglas show-set
+  (incluidas las incorporadas) tienen prioridad sobre las reglas set comunes.
+],
+que apunte a la bibliografía:
+
+```example
+#show bibliography: set par(
+  hanging-indent: 3em
+)
+
+The Net Wok is ... @netwok
+
+#bibliography(
+  "works.bib",
+  style: "apa",
+)
+```
+
+
 @@ BibliographyElem::full  [src:6f7b8ea8]
 Si se incluyen todas las obras de los archivos de bibliografía dados, incluso las que no se citaron en el
 documento.
 
 Para agregar selectivamente obras citadas individuales sin mostrarlas, también podés usar la función `cite` con
 @cite.form[`form`] establecido en `{none}`.
+
 
 @@ BibliographyElem::group  [src:623a4241]
 Agrupa conceptualmente esta bibliografía con otras bibliografías a los fines de la numeración. Las bibliografías
@@ -125,11 +150,14 @@ El grupo `{auto}` funciona igual que cualquier grupo de cadena, pero es el grupo
   ```
 )
 
+
 @@ BibliographyElem::lang  [src:907a23b8]
 La configuración de idioma del lugar donde está la bibliografía.
 
+
 @@ BibliographyElem::region  [src:2093fb27]
 La configuración de región del lugar donde está la bibliografía.
+
 
 @@ BibliographyElem::sources  [src:96112987]
 Una o varias rutas a archivos `.yaml` de Hayagriva y/o `.bib` de BibLaTeX, o sus bytes sin procesar.
@@ -139,6 +167,7 @@ Puede ser:
 - Bytes sin procesar a partir de los cuales se debe decodificar la bibliografía.
 - Un array en el que cada elemento es una de las opciones anteriores.
 
+
 @@ BibliographyElem::style  [src:83234acd]
 El estilo de bibliografía.
 
@@ -147,6 +176,7 @@ Puede ser:
   listados abajo aparecen dos veces: una con su nombre completo y otra con un alias corto.
 - Una cadena de ruta o @path a un #link("https://citationstyles.org/")[archivo CSL].
 - Bytes sin procesar a partir de los cuales se debe decodificar un estilo CSL.
+
 
 @@ BibliographyElem::target  [src:b605c775]
 Define qué citas se incluyen en la bibliografía.
@@ -191,6 +221,7 @@ Typst asignará automáticamente cada cita del documento a una bibliografía. Co
   ```
 )
 
+
 @@ BibliographyElem::title  [src:9f04c9a6]
 El título de la bibliografía.
 
@@ -202,6 +233,7 @@ El título de la bibliografía.
 El título de la bibliografía no estará numerado por defecto, pero podés forzarlo con una regla show-set:
 `{show bibliography: set heading(numbering: "1.")}`
 
+
 @@ CslIndentElem  [src:25a6a9f6]
 Traducción de `display="indent"` en CSL.
 
@@ -209,6 +241,7 @@ Un `display="block"` simplemente se traduce a un `BlockElem` de Typst. De manera
 `display="indent"` a un `PadElem`, pero (a) todavía no tiene compatibilidad en HTML y (b) un `PadElem` describe un
 relleno fijo, mientras que CSL deja la cantidad de relleno definida por el usuario, por lo que no es un encaje
 perfecto.
+
 
 @@ CslLightElem  [src:7e8af052]
 Traducción de `font-weight="light"` en CSL.
