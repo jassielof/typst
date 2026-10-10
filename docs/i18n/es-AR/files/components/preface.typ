@@ -40,6 +40,8 @@
 
     *Errores y sugerencias.* ¿Encontraste un error de traducción o tenés una sugerencia? Abrí un _issue_ en el repositorio de la traducción: #link("https://github.com/jassielof/typst/issues")[github.com/jassielof/typst/issues]. Los errores de Typst o de la documentación original van en https://github.com/typst/typst/issues
 
+    *Revisión.* Compilada el #stdx.revision.built-long a partir de #if stdx.revision.commit != none [la revisión #link(stdx.revision.repo + "/commit/" + stdx.revision.commit, raw(stdx.revision.short)) (#stdx.revision.date-long)#if stdx.revision.tag != none [, etiqueta #raw(stdx.revision.tag)]] else [una copia sin información de Git], sobre la versión #stdx.revision.version de Typst.
+
     *Cambios de diseño respecto del original.* Esta edición usa otras tipografías: la familia Reforma (de PampaType, creada para la Universidad Nacional de Córdoba): #fonts.body, sin serifa, en lugar de HK Grotesk para el texto, y Reforma 1918, con serifa, para los títulos, que en el original usan la misma tipografía que el texto; #fonts.mono en lugar de Cascadia Mono para el código y #fonts.math en lugar de New Computer Modern Math para las fórmulas. Los ejemplos de código compilados se componen con el idioma español de Argentina, y el código de los ejemplos, que no se tradujo, se muestra tal como en el original.
   ]
 

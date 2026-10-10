@@ -33,6 +33,12 @@ publica `sitemap.xml`, `robots.txt` y una página 404 en español. Las descripci
 las páginas de funciones y tipos se arman con la primera frase traducida de su
 documentación (`i18n-description` en `docs/src/i18n.rs`).
 
+Revisión: la nota de la portada del PDF y la barra lateral de la web muestran el commit
+(con enlace), su fecha, la última etiqueta (si el repositorio tiene alguna), la versión de
+Typst del manifiesto y la fecha de compilación; todo sale de `git` y de `Cargo.toml` al
+compilar (`stdx.revision`, en `docs/src/i18n.rs`). Los enlaces «código fuente» apuntan a
+este repositorio en ese commit. El workflow clona con historial y etiquetas completos.
+
 El favicon es un SVG hecho a mano (`brand/favicon.svg`, con el texto convertido a
 trazados, porque usa una tipografía de pago). La miniatura social (`social-card.png`)
 se genera con Typst a partir de `brand/social-card.typ` (con Reforma 1969); el comando

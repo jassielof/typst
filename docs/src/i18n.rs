@@ -10,8 +10,9 @@
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::process::ExitCode;
+use std::process::{Command, ExitCode};
 use std::sync::{Mutex, OnceLock};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use ecow::EcoString;
 use typst::foundations::{Bytes, Dict, FromValue, IntoValue, Scope, Styles, Value, func};
@@ -28,6 +29,8 @@ struct State {
     /// `docs/i18n/<lang>`.
     root: PathBuf,
     ui: HashMap<String, String>,
+    /// Where and when the docs were built from (see `revision`).
+    revision: Dict,
     /// Parsed sidecar files, keyed by Rust source path.
     sidecars: Mutex<HashMap<String, HashMap<String, String>>>,
 }
@@ -47,10 +50,109 @@ pub fn init(lang: Option<&str>, workspace: &Path) {
             lang: lang.into(),
             root,
             ui,
+            revision: revision(workspace),
             sidecars: Mutex::default(),
         }
     });
     let _ = STATE.set(state);
+}
+
+/// Runs `git` in the workspace and returns its trimmed output, if it succeeded.
+fn git(workspace: &Path, args: &[&str]) -> Option<String> {
+    let out = Command::new("git")
+        .arg("-C")
+        .arg(workspace)
+        .args(args)
+        .output()
+        .ok()?;
+    let text = String::from_utf8(out.stdout).ok()?;
+    let text = text.trim();
+    (out.status.success() && !text.is_empty()).then(|| text.to_string())
+}
+
+/// Describes the revision of the (forked) repository the docs are built from:
+/// the Typst version of the manifest, the nearest tag (if any), the commit and
+/// its date, the build date and the base URL of the sources on GitHub. Missing
+/// pieces are `none`, except `source-base`, which always works.
+fn revision(workspace: &Path) -> Dict {
+    let commit = git(workspace, &["rev-parse", "HEAD"]);
+    let repo = git(workspace, &["remote", "get-url", "origin"])
+        .and_then(|url| {
+            let url = url.trim_end_matches(".git");
+            let path = url
+                .split_once("github.com/")
+                .or_else(|| url.split_once("github.com:"))?
+                .1;
+            let mut parts = path.splitn(2, '/');
+            Some(format!("https://github.com/{}/{}", parts.next()?, parts.next()?))
+        })
+        .unwrap_or_else(|| "https://github.com/typst/typst".into());
+    let source_base = match &commit {
+        Some(commit) => format!("{repo}/blob/{commit}"),
+        None => format!(
+            "https://github.com/typst/typst/blob/{}",
+            typst_utils::version().commit().unwrap_or("main")
+        ),
+    };
+    let opt = |value: Option<String>| value.map_or(Value::None, IntoValue::into_value);
+    let date = git(workspace, &["show", "-s", "--format=%cs", "HEAD"]);
+    let mut dict = Dict::new();
+    dict.insert("version".into(), typst_utils::version().raw().into_value());
+    dict.insert("tag".into(), opt(git(workspace, &["describe", "--tags", "--abbrev=0"])));
+    dict.insert(
+        "short".into(),
+        opt(commit.as_ref().map(|c| c.chars().take(7).collect())),
+    );
+    dict.insert("commit".into(), opt(commit));
+    let built = build_date();
+    dict.insert("date-long".into(), opt(date.as_deref().and_then(long_date)));
+    dict.insert("built-long".into(), opt(long_date(&built)));
+    dict.insert("date".into(), opt(date));
+    dict.insert("built".into(), built.into_value());
+    dict.insert("repo".into(), repo.into_value());
+    dict.insert("source-base".into(), source_base.into_value());
+    dict
+}
+
+/// Formats `YYYY-MM-DD` as e.g. `10 de octubre de 2026` (Spanish only).
+fn long_date(iso: &str) -> Option<String> {
+    const MONTHS: [&str; 12] = [
+        "enero",
+        "febrero",
+        "marzo",
+        "abril",
+        "mayo",
+        "junio",
+        "julio",
+        "agosto",
+        "septiembre",
+        "octubre",
+        "noviembre",
+        "diciembre",
+    ];
+    let mut parts = iso.split('-');
+    let year: u32 = parts.next()?.parse().ok()?;
+    let month: usize = parts.next()?.parse().ok()?;
+    let day: u32 = parts.next()?.parse().ok()?;
+    Some(format!("{day} de {} de {year}", MONTHS.get(month.checked_sub(1)?)?))
+}
+
+/// Today's date (UTC) as `YYYY-MM-DD`.
+fn build_date() -> String {
+    let days = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |d| d.as_secs() / 86_400) as i64;
+    // Civil-from-days (Howard Hinnant).
+    let z = days + 719_468;
+    let era = z.div_euclid(146_097);
+    let doe = z.rem_euclid(146_097);
+    let yoe = (doe - doe / 1_460 + doe / 36_524 - doe / 146_096) / 365;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let day = doy - (153 * mp + 2) / 5 + 1;
+    let month = if mp < 10 { mp + 3 } else { mp - 9 };
+    let year = yoe + era * 400 + i64::from(month <= 2);
+    format!("{year:04}-{month:02}-{day:02}")
 }
 
 /// Returns the path of the translated replacement for a file of the docs
@@ -185,6 +287,7 @@ pub fn define(scope: &mut Scope) {
         text.insert("lang".into(), lang.into_value());
     }
     scope.define("lang", lang);
+    scope.define("revision", state().map(|s| s.revision.clone()).unwrap_or_default());
     scope.define("text-lang", text);
     // Attributes of the `<html>` element (none for the original).
     let mut html_attrs = Dict::new();

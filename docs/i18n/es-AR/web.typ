@@ -224,6 +224,21 @@
 )
 #let issues = "https://github.com/jassielof/typst/issues"
 #let report-link = html.div(class: "es-ar-theme", html.a(href: issues)[Reportar un error de traducción])
+// Which revision of the repository this was built from (see `revision` in
+// `docs/src/i18n.rs`): commit (linked), its date and the Typst version.
+#let revision-note = {
+  let r = stdx.revision
+  html.div(class: "es-ar-theme", {
+    [Revisión ]
+    if r.commit != none {
+      html.a(href: r.repo + "/commit/" + r.commit, r.short)
+      [ (#r.date-long)]
+      if r.tag != none [, #r.tag]
+    } else [sin datos de Git]
+    html.br()
+    [Typst #r.version · compilada el #r.built-long]
+  })
+}
 #let theme-switch = html.div(class: "es-ar-theme", {
   [Tema]
   html.div(
@@ -270,6 +285,6 @@
   insertions: (
     head: seo-head,
     "page-top": notice,
-    "after-nav-items": { pdf-button(block: true); theme-switch; report-link },
+    "after-nav-items": { pdf-button(block: true); theme-switch; report-link; revision-note },
   ),
 )
