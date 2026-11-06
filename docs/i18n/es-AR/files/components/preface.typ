@@ -30,7 +30,7 @@
 
   El contenido de este documento y el compilador de Typst se licencian bajo los términos de la Apache License, Version 2.0.
 
-  Esta documentación es de código abierto y se puede contribuir a ella en https://github.com/typst/typst. Fue compuesta con Typst #sys.version, #fonts.body, Reforma 1918, #fonts.mono e #fonts.math.
+  Esta documentación es de código abierto y se puede contribuir a ella en https://github.com/typst/typst. Fue compuesta con Typst #sys.version, #fonts.body, #fonts.mono e #fonts.math.
 
   La documentación original en inglés es publicada por Typst GmbH, Heidestraße 34, 10557 Berlin, Germany.
 
@@ -45,7 +45,7 @@
     radius: 3pt,
     breakable: false,
   )[
-    *Traducción no oficial.* Esta es una traducción al español rioplatense de la documentación de Typst. *No es una publicación oficial* de Typst GmbH ni del equipo de Typst, y no cuenta con su aval. Fue traducida con inteligencia artificial (Claude Sonnet 5.5, de Anthropic), bajo la dirección y revisión de #link("https://github.com/jassielof")[Jassiel Ovando], y puede contener errores o imprecisiones. Ante cualquier duda, prevalece la documentación oficial en inglés:\ https://typst.app/docs
+    *Traducción no oficial.* Esta es una traducción al español rioplatense de la documentación de Typst. *No es una publicación oficial* de Typst GmbH ni del equipo de Typst, y no cuenta con su aval. Fue traducida con inteligencia artificial, bajo la dirección y revisión de #link("https://github.com/jassielof")[Jassiel Ovando], y puede contener errores o imprecisiones. Ante cualquier duda, prevalece la documentación oficial en inglés:\ https://typst.app/docs
 
     *Errores y sugerencias.* ¿Encontraste un error de traducción o tenés una sugerencia? Abrí un _issue_ en el repositorio de la traducción: #link("https://github.com/jassielof/typst/issues")[github.com/jassielof/typst/issues]. Los errores de Typst o de la documentación original van en https://github.com/typst/typst/issues
 
