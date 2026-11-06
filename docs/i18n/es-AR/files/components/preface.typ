@@ -6,6 +6,15 @@
 
 #page({
   logotype
+  // {
+  //   v(1fr)
+  //   image(
+  //     "/i18n/es-AR/brand/logo.svg",
+  //     width: 25%,
+  //     alt: "Logo de la documentación en español",
+  //   )
+  //   v(1fr)
+  // }
   v(2fr)
   title[Documentación de Typst]
   text(1.5em, luma(100))[Versión: #sys.version]

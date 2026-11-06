@@ -696,12 +696,12 @@
 "forever" = "siempre"
 
 # Fonts (the files live in fonts/).
-"HK Grotesk" = "Reforma 2018"
+"HK Grotesk" = "Reforma 1918"
 "Cascadia Mono" = "Chivo Mono"
 "New Computer Modern Math" = "IBM Plex Math"
 
 # Headings and titles (Reforma is fetched by `python3 tools/i18n fonts`).
-"Heading font" = "Reforma 1918"
+"Heading font" = "Reforma 1969"
 "Types" = "Tipos"
 
 # Web version.

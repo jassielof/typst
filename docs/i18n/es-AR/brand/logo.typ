@@ -1,12 +1,12 @@
 #set page(
   width: 500pt,
   height: 500pt,
-  margin: 50pt,
+  margin: 0pt,
   fill: none,
 )
 
 #set text(
-  size: 470pt,
+  size: 600pt,
   weight: "bold",
   fill: white,
   top-edge: "bounds",

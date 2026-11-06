@@ -149,6 +149,12 @@
           nav-on-this-page(here())
         }
       })
+      if "page-bottom" in stdx.config.insertions {
+        html.footer(
+          class: "docs-footer",
+          stdx.config.insertions.at("page-bottom"),
+        )
+      }
     })
   }))
 }

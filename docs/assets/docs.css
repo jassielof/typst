@@ -9,11 +9,16 @@
 
 body.docs {
   font-size: 16px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 body.docs > .main-grid {
   max-width: unset;
   padding: 32px;
+  flex: 1;
 }
 
 .main-grid {

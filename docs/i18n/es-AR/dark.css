@@ -11,6 +11,9 @@
   --brand: #165c67;
   --brand-line: #2f95a3;
   --brand-ink: #e4f6f9;
+  --theme-selected-bg: #4fc3d1;
+  --theme-selected-ink: #19181f;
+  --es-ar-muted-text: #a9a9b8;
   --text-primary: #ececf2;
   --text-disabled: rgba(236, 236, 242, 0.5);
   --text-c-comment: #9d9da8;
@@ -34,9 +37,9 @@
 @@ main a:link, @@ section a:link { color: #5eb0ff; }
 @@ main a:visited, @@ section a:visited { color: #b79cf2; }
 @@ button { background-color: #22212a; border-color: #4a4959; }
-@@ button:active, @@ input[type="submit"]:active { background-color: #3f3e4b !important; }
+@@ button:active:where(:not(.es-ar-theme [aria-pressed="true"])), @@ input[type="submit"]:active { background-color: #3f3e4b !important; }
 @media (hover: hover) {
-  @@ button:hover, @@ input[type="submit"]:hover { background-color: #34333f; }
+  @@ button:hover:where(:not(.es-ar-theme [aria-pressed="true"])), @@ input[type="submit"]:hover { background-color: #34333f; }
 }
 @@ input::placeholder { color: #a9a9b8; }
 @@ h1 small, @@ .reference-index .mod, @@ .folding-details summary,
@@ -85,7 +88,6 @@
 @@ .symbol-flyout button:not(.copy):hover, @@ .symbol-flyout button.main:hover { background: #3f3e4b; }
 @@ .symbol-flyout .latex-name { color: rgba(236, 236, 242, 0.5); }
 /* Our own additions. */
-@@ #es-ar-notice { background: #2e2810; color: #f2e6b0; border-bottom-color: #6b5a14; }
 /* Syntax colors are emitted inline by the docs; remap them to the dark set. */
 @@ [style*="color: #d73948"] { color: var(--text-c-keyword) !important; }
 @@ [style*="color: #4b69c6"] { color: var(--text-c-func) !important; }
