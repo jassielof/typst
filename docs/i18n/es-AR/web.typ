@@ -265,7 +265,6 @@
     if r.commit != none {
       html.a(href: r.repo + "/commit/" + r.commit, r.short)
       [ (#r.date-long)]
-      if r.tag != none [, #r.tag]
     } else [sin datos de Git]
     html.br()
     [Typst #r.version · compilada el #r.built-long]
