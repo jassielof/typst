@@ -46,6 +46,14 @@ a2c6af5f2ff65534067dc2e2e2f49cc6 grid-tags-internal-grid-layout-breaking-bibliog
 823b53d909fa38c71d03bf35b4ba1a44 heading-offset
 c5c5effc40e0e84c792e22d66fc28a9d heading-tags-basic
 ccf6779f5948fdcd0fd5f59366acb514 heading-tags-complex
+dab68885c63ded90e66044218b2e12ec heading-tags-run-in
+87ce78f0a448f0147fca35fc5f7aef5c heading-tags-run-in-alone
+fa6f37800be11d5af7901106bd522e65 heading-tags-run-in-boxed
+78f55b702a8f769ef69a280fc0d21670 heading-tags-run-in-containers
+a3fcb74da9dacbaac898c6c0c8e06e09 heading-tags-run-in-language
+ddb18d409af2352930c839e478dfc77a heading-tags-run-in-middle
+74f8895f4ae534c93dba45b07404ca70 heading-tags-run-in-numbered
+0b32f68fbff393d6ae5768c02b39d9a1 heading-tags-run-in-wrapping
 fd0d61d4bd3970d6e68cf6712f970270 issue-7020-break-tags
 48176e7c86707d8a69eccbcf4e17e23b issue-7301-link-tags-empty-link-body
 1ce8f02c1a8be1ec36d8a288b404cc3e issue-7301-link-tags-empty-link-body-footnote

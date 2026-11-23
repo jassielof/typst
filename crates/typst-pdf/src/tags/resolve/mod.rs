@@ -197,7 +197,40 @@ fn resolve_group_node(
         validate_children(rs, &tag, &nodes);
     }
 
-    accum.push(Node::Group(kt::TagGroup::with_children(tag, nodes)));
+    // Inline show rules can place a heading inside a layout paragraph. Keep
+    // the visual paragraph intact, but separate its heading and prose in the
+    // logical PDF structure.
+    if matches!(tag, TagKind::P(_))
+        && nodes.iter().any(|node| {
+            matches!(node, Node::Group(group) if matches!(group.tag, TagKind::Hn(_)))
+        })
+    {
+        let mut paragraph = Vec::new();
+        for mut node in nodes {
+            if let Node::Group(heading) = &mut node
+                && matches!(heading.tag, TagKind::Hn(_))
+            {
+                if !paragraph.is_empty() {
+                    accum.push(Node::Group(kt::TagGroup::with_children(
+                        tag.clone(),
+                        std::mem::take(&mut paragraph),
+                    )));
+                }
+                // The heading no longer inherits the paragraph's language.
+                if heading.tag.lang().is_none() {
+                    heading.tag.set_lang(tag.lang().map(str::to_owned));
+                }
+                accum.push(node);
+            } else {
+                paragraph.push(node);
+            }
+        }
+        if !paragraph.is_empty() {
+            accum.push(Node::Group(kt::TagGroup::with_children(tag, paragraph)));
+        }
+    } else {
+        accum.push(Node::Group(kt::TagGroup::with_children(tag, nodes)));
+    }
 }
 
 fn resolve_text(
